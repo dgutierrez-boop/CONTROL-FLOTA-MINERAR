@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minerar 2026 - Panel de Flota</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -74,6 +75,7 @@
         .stat-card.mal { border-color: #38bdf8; }
         .stat-card.brk { border-color: #a78bfa; }
         .stat-card.lpa { border-color: #4ade80; }
+        .stat-card.alert { border-color: #f87171; }
         .stat-value {
             font-size: 36px;
             font-weight: bold;
@@ -257,7 +259,7 @@
             <div class="stat-value" id="lpaOperativos">0</div>
             <div style="font-size: 12px; color: #94a3b8;">Click para ver detalle</div>
         </div>
-        <div class="stat-card" style="border-color: #f87171;" onclick="mostrarModal('alertas')">
+        <div class="stat-card alert" style="border-color: #f87171;" onclick="mostrarModal('alertas')">
             <div class="stat-label">⚠️ Alertas (>4h parados)</div>
             <div class="stat-value" id="totalAlertas">0</div>
             <div style="font-size: 12px; color: #94a3b8;">Click para ver detalle</div>
@@ -448,12 +450,12 @@
             if (chartEstado) chartEstado.destroy();
             chartEstado = new Chart(ctxEstado, {
                 type: 'bar',
-                 {
+                data: {
                     labels: ['Malagueño', 'Barker', 'La Pampita'],
                     datasets: [
-                        { label: 'Operativos',  [datosPorSucursal['Malagueño'].operativo, datosPorSucursal['Barker'].operativo, datosPorSucursal['La Pampita'].operativo], backgroundColor: '#34d399' },
-                        { label: 'Parados',  [datosPorSucursal['Malagueño'].parado, datosPorSucursal['Barker'].parado, datosPorSucursal['La Pampita'].parado], backgroundColor: '#fbbf24' },
-                        { label: 'En Service',  [datosPorSucursal['Malagueño'].service, datosPorSucursal['Barker'].service, datosPorSucursal['La Pampita'].service], backgroundColor: '#f87171' }
+                        { label: 'Operativos', data: [datosPorSucursal['Malagueño'].operativo, datosPorSucursal['Barker'].operativo, datosPorSucursal['La Pampita'].operativo], backgroundColor: '#34d399' },
+                        { label: 'Parados', data: [datosPorSucursal['Malagueño'].parado, datosPorSucursal['Barker'].parado, datosPorSucursal['La Pampita'].parado], backgroundColor: '#fbbf24' },
+                        { label: 'En Service', data: [datosPorSucursal['Malagueño'].service, datosPorSucursal['Barker'].service, datosPorSucursal['La Pampita'].service], backgroundColor: '#f87171' }
                     ]
                 },
                 options: {
@@ -480,10 +482,10 @@
             if (chartTiempo) chartTiempo.destroy();
             chartTiempo = new Chart(ctxTiempo, {
                 type: 'doughnut',
-                 {
+                data: {
                     labels: ['Malagueño', 'Barker', 'La Pampita'],
                     datasets: [{
-                         [tiempos['Malagueño'], tiempos['Barker'], tiempos['La Pampita']],
+                        data: [tiempos['Malagueño'], tiempos['Barker'], tiempos['La Pampita']],
                         backgroundColor: ['#38bdf8', '#a78bfa', '#4ade80'],
                         borderWidth: 0
                     }]
@@ -556,7 +558,7 @@
                     <span class="detail-value">${equipo.ID_Equipo || '-'}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label"> Estado:</span>
+                    <span class="detail-label">📊 Estado:</span>
                     <span class="detail-value">${equipo.Estado || '-'}</span>
                 </div>
                 <div class="detail-row">
