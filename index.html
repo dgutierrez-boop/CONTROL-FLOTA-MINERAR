@@ -47,7 +47,7 @@ tr:hover{background:rgba(255,255,255,0.05);cursor:pointer}
 <header><div class="header-top"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="logo"/><div class="header-title"><h1>PANEL DE FLOTA MINERA 2026 🚜</h1><p>DATOS REALES · SIN DATOS FICTICIOS</p></div></div>
 <div class="header-actions"><div class="sync-status" id="sync-status"><i class="fas fa-sync-alt"></i><span id="sync-text">Cargando...</span></div>
 <div style="display:flex;gap:0.3rem"><button class="branch-filter active" data-sheet="ALL">🏭 TODAS</button><button class="branch-filter" data-sheet="MALAGUEÑO">📍 MALAGUEÑO</button><button class="branch-filter" data-sheet="BARKER">📍 BARKER</button><button class="branch-filter" data-sheet="LA_PAMPITA">📍 LA PAMPITA</button></div>
-<div class="alert-badge" onclick="mostrarModalResumen('alertas')"><i class="fas fa-exclamation-triangle"></i><span id="alert-count">⚠️ Alertas: <strong>0</strong></span></div></div></header>
+<div class="alert-badge" onclick="alert('Función en desarrollo')"><i class="fas fa-exclamation-triangle"></i><span id="alert-count">⚠️ Alertas: <strong>0</strong></span></div></div></header>
 
 <section class="kpi-grid">
 <div class="kpi-card"><div class="kpi-label">Disponibilidad</div><div class="kpi-value" id="kpi-disponibilidad">0%</div></div>
@@ -71,11 +71,10 @@ tr:hover{background:rgba(255,255,255,0.05);cursor:pointer}
 <div class="table-card"><div class="table-header"><h3>📋 FLOTA EN TIEMPO REAL</h3><button class="btn-refresh" style="padding:0.3rem 0.7rem;font-size:0.85rem" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> Actualizar</button></div>
 <div style="overflow-x:auto"><table id="tabla-flota"><thead><tr><th>ID</th><th>EQUIPO</th><th>SUCURSAL</th><th>PROPIEDAD</th><th>ESTADO</th><th>LECTURA</th><th>⏱️ PARADA</th><th>MOTIVO</th><th>REPORTANTE</th><th>ÚLTIMA ACT.</th></tr></thead><tbody id="tabla-body"></tbody></table>
 <div id="tabla-loading" class="loading"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Cargando datos REALES del sheet...</p></div>
-<div id="tabla-empty" class="empty-msg" style="display:none"><i class="fas fa-database"></i><strong>📭 No hay datos en esta sucursal</strong><p>La hoja está vacía - cargá datos desde el formulario o el sheet</p><small style="color:var(--muted)">Google Sheet: <span id="sheet-name">-</span></small></div></div></div>
+<div id="tabla-empty" class="empty-msg" style="display:none"><i class="fas fa-database"></i><strong>📭 No hay datos en esta sucursal</strong><p>La hoja está vacía - cargá datos desde el formulario</p><small style="color:var(--muted)">Google Sheet: <span id="sheet-name">-</span></small></div></div></div>
 </section>
 
 <script>
-// 📊 URLs REALES DE GOOGLE SHEETS
 const SHEETS = {
   'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
   'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=847775149&single=true&output=csv',
@@ -129,7 +128,6 @@ function normalizeKey(k) {
   return map[lk] || k;
 }
 
-// ✅ SOLO CARGA DATOS REALES - SIN DATOS FICTICIOS
 async function fetchSheet(name) {
   try {
     const url = name === 'ALL' ? null : SHEETS[name];
@@ -224,7 +222,7 @@ function renderCharts(data) {
   if (chartHoras) chartHoras.destroy();
   chartHoras = new Chart($('#chart-horas'), {
     type: 'bar',
-     { labels: suc, datasets: [{ label: 'Horas',  hrs, backgroundColor: ['#00ff88', '#ff9900', '#00ccff'], borderRadius: 6 }] },
+    data: { labels: suc, datasets: [{ label: 'Horas', data: hrs, backgroundColor: ['#00ff88', '#ff9900', '#00ccff'], borderRadius: 6 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#f8fafc' } } } }
   });
   
@@ -236,7 +234,7 @@ function renderCharts(data) {
   if (chartEstado) chartEstado.destroy();
   chartEstado = new Chart($('#chart-estado'), {
     type: 'doughnut',
-     { labels: Object.keys(est), datasets: [{  Object.values(est), backgroundColor: ['#00ff88', '#ff9900', '#ff3333'], borderWidth: 0 }] },
+    data: { labels: Object.keys(est), datasets: [{ data: Object.values(est), backgroundColor: ['#00ff88', '#ff9900', '#ff3333'], borderWidth: 0 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#f8fafc' } }, tooltip: { backgroundColor: 'rgba(11,17,32,0.9)', titleColor: '#fff', bodyColor: '#cbd5e1' } } }
   });
 }
@@ -269,7 +267,7 @@ function getFiltered() {
 
 async function loadDashboard() {
   const btn = $('#btn-actualizar'), syncTxt = $('#sync-text'), syncSt = $('#sync-status');
-  if (btn) btn.disabled = true; if (syncSt) { syncSt.className = 'sync-status'; syncSt.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Cargando datos REALES...'; }
+  if (btn) btn.disabled = true; if (syncSt) { syncSt.className = 'sync-status'; syncSt.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Cargando...'; }
   try {
     if (currentSheet === 'ALL') {
       const [m, b, l] = await Promise.all([fetchSheet('MALAGUEÑO'), fetchSheet('BARKER'), fetchSheet('LA_PAMPITA')]);
@@ -277,22 +275,18 @@ async function loadDashboard() {
     } else {
       equipos = await fetchSheet(currentSheet);
     }
-    console.log('📊 Datos REALES cargados:', equipos.length, '| Sucursal:', currentSheet);
+    console.log('📊 Datos cargados:', equipos.length, '| Sucursal:', currentSheet);
     if (equipos.length === 0) {
       if (syncSt) { syncSt.className = 'sync-status warning'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Sin datos'; }
-      if (syncTxt) syncTxt.textContent = '⚠️ Hoja vacía - cargá datos';
+      if (syncTxt) syncTxt.textContent = '⚠️ Hoja vacía';
     } else {
       if (syncSt) { syncSt.className = 'sync-status ok'; syncSt.innerHTML = '<i class="fas fa-check"></i> OK'; }
-      if (syncTxt) syncTxt.textContent = `✅ Actualizado: ${new Date().toLocaleTimeString('es-AR')} | ${equipos.length} equipos REALES`;
+      if (syncTxt) syncTxt.textContent = `✅ ${equipos.length} equipos`;
     }
     renderKPIs(equipos); renderCharts(equipos); renderTable(equipos);
     if (cronInt) clearInterval(cronInt); cronInt = setInterval(updateCronos, 1000);
-  } catch (err) { console.error('❌ Error:', err); if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; } if (syncTxt) syncTxt.textContent = '❌ Error de conexión'; }
+  } catch (err) { console.error('❌ Error:', err); if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; } if (syncTxt) syncTxt.textContent = '❌ Error'; }
   finally { if (btn) btn.disabled = false; }
-}
-
-function mostrarModalResumen(tipo) {
-  alert('Función en desarrollo - mostrará: ' + tipo);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -300,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
     $$('.branch-filter').forEach(b => b.classList.remove('active'));
     e.currentTarget.classList.add('active');
     currentSheet = e.currentTarget.dataset.sheet;
-    console.log('🔄 Cambiando a sucursal:', currentSheet);
     loadDashboard();
   }));
   $('#filter-propiedad')?.addEventListener('change', () => renderTable(equipos));
