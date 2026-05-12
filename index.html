@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: Arial, sans-serif; 
-            background: #1e293b;
+            background: #0f172a;
             color: white;
             padding: 20px;
         }
@@ -25,6 +25,7 @@
             gap: 10px; 
             margin-bottom: 20px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .btn-sucursal {
             padding: 10px 20px;
@@ -34,12 +35,15 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            transition: all 0.3s;
         }
+        .btn-sucursal:hover { background: #334155; }
         .btn-sucursal.active {
             background: #3b82f6;
+            border-color: #60a5fa;
         }
         .tabla-container {
-            background: #0f172a;
+            background: #1e293b;
             padding: 20px;
             border-radius: 10px;
             overflow-x: auto;
@@ -47,6 +51,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
         }
         th, td {
             padding: 12px;
@@ -54,24 +59,47 @@
             border-bottom: 1px solid #334155;
         }
         th {
-            background: #1e293b;
+            background: #0f172a;
             color: #94a3b8;
             font-size: 12px;
             text-transform: uppercase;
         }
+        tr:hover { background: #334155; }
         .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
+            display: inline-block;
         }
         .badge-activo { background: #065f46; color: #34d399; }
         .badge-parado { background: #92400e; color: #fbbf24; }
         .badge-service { background: #7f1d1d; color: #f87171; }
-        .loading {
+        .loading, .sin-datos {
             text-align: center;
             padding: 40px;
             color: #94a3b8;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -79,108 +107,93 @@
     <div class="header">
         <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo">
         <h1>🚜 PANEL DE FLOTA MINERA 2026</h1>
-        <p>Control de Horómetros y Kilómetros</p>
+        <p>Control de Horómetros y Kilómetros - Datos en Vivo</p>
     </div>
     
     <div class="sucursales">
-        <button class="btn-sucursal active" onclick="cargarSucursal('TODAS')">🏭 Todas</button>
-        <button class="btn-sucursal" onclick="cargarSucursal('MALAGUEÑO')">📍 Malagueño</button>
-        <button class="btn-sucursal" onclick="cargarSucursal('BARKER')">🐺 Barker</button>
-        <button class="btn-sucursal" onclick="cargarSucursal('LA_PAMPITA')">🌸 La Pampita</button>
+        <button class="btn-sucursal active" onclick="filtrarSucursal('TODAS', this)">🏭 Todas</button>
+        <button class="btn-sucursal" onclick="filtrarSucursal('MALAGUEÑO', this)">📍 Malagueño</button>
+        <button class="btn-sucursal" onclick="filtrarSucursal('BARKER', this)">🐺 Barker</button>
+        <button class="btn-sucursal" onclick="filtrarSucursal('LA_PAMPITA', this)">🌸 La Pampita</button>
+    </div>
+
+    <div class="stats" id="statsContainer">
+        <div class="stat-card">
+            <div class="stat-label">📊 Total Equipos</div>
+            <div class="stat-value" id="totalEquipos">0</div>
+        </div>
+        <div class="stat-card" style="border-color: #34d399;">
+            <div class="stat-label">✅ Operativos</div>
+            <div class="stat-value" id="totalOperativos">0</div>
+        </div>
+        <div class="stat-card" style="border-color: #fbbf24;">
+            <div class="stat-label">⏸️ Parados</div>
+            <div class="stat-value" id="totalParados">0</div>
+        </div>
+        <div class="stat-card" style="border-color: #f87171;">
+            <div class="stat-label">🔧 En Service</div>
+            <div class="stat-value" id="totalService">0</div>
+        </div>
     </div>
     
     <div class="tabla-container">
-        <h2 style="margin-bottom: 15px;">📋 Flota en Tiempo Real</h2>
+        <h2 style="margin-bottom: 15px;">📋 Flota en Tiempo Real - <span id="sucursalActual">Todas</span></h2>
         <div id="contenido">
             <div class="loading">Cargando datos...</div>
         </div>
     </div>
 
     <script>
-        // URLs REALES de Google Sheets Publicados
         const SHEETS = {
             'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
             'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv',
             'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=149809572&single=true&output=csv'
         };
 
-        let sucursalActual = 'TODAS';
+        let sucursalFiltro = 'TODAS';
+        let todosLosDatos = [];
 
-        function cargarSucursal(sucursal) {
-            sucursalActual = sucursal;
+        function filtrarSucursal(sucursal, btn) {
+            sucursalFiltro = sucursal;
             
-            // Actualizar botones
-            document.querySelectorAll('.btn-sucursal').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
+            // Actualizar botones visualmente
+            document.querySelectorAll('.btn-sucursal').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             
-            cargarDatos();
+            // Actualizar título
+            const nombres = {
+                'TODAS': 'Todas las Sucursales',
+                'MALAGUEÑO': 'Malagueño',
+                'BARKER': 'Barker',
+                'LA_PAMPITA': 'La Pampita'
+            };
+            document.getElementById('sucursalActual').textContent = nombres[sucursal];
+            
+            // Filtrar y mostrar
+            aplicarFiltro();
         }
 
-        async function cargarDatos() {
+        function aplicarFiltro() {
             const contenido = document.getElementById('contenido');
-            contenido.innerHTML = '<div class="loading">Cargando datos...</div>';
             
-            try {
-                let datos = [];
-                
-                if (sucursalActual === 'TODAS') {
-                    // Cargar todas las sucursales
-                    for (const [sucursal, url] of Object.entries(SHEETS)) {
-                        const response = await fetch(url);
-                        const texto = await response.text();
-                        const filas = parseCSV(texto);
-                        datos = datos.concat(filas.map(f => ({...f, sucursal})));
-                    }
-                } else {
-                    // Cargar sucursal específica
-                    const response = await fetch(SHEETS[sucursalActual]);
-                    const texto = await response.text();
-                    datos = parseCSV(texto);
-                }
-                
-                mostrarTabla(datos);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                contenido.innerHTML = '<div class="loading" style="color: #f87171;">❌ Error al cargar datos<br>' + error.message + '</div>';
-            }
-        }
-
-        function parseCSV(texto) {
-            const lineas = texto.trim().split('\n');
-            if (lineas.length < 2) return [];
+            let datosFiltrados = todosLosDatos;
             
-            const headers = lineas[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            const datos = [];
-            
-            for (let i = 1; i < lineas.length; i++) {
-                if (!lineas[i].trim()) continue;
-                
-                const valores = lineas[i].split(',').map(v => v.trim().replace(/"/g, ''));
-                const fila = {};
-                
-                headers.forEach((header, index) => {
-                    fila[header] = valores[index] || '';
-                });
-                
-                // Solo agregar si tiene ID de equipo
-                if (fila['ID_Equipo'] && fila['ID_Equipo'].trim()) {
-                    datos.push(fila);
-                }
+            if (sucursalFiltro !== 'TODAS') {
+                datosFiltrados = todosLosDatos.filter(d => d.sucursal === sucursalFiltro);
             }
             
-            return datos;
+            if (datosFiltrados.length === 0) {
+                contenido.innerHTML = '<div class="sin-datos">📭 No hay datos para mostrar</div>';
+                actualizarStats([]);
+                return;
+            }
+            
+            mostrarTabla(datosFiltrados);
+            actualizarStats(datosFiltrados);
         }
 
         function mostrarTabla(datos) {
             const contenido = document.getElementById('contenido');
-            
-            if (datos.length === 0) {
-                contenido.innerHTML = '<div class="loading">📭 No hay datos disponibles</div>';
-                return;
-            }
             
             let html = `
                 <table>
@@ -205,11 +218,11 @@
                 if (estado === 'PARADO') badgeClass = 'badge-parado';
                 else if (estado === 'EN_SERVICE' || estado === 'MANTENIMIENTO') badgeClass = 'badge-service';
                 
-                const tiempoParada = calcularTiempoParada(d.Timestamp_Parada);
+                const tiempoParada = calcularTiempoParada(d.Timestamp_Parada, estado);
                 
                 html += `
                     <tr>
-                        <td>${d.sucursal || sucursalActual}</td>
+                        <td>${d.sucursal}</td>
                         <td><strong>${d.ID_Equipo || '-'}</strong></td>
                         <td>${d.Equipo || '-'}</td>
                         <td><span class="badge ${badgeClass}">${d.Estado || '-'}</span></td>
@@ -225,8 +238,19 @@
             contenido.innerHTML = html;
         }
 
-        function calcularTiempoParada(timestamp) {
-            if (!timestamp) return '-';
+        function actualizarStats(datos) {
+            const operativos = datos.filter(d => (d.Estado || '').toUpperCase() === 'OPERATIVO').length;
+            const parados = datos.filter(d => (d.Estado || '').toUpperCase() === 'PARADO').length;
+            const service = datos.filter(d => ['EN_SERVICE', 'MANTENIMIENTO'].includes((d.Estado || '').toUpperCase())).length;
+            
+            document.getElementById('totalEquipos').textContent = datos.length;
+            document.getElementById('totalOperativos').textContent = operativos;
+            document.getElementById('totalParados').textContent = parados;
+            document.getElementById('totalService').textContent = service;
+        }
+
+        function calcularTiempoParada(timestamp, estado) {
+            if (!timestamp || estado === 'OPERATIVO') return '-';
             
             try {
                 const inicio = new Date(timestamp);
@@ -243,7 +267,63 @@
             }
         }
 
-        // Cargar datos al iniciar
+        async function cargarDatos() {
+            try {
+                todosLosDatos = [];
+                
+                // Cargar todas las sucursales
+                for (const [sucursal, url] of Object.entries(SHEETS)) {
+                    try {
+                        const response = await fetch(url);
+                        const texto = await response.text();
+                        const filas = parseCSV(texto);
+                        
+                        filas.forEach(fila => {
+                            if (fila['ID_Equipo'] && fila['ID_Equipo'].trim()) {
+                                todosLosDatos.push({
+                                    ...fila,
+                                    sucursal: sucursal
+                                });
+                            }
+                        });
+                    } catch (err) {
+                        console.error(`Error cargando ${sucursal}:`, err);
+                    }
+                }
+                
+                aplicarFiltro();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('contenido').innerHTML = 
+                    '<div class="sin-datos" style="color: #f87171;">❌ Error al cargar datos<br>' + error.message + '</div>';
+            }
+        }
+
+        function parseCSV(texto) {
+            const lineas = texto.trim().split('\n');
+            if (lineas.length < 2) return [];
+            
+            const headers = lineas[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const datos = [];
+            
+            for (let i = 1; i < lineas.length; i++) {
+                if (!lineas[i].trim()) continue;
+                
+                const valores = lineas[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                const fila = {};
+                
+                headers.forEach((header, index) => {
+                    fila[header] = valores[index] || '';
+                });
+                
+                datos.push(fila);
+            }
+            
+            return datos;
+        }
+
+        // Cargar al iniciar
         window.onload = () => cargarDatos();
         
         // Actualizar cada 30 segundos
