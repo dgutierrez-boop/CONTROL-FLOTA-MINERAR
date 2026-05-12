@@ -75,9 +75,10 @@ tr:hover{background:rgba(255,255,255,0.05);cursor:pointer}
 </section>
 
 <script>
+// 📊 URLs CORREGIDAS DE GOOGLE SHEETS PUBLICADAS
 const SHEETS = {
   'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
-  'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=847775149&single=true&output=csv',
+  'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv',
   'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=149809572&single=true&output=csv'
 };
 const ALERT_HOURS = 4;
@@ -133,13 +134,16 @@ async function fetchSheet(name) {
     const url = name === 'ALL' ? null : SHEETS[name];
     if (!url) return [];
     const res = await fetch(url, { cache: 'no-store', mode: 'cors' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    if (!res.ok) {
+      console.error(`❌ Error HTTP ${res.status} cargando ${name}`);
+      throw new Error('HTTP ' + res.status);
+    }
     const text = await res.text();
     const data = parseCSV(text);
     if (name !== 'ALL' && data.length > 0 && !data[0].Sucursal) data.forEach(row => row.Sucursal = name);
     return data.filter(e => e['Equipo'] || e['Nombre'] || e['ID_Equipo']);
   } catch (err) {
-    console.error('❌ Error cargando ' + name + ':', err);
+    console.error('❌ Error cargando ' + name + ':', err.message);
     return [];
   }
 }
@@ -222,7 +226,7 @@ function renderCharts(data) {
   if (chartHoras) chartHoras.destroy();
   chartHoras = new Chart($('#chart-horas'), {
     type: 'bar',
-    data: { labels: suc, datasets: [{ label: 'Horas', data: hrs, backgroundColor: ['#00ff88', '#ff9900', '#00ccff'], borderRadius: 6 }] },
+     { labels: suc, datasets: [{ label: 'Horas',  hrs, backgroundColor: ['#00ff88', '#ff9900', '#00ccff'], borderRadius: 6 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#f8fafc' } } } }
   });
   
@@ -234,7 +238,7 @@ function renderCharts(data) {
   if (chartEstado) chartEstado.destroy();
   chartEstado = new Chart($('#chart-estado'), {
     type: 'doughnut',
-    data: { labels: Object.keys(est), datasets: [{ data: Object.values(est), backgroundColor: ['#00ff88', '#ff9900', '#ff3333'], borderWidth: 0 }] },
+     { labels: Object.keys(est), datasets: [{  Object.values(est), backgroundColor: ['#00ff88', '#ff9900', '#ff3333'], borderWidth: 0 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#f8fafc' } }, tooltip: { backgroundColor: 'rgba(11,17,32,0.9)', titleColor: '#fff', bodyColor: '#cbd5e1' } } }
   });
 }
@@ -285,7 +289,7 @@ async function loadDashboard() {
     }
     renderKPIs(equipos); renderCharts(equipos); renderTable(equipos);
     if (cronInt) clearInterval(cronInt); cronInt = setInterval(updateCronos, 1000);
-  } catch (err) { console.error('❌ Error:', err); if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; } if (syncTxt) syncTxt.textContent = '❌ Error'; }
+  } catch (err) { console.error('❌ Error:', err); if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; } if (syncTxt) syncTxt.textContent = '❌ Error de conexión'; }
   finally { if (btn) btn.disabled = false; }
 }
 
