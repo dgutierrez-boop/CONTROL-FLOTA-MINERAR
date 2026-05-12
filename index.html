@@ -9,13 +9,12 @@ header{background:linear-gradient(180deg,#1e293b,#0b1120);border-bottom:1px soli
 .header-title p{font-size:0.85rem;color:var(--muted)}
 .header-actions{margin-top:1rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}
 .sync-status{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem}
-.sync-status.ok{color:var(--green)}.sync-status.error{color:var(--red)}
+.sync-status.ok{color:var(--green)}.sync-status.error{color:var(--red)}.sync-status.warning{color:var(--orange)}
 .branch-filter{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.4rem 1rem;border-radius:99px;cursor:pointer}
 .branch-filter.active{background:var(--blue);color:#000;border-color:var(--blue)}
 .alert-badge{background:rgba(255,51,51,0.1);color:var(--red);padding:0.4rem 0.8rem;border-radius:8px;border:1px solid var(--red);cursor:pointer}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;padding:1.5rem 2rem}
-.kpi-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border);cursor:pointer}
-.kpi-card:hover{transform:translateY(-5px)}
+.kpi-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border)}
 .kpi-label{font-size:0.75rem;color:var(--muted);text-transform:uppercase}
 .kpi-value{font-size:2rem;font-weight:800;margin:0.3rem 0;color:#fff}
 .filters{padding:0 2rem 1rem;display:flex;gap:1rem;flex-wrap:wrap;background:rgba(11,17,32,0.8);border-bottom:1px solid var(--border)}
@@ -43,39 +42,18 @@ tr:hover{background:rgba(255,255,255,0.05);cursor:pointer}
 .cronometro.parado-largo{color:var(--red)}
 .loading,.empty-msg{text-align:center;padding:3rem;color:var(--muted)}
 .empty-msg i{font-size:3rem;margin-bottom:1rem;color:var(--border)}
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;visibility:hidden;transition:all 0.3s}
-.modal-overlay.active{opacity:1;visibility:visible}
-.modal-content{background:var(--card);border-radius:20px;border:1px solid var(--border);width:90%;max-width:700px;max-height:85vh;overflow-y:auto;transform:scale(0.8) translateY(50px);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}
-.modal-overlay.active .modal-content{transform:scale(1) translateY(0)}
-.modal-header{background:linear-gradient(135deg,var(--blue),#005f85);padding:1.5rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center}
-.modal-header h2{font-size:1.3rem;color:#fff;display:flex;align-items:center;gap:0.75rem}
-.modal-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer}
-.modal-body{padding:1.5rem}
-.summary-list{list-style:none}
-.summary-item{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);border-radius:8px;margin-bottom:0.5rem}
-.summary-title{font-weight:700;color:#fff}
-.summary-subtitle{font-size:0.8rem;color:var(--muted)}
-.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
-.detail-card{background:rgba(0,0,0,0.3);padding:1rem;border-radius:10px;border-left:4px solid var(--blue)}
-.detail-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase}
-.detail-value{font-size:1.2rem;font-weight:700;color:#fff}
-.info-row{display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(51,65,85,0.3)}
-.modal-actions{display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
-.btn{flex:1;padding:0.8rem 1rem;border:none;border-radius:8px;font-weight:700;cursor:pointer}
-.btn-primary{background:var(--blue);color:#000}
-.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
-@media(max-width:768px){header,.kpi-grid,.charts-grid,.filters,.table-section{padding-left:1rem;padding-right:1rem}.charts-grid{grid-template-columns:1fr}.modal-content{width:95%}}
+.empty-msg strong{color:var(--text);display:block;margin-bottom:0.5rem}
 </style></head><body>
-<header><div class="header-top"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="logo"/><div class="header-title"><h1>PANEL DE FLOTA MINERA 2026 🚜</h1><p>CONTROL DE HORÓMETROS · MONITOREO EN VIVO</p></div></div>
+<header><div class="header-top"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="logo"/><div class="header-title"><h1>PANEL DE FLOTA MINERA 2026 🚜</h1><p>DATOS REALES · SIN DATOS FICTICIOS</p></div></div>
 <div class="header-actions"><div class="sync-status" id="sync-status"><i class="fas fa-sync-alt"></i><span id="sync-text">Cargando...</span></div>
 <div style="display:flex;gap:0.3rem"><button class="branch-filter active" data-sheet="ALL">🏭 TODAS</button><button class="branch-filter" data-sheet="MALAGUEÑO">📍 MALAGUEÑO</button><button class="branch-filter" data-sheet="BARKER">📍 BARKER</button><button class="branch-filter" data-sheet="LA_PAMPITA">📍 LA PAMPITA</button></div>
 <div class="alert-badge" onclick="mostrarModalResumen('alertas')"><i class="fas fa-exclamation-triangle"></i><span id="alert-count">⚠️ Alertas: <strong>0</strong></span></div></div></header>
 
 <section class="kpi-grid">
-<div class="kpi-card" onclick="mostrarModalResumen('todos')"><div class="kpi-label">Disponibilidad</div><div class="kpi-value" id="kpi-disponibilidad">0%</div><div class="kpi-desc">Click para ver flota</div></div>
-<div class="kpi-card" onclick="mostrarModalResumen('operativos')"><div class="kpi-label">Operativos</div><div class="kpi-value"><span id="kpi-operativos">0</span>/<span id="kpi-total">0</span></div><div class="kpi-desc">Click para lista</div></div>
-<div class="kpi-card" onclick="mostrarModalResumen('inactivos')"><div class="kpi-label">Tiempo Muerto</div><div class="kpi-value" id="kpi-tiempo-muerto">0h</div><div class="kpi-desc">Click para ver parados</div></div>
-<div class="kpi-card" onclick="mostrarModalResumen('alertas')"><div class="kpi-label">Alertas</div><div class="kpi-value" id="kpi-alertas">0</div><div class="kpi-desc">Click para críticas</div></div>
+<div class="kpi-card"><div class="kpi-label">Disponibilidad</div><div class="kpi-value" id="kpi-disponibilidad">0%</div></div>
+<div class="kpi-card"><div class="kpi-label">Operativos</div><div class="kpi-value"><span id="kpi-operativos">0</span>/<span id="kpi-total">0</span></div></div>
+<div class="kpi-card"><div class="kpi-label">Tiempo Muerto</div><div class="kpi-value" id="kpi-tiempo-muerto">0h</div></div>
+<div class="kpi-card"><div class="kpi-label">Alertas</div><div class="kpi-value" id="kpi-alertas">0</div></div>
 </section>
 
 <section class="filters">
@@ -92,23 +70,12 @@ tr:hover{background:rgba(255,255,255,0.05);cursor:pointer}
 <section class="table-section">
 <div class="table-card"><div class="table-header"><h3>📋 FLOTA EN TIEMPO REAL</h3><button class="btn-refresh" style="padding:0.3rem 0.7rem;font-size:0.85rem" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> Actualizar</button></div>
 <div style="overflow-x:auto"><table id="tabla-flota"><thead><tr><th>ID</th><th>EQUIPO</th><th>SUCURSAL</th><th>PROPIEDAD</th><th>ESTADO</th><th>LECTURA</th><th>⏱️ PARADA</th><th>MOTIVO</th><th>REPORTANTE</th><th>ÚLTIMA ACT.</th></tr></thead><tbody id="tabla-body"></tbody></table>
-<div id="tabla-loading" class="loading"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Cargando datos...</p></div>
-<div id="tabla-empty" class="empty-msg" style="display:none"><i class="fas fa-database"></i><p>📭 No hay datos en esta sucursal</p><small>Verificá que la hoja tenga registros</small></div></div></div>
+<div id="tabla-loading" class="loading"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Cargando datos REALES del sheet...</p></div>
+<div id="tabla-empty" class="empty-msg" style="display:none"><i class="fas fa-database"></i><strong>📭 No hay datos en esta sucursal</strong><p>La hoja está vacía - cargá datos desde el formulario o el sheet</p><small style="color:var(--muted)">Google Sheet: <span id="sheet-name">-</span></small></div></div></div>
 </section>
 
-<div class="modal-overlay" id="modal-detalle"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-truck-monster"></i><span id="modal-titulo">Detalle</span></h2><button class="modal-close" onclick="cerrarModal('modal-detalle')">×</button></div>
-<div class="modal-body"><div class="detail-grid"><div class="detail-card"><div class="detail-label">ID</div><div class="detail-value" id="modal-id">-</div></div><div class="detail-card"><div class="detail-label">Nombre</div><div class="detail-value" id="modal-nombre">-</div></div><div class="detail-card"><div class="detail-label">Sucursal</div><div class="detail-value" id="modal-sucursal">-</div></div><div class="detail-card"><div class="detail-label">Estado</div><div class="detail-value" id="modal-estado">-</div></div></div>
-<div style="margin-bottom:1.5rem"><h3 style="color:var(--blue);margin-bottom:0.75rem">Info General</h3>
-<div class="info-row"><span style="color:var(--muted)">Tipo</span><span id="modal-tipo">-</span></div>
-<div class="info-row"><span style="color:var(--muted)">Propiedad</span><span id="modal-propiedad">-</span></div>
-<div class="info-row"><span style="color:var(--muted)">Lectura</span><span id="modal-lectura">-</span></div></div>
-<div class="modal-actions"><button class="btn btn-secondary" onclick="cerrarModal('modal-detalle')">Cerrar</button></div></div></div></div>
-
-<div class="modal-overlay" id="modal-resumen"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-list"></i><span id="modal-resumen-titulo">Resumen</span></h2><button class="modal-close" onclick="cerrarModal('modal-resumen')">×</button></div>
-<div class="modal-body"><ul class="summary-list" id="modal-resumen-lista"></ul><div id="modal-resumen-empty" style="display:none;text-align:center;color:var(--muted);padding:2rem">Sin datos</div></div></div></div>
-
 <script>
-// 📊 URLs CON GID CORRECTOS
+// 📊 URLs REALES DE GOOGLE SHEETS
 const SHEETS = {
   'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
   'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=847775149&single=true&output=csv',
@@ -162,6 +129,7 @@ function normalizeKey(k) {
   return map[lk] || k;
 }
 
+// ✅ SOLO CARGA DATOS REALES - SIN DATOS FICTICIOS
 async function fetchSheet(name) {
   try {
     const url = name === 'ALL' ? null : SHEETS[name];
@@ -173,7 +141,7 @@ async function fetchSheet(name) {
     if (name !== 'ALL' && data.length > 0 && !data[0].Sucursal) data.forEach(row => row.Sucursal = name);
     return data.filter(e => e['Equipo'] || e['Nombre'] || e['ID_Equipo']);
   } catch (err) {
-    console.warn('Error cargando ' + name + ':', err);
+    console.error('❌ Error cargando ' + name + ':', err);
     return [];
   }
 }
@@ -228,12 +196,12 @@ function renderTable(data) {
       return s === target || s.replace(' ','_') === target || s === target.replace('_',' ');
     });
   }
-  if (!filtered || !filtered.length) { tbody.innerHTML = ''; if (load) load.style.display = 'none'; if (empty) empty.style.display = 'block'; return; }
+  if (!filtered || !filtered.length) { tbody.innerHTML = ''; if (load) load.style.display = 'none'; if (empty) { empty.style.display = 'block'; $('#sheet-name').textContent = currentSheet === 'ALL' ? 'Todas las sucursales' : currentSheet; } return; }
   if (load) load.style.display = 'none'; if (empty) empty.style.display = 'none';
   tbody.innerHTML = filtered.map((eq, i) => {
     const ms = getParadaMs(eq), cron = ms > 0 ? fmtDur(ms) : '--:--:--', cls = ms > ALERT_HOURS*36e5 ? 'cronometro parado-largo' : 'cronometro';
     const suc = eq['Sucursal'] || eq['sucursal'] || '-';
-    return `<tr onclick="abrirModal(equipos[${i}])"><td><strong>${eq['ID_Equipo']||eq['id_equipo']||eq['ID']||'-'}</strong></td><td>${eq['Equipo']||eq['equipo']||eq['Nombre']||'-'}</td><td>${suc}</td><td>${(eq['Propiedad']||eq['propiedad']||'').toUpperCase()}</td><td>${badge(eq['Estado']||eq['estado'])}</td><td><strong>${fmtH(calcHorometro(eq))}</strong></td><td><span class="${cls}">${cron}</span></td><td>${eq['Motivo_Parada']||eq['motivo_parada']||'-'}</td><td>${eq['Reportante']||eq['reportante']||'-'}</td><td>${timeAgo(eq['Fecha_Carga']||eq['fecha_carga']||eq['Timestamp_Parada'])}</td></tr>`;
+    return `<tr><td><strong>${eq['ID_Equipo']||eq['id_equipo']||eq['ID']||'-'}</strong></td><td>${eq['Equipo']||eq['equipo']||eq['Nombre']||'-'}</td><td>${suc}</td><td>${(eq['Propiedad']||eq['propiedad']||'').toUpperCase()}</td><td>${badge(eq['Estado']||eq['estado'])}</td><td><strong>${fmtH(calcHorometro(eq))}</strong></td><td><span class="${cls}">${cron}</span></td><td>${eq['Motivo_Parada']||eq['motivo_parada']||'-'}</td><td>${eq['Reportante']||eq['reportante']||'-'}</td><td>${timeAgo(eq['Fecha_Carga']||eq['fecha_carga']||eq['Timestamp_Parada'])}</td></tr>`;
   }).join('');
 }
 
@@ -256,7 +224,7 @@ function renderCharts(data) {
   if (chartHoras) chartHoras.destroy();
   chartHoras = new Chart($('#chart-horas'), {
     type: 'bar',
-    data: { labels: suc, datasets: [{ label: 'Horas', data: hrs, backgroundColor: ['#00ff88', '#ff9900', '#00ccff'], borderRadius: 6 }] },
+     { labels: suc, datasets: [{ label: 'Horas',  hrs, backgroundColor: ['#00ff88', '#ff9900', '#00ccff'], borderRadius: 6 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#f8fafc' } } } }
   });
   
@@ -268,7 +236,7 @@ function renderCharts(data) {
   if (chartEstado) chartEstado.destroy();
   chartEstado = new Chart($('#chart-estado'), {
     type: 'doughnut',
-    data: { labels: Object.keys(est), datasets: [{ data: Object.values(est), backgroundColor: ['#00ff88', '#ff9900', '#ff3333'], borderWidth: 0 }] },
+     { labels: Object.keys(est), datasets: [{  Object.values(est), backgroundColor: ['#00ff88', '#ff9900', '#ff3333'], borderWidth: 0 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#f8fafc' } }, tooltip: { backgroundColor: 'rgba(11,17,32,0.9)', titleColor: '#fff', bodyColor: '#cbd5e1' } } }
   });
 }
@@ -301,7 +269,7 @@ function getFiltered() {
 
 async function loadDashboard() {
   const btn = $('#btn-actualizar'), syncTxt = $('#sync-text'), syncSt = $('#sync-status');
-  if (btn) btn.disabled = true; if (syncSt) { syncSt.className = 'sync-status'; syncSt.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Sync...'; }
+  if (btn) btn.disabled = true; if (syncSt) { syncSt.className = 'sync-status'; syncSt.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Cargando datos REALES...'; }
   try {
     if (currentSheet === 'ALL') {
       const [m, b, l] = await Promise.all([fetchSheet('MALAGUEÑO'), fetchSheet('BARKER'), fetchSheet('LA_PAMPITA')]);
@@ -309,62 +277,24 @@ async function loadDashboard() {
     } else {
       equipos = await fetchSheet(currentSheet);
     }
-    console.log('📊 Datos cargados:', equipos.length, '| Sucursal:', currentSheet);
+    console.log('📊 Datos REALES cargados:', equipos.length, '| Sucursal:', currentSheet);
     if (equipos.length === 0) {
-      if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Sin datos'; }
-      if (syncTxt) syncTxt.textContent = 'Hoja vacía - agregá registros';
+      if (syncSt) { syncSt.className = 'sync-status warning'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Sin datos'; }
+      if (syncTxt) syncTxt.textContent = '⚠️ Hoja vacía - cargá datos';
     } else {
       if (syncSt) { syncSt.className = 'sync-status ok'; syncSt.innerHTML = '<i class="fas fa-check"></i> OK'; }
-      if (syncTxt) syncTxt.textContent = `Actualizado: ${new Date().toLocaleTimeString('es-AR')} | ${equipos.length} equipos`;
+      if (syncTxt) syncTxt.textContent = `✅ Actualizado: ${new Date().toLocaleTimeString('es-AR')} | ${equipos.length} equipos REALES`;
     }
     renderKPIs(equipos); renderCharts(equipos); renderTable(equipos);
     if (cronInt) clearInterval(cronInt); cronInt = setInterval(updateCronos, 1000);
-  } catch (err) { console.error('❌ Error:', err); if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; } if (syncTxt) syncTxt.textContent = 'Error de conexión'; }
+  } catch (err) { console.error('❌ Error:', err); if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; } if (syncTxt) syncTxt.textContent = '❌ Error de conexión'; }
   finally { if (btn) btn.disabled = false; }
 }
 
-function abrirModal(eq) {
-  const ov = $('#modal-detalle'); if (!ov) return;
-  $('#modal-id').textContent = eq['ID_Equipo']||eq['id_equipo']||eq['ID']||'-';
-  $('#modal-nombre').textContent = eq['Equipo']||eq['equipo']||eq['Nombre']||'-';
-  $('#modal-sucursal').textContent = eq['Sucursal']||eq['sucursal']||'-';
-  $('#modal-estado').innerHTML = badge(eq['Estado']||eq['estado']);
-  $('#modal-tipo').textContent = eq['Tipo_Equipo']||eq['tipo_equipo']||'-';
-  $('#modal-propiedad').textContent = (eq['Propiedad']||eq['propiedad']||'-').toUpperCase();
-  $('#modal-lectura').textContent = fmtH(calcHorometro(eq));
-  ov.classList.add('active'); document.body.style.overflow = 'hidden';
-}
-
 function mostrarModalResumen(tipo) {
-  const ov = $('#modal-resumen'), lista = $('#modal-resumen-lista'), empty = $('#modal-resumen-empty'), tit = $('#modal-resumen-titulo');
-  if (!ov || !lista) return;
-  let baseData = [...equipos];
-  if (currentSheet && currentSheet !== 'ALL') {
-    const target = currentSheet.toLowerCase().trim();
-    baseData = baseData.filter(e => {
-      const s = (e['Sucursal']||e['sucursal']||'').toLowerCase().trim();
-      return s === target || s.replace(' ','_') === target || s === target.replace('_',' ');
-    });
-  }
-  let data = [], title = '';
-  if (tipo === 'todos') { title = '📋 Toda la Flota'; data = [...baseData]; }
-  else if (tipo === 'operativos') { title = '✅ Operativos'; data = baseData.filter(e => ['operativo', 'activo'].includes((e['Estado']||e['estado']||'').toLowerCase())); }
-  else if (tipo === 'inactivos') { title = '🟠 Parados'; data = baseData.filter(e => ['parado', 'en service'].includes((e['Estado']||e['estado']||'').toLowerCase())); }
-  else if (tipo === 'alertas') { title = '🚨 Críticas'; data = baseData.filter(e => getParadaMs(e) > ALERT_HOURS*36e5); }
-  tit.textContent = title; lista.innerHTML = '';
-  if (!data.length) { lista.style.display = 'none'; empty.style.display = 'block'; }
-  else { lista.style.display = 'block'; empty.style.display = 'none'; data.forEach(eq => {
-    const li = document.createElement('li'); li.className = 'summary-item';
-    li.innerHTML = `<div><div class="summary-title">${eq['Equipo']||eq['equipo']||eq['Nombre']}</div><div class="summary-subtitle">${eq['Sucursal']||eq['sucursal']} · ${(eq['Propiedad']||eq['propiedad']||'').toUpperCase()}</div></div><div>${badge(eq['Estado']||eq['estado'])}</div>`;
-    lista.appendChild(li);
-  }); }
-  ov.classList.add('active'); document.body.style.overflow = 'hidden';
+  alert('Función en desarrollo - mostrará: ' + tipo);
 }
 
-function cerrarModal(id) { const m = $(`#${id}`); if (m) { m.classList.remove('active'); document.body.style.overflow = ''; } }
-
-window.addEventListener('click', e => { if (e.target.id === 'modal-detalle' || e.target.id === 'modal-resumen') cerrarModal(e.target.id); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarModal('modal-detalle'); cerrarModal('modal-resumen'); } });
 document.addEventListener('DOMContentLoaded', () => {
   $$('.branch-filter').forEach(btn => btn.addEventListener('click', e => {
     $$('.branch-filter').forEach(b => b.classList.remove('active'));
