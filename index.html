@@ -4,57 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minerar 2026 - Panel de Flota</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: Arial, sans-serif; 
-            background: #0f172a;
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: white;
+            min-height: 100vh;
             padding: 20px;
         }
         .header {
             background: linear-gradient(135deg, #3b82f6, #1e40af);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
             text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        .logo { max-height: 60px; margin-bottom: 10px; }
+        .logo { max-height: 70px; margin-bottom: 15px; border-radius: 10px; }
         .sucursales { 
             display: flex; 
-            gap: 10px; 
-            margin-bottom: 20px;
+            gap: 12px; 
+            margin: 25px 0;
             justify-content: center;
             flex-wrap: wrap;
         }
         .btn-sucursal {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: 2px solid #3b82f6;
             background: #1e293b;
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .btn-sucursal:hover { background: #334155; }
+        .btn-sucursal:hover { 
+            background: #334155;
+            transform: translateY(-2px);
+        }
         .btn-sucursal.active {
             background: #3b82f6;
             border-color: #60a5fa;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
         }
-        .tabla-container {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
             background: #1e293b;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
+            border-left: 5px solid;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .stat-card.mal { border-color: #38bdf8; }
+        .stat-card.brk { border-color: #a78bfa; }
+        .stat-card.lpa { border-color: #4ade80; }
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .chart-container {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .chart-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+        }
+        .tabla-wrapper {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
             overflow-x: auto;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         th, td {
-            padding: 12px;
+            padding: 14px;
             text-align: left;
             border-bottom: 1px solid #334155;
         }
@@ -63,10 +121,15 @@
             color: #94a3b8;
             font-size: 12px;
             text-transform: uppercase;
+            font-weight: 600;
+        }
+        tr {
+            cursor: pointer;
+            transition: background 0.2s;
         }
         tr:hover { background: #334155; }
         .badge {
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
@@ -75,31 +138,84 @@
         .badge-activo { background: #065f46; color: #34d399; }
         .badge-parado { background: #92400e; color: #fbbf24; }
         .badge-service { background: #7f1d1d; color: #f87171; }
-        .loading, .sin-datos {
+        .loading {
             text-align: center;
             padding: 40px;
             color: #94a3b8;
+            font-size: 16px;
         }
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
         }
-        .stat-card {
+        .modal.active { display: flex; }
+        .modal-content {
             background: #1e293b;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #3b82f6;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 5px 0;
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #334155;
         }
-        .stat-label {
+        .modal-title {
+            font-size: 20px;
+            color: #38bdf8;
+        }
+        .modal-close {
+            background: none;
+            border: none;
             color: #94a3b8;
-            font-size: 12px;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .modal-close:hover {
+            background: #334155;
+            color: white;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #334155;
+        }
+        .detail-label {
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        .detail-value {
+            color: white;
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .charts-section { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -107,100 +223,141 @@
     <div class="header">
         <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo">
         <h1>🚜 PANEL DE FLOTA MINERA 2026</h1>
-        <p>Control de Horómetros y Kilómetros - Datos en Vivo</p>
+        <p style="color: #94a3b8; margin-top: 8px;">Control de Horómetros y Kilómetros - Tiempo Real</p>
     </div>
     
     <div class="sucursales">
-        <button class="btn-sucursal active" onclick="filtrarSucursal('TODAS', this)">🏭 Todas</button>
-        <button class="btn-sucursal" onclick="filtrarSucursal('MALAGUEÑO', this)">📍 Malagueño</button>
-        <button class="btn-sucursal" onclick="filtrarSucursal('BARKER', this)">🐺 Barker</button>
-        <button class="btn-sucursal" onclick="filtrarSucursal('LA_PAMPITA', this)">🌸 La Pampita</button>
+        <button class="btn-sucursal active" onclick="filtrarSucursal('TODAS', this)">
+            🏭 Todas
+        </button>
+        <button class="btn-sucursal" onclick="filtrarSucursal('MALAGUEÑO', this)">
+            📍 Malagueño
+        </button>
+        <button class="btn-sucursal" onclick="filtrarSucursal('BARKER', this)">
+            🐺 Barker
+        </button>
+        <button class="btn-sucursal" onclick="filtrarSucursal('LA_PAMPITA', this)">
+            🌸 La Pampita
+        </button>
     </div>
 
-    <div class="stats" id="statsContainer">
-        <div class="stat-card">
-            <div class="stat-label">📊 Total Equipos</div>
-            <div class="stat-value" id="totalEquipos">0</div>
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card mal" onclick="mostrarModal('operativos')">
+            <div class="stat-label">📍 Malagueño - Operativos</div>
+            <div class="stat-value" id="malOperativos">0</div>
+            <div style="font-size: 12px; color: #94a3b8;">Click para ver detalle</div>
         </div>
-        <div class="stat-card" style="border-color: #34d399;">
-            <div class="stat-label">✅ Operativos</div>
-            <div class="stat-value" id="totalOperativos">0</div>
+        <div class="stat-card brk" onclick="mostrarModal('barker')">
+            <div class="stat-label">🐺 Barker - Activos</div>
+            <div class="stat-value" id="brkOperativos">0</div>
+            <div style="font-size: 12px; color: #94a3b8;">Click para ver detalle</div>
         </div>
-        <div class="stat-card" style="border-color: #fbbf24;">
-            <div class="stat-label">⏸️ Parados</div>
-            <div class="stat-value" id="totalParados">0</div>
+        <div class="stat-card lpa" onclick="mostrarModal('pampita')">
+            <div class="stat-label">🌸 La Pampita - Activos</div>
+            <div class="stat-value" id="lpaOperativos">0</div>
+            <div style="font-size: 12px; color: #94a3b8;">Click para ver detalle</div>
         </div>
-        <div class="stat-card" style="border-color: #f87171;">
-            <div class="stat-label">🔧 En Service</div>
-            <div class="stat-value" id="totalService">0</div>
+        <div class="stat-card" style="border-color: #f87171;" onclick="mostrarModal('alertas')">
+            <div class="stat-label">⚠️ Alertas (>4h parados)</div>
+            <div class="stat-value" id="totalAlertas">0</div>
+            <div style="font-size: 12px; color: #94a3b8;">Click para ver detalle</div>
         </div>
     </div>
-    
-    <div class="tabla-container">
-        <h2 style="margin-bottom: 15px;">📋 Flota en Tiempo Real - <span id="sucursalActual">Todas</span></h2>
-        <div id="contenido">
-            <div class="loading">Cargando datos...</div>
+
+    <div class="charts-section">
+        <div class="chart-container">
+            <div class="chart-title">📊 Estado de Equipos por Sucursal</div>
+            <canvas id="chartEstado"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">⏱️ Tiempo Muerto Acumulado</div>
+            <canvas id="chartTiempo"></canvas>
+        </div>
+    </div>
+
+    <div class="tabla-wrapper">
+        <h2 style="margin-bottom: 15px; color: #38bdf8;">
+            📋 Flota en Tiempo Real - <span id="sucursalTitulo">Todas las Sucursales</span>
+        </h2>
+        <div id="contenidoTabla">
+            <div class="loading">🔄 Cargando datos de Google Sheets...</div>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLE -->
+    <div class="modal" id="modalDetalle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitulo">📋 Detalle del Equipo</h3>
+                <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- Contenido dinámico -->
+            </div>
         </div>
     </div>
 
     <script>
+        // URLs REALES de Google Sheets Publicados
         const SHEETS = {
             'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
             'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv',
             'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=149809572&single=true&output=csv'
         };
 
-        let sucursalFiltro = 'TODAS';
+        let sucursalActual = 'TODAS';
         let todosLosDatos = [];
+        let chartEstado = null;
+        let chartTiempo = null;
 
         function filtrarSucursal(sucursal, btn) {
-            sucursalFiltro = sucursal;
+            sucursalActual = sucursal;
             
-            // Actualizar botones visualmente
+            // Actualizar botones
             document.querySelectorAll('.btn-sucursal').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
             // Actualizar título
-            const nombres = {
+            const titulos = {
                 'TODAS': 'Todas las Sucursales',
                 'MALAGUEÑO': 'Malagueño',
                 'BARKER': 'Barker',
                 'LA_PAMPITA': 'La Pampita'
             };
-            document.getElementById('sucursalActual').textContent = nombres[sucursal];
+            document.getElementById('sucursalTitulo').textContent = titulos[sucursal];
             
             // Filtrar y mostrar
             aplicarFiltro();
         }
 
         function aplicarFiltro() {
-            const contenido = document.getElementById('contenido');
-            
             let datosFiltrados = todosLosDatos;
             
-            if (sucursalFiltro !== 'TODAS') {
-                datosFiltrados = todosLosDatos.filter(d => d.sucursal === sucursalFiltro);
+            if (sucursalActual !== 'TODAS') {
+                datosFiltrados = todosLosDatos.filter(d => d.sucursal === sucursalActual);
             }
             
             if (datosFiltrados.length === 0) {
-                contenido.innerHTML = '<div class="sin-datos">📭 No hay datos para mostrar</div>';
+                document.getElementById('contenidoTabla').innerHTML = 
+                    '<div class="loading">📭 No hay datos disponibles para esta sucursal</div>';
                 actualizarStats([]);
                 return;
             }
             
             mostrarTabla(datosFiltrados);
             actualizarStats(datosFiltrados);
+            actualizarGraficos(datosFiltrados);
         }
 
         function mostrarTabla(datos) {
-            const contenido = document.getElementById('contenido');
+            const contenedor = document.getElementById('contenidoTabla');
             
             let html = `
                 <table>
                     <thead>
                         <tr>
                             <th>📍 Sucursal</th>
-                            <th>🔢 ID Equipo</th>
+                            <th>🔢 ID</th>
                             <th>🚜 Equipo</th>
                             <th>📊 Estado</th>
                             <th>⏱️ Horómetro/Km</th>
@@ -212,7 +369,7 @@
                     <tbody>
             `;
             
-            datos.forEach(d => {
+            datos.forEach((d, index) => {
                 const estado = (d.Estado || '').toUpperCase();
                 let badgeClass = 'badge-activo';
                 if (estado === 'PARADO') badgeClass = 'badge-parado';
@@ -221,36 +378,138 @@
                 const tiempoParada = calcularTiempoParada(d.Timestamp_Parada, estado);
                 
                 html += `
-                    <tr>
+                    <tr onclick="mostrarDetalleEquipo(${index})">
                         <td>${d.sucursal}</td>
                         <td><strong>${d.ID_Equipo || '-'}</strong></td>
                         <td>${d.Equipo || '-'}</td>
                         <td><span class="badge ${badgeClass}">${d.Estado || '-'}</span></td>
-                        <td>${d['Horó./Kilómetro'] || '-'} ${d.Lectura ? '(' + d.Lectura + ')' : ''}</td>
+                        <td>${d['Horó./Kilómetro'] || '-'} ${d.Lectura ? '<small style="color:#94a3b8">(' + d.Lectura + ')</small>' : ''}</td>
                         <td>${d.Reportante || '-'}</td>
                         <td>${d.Fecha_Carga || '-'}</td>
-                        <td>${tiempoParada}</td>
+                        <td style="font-family: monospace; color: ${tiempoParada !== '-' ? '#fbbf24' : '#94a3b8'}">${tiempoParada}</td>
                     </tr>
                 `;
             });
             
             html += '</tbody></table>';
-            contenido.innerHTML = html;
+            contenedor.innerHTML = html;
         }
 
         function actualizarStats(datos) {
-            const operativos = datos.filter(d => (d.Estado || '').toUpperCase() === 'OPERATIVO').length;
-            const parados = datos.filter(d => (d.Estado || '').toUpperCase() === 'PARADO').length;
-            const service = datos.filter(d => ['EN_SERVICE', 'MANTENIMIENTO'].includes((d.Estado || '').toUpperCase())).length;
+            const stats = {
+                MALAGUEÑO: { operativos: 0, parados: 0, service: 0 },
+                BARKER: { operativos: 0, parados: 0, service: 0 },
+                LA_PAMPITA: { operativos: 0, parados: 0, service: 0 },
+                alertas: 0
+            };
             
-            document.getElementById('totalEquipos').textContent = datos.length;
-            document.getElementById('totalOperativos').textContent = operativos;
-            document.getElementById('totalParados').textContent = parados;
-            document.getElementById('totalService').textContent = service;
+            datos.forEach(d => {
+                const suc = d.sucursal;
+                const estado = (d.Estado || '').toUpperCase();
+                
+                if (stats[suc]) {
+                    if (estado === 'OPERATIVO') stats[suc].operativos++;
+                    else if (estado === 'PARADO') {
+                        stats[suc].parados++;
+                        const horas = obtenerHorasParada(d.Timestamp_Parada);
+                        if (horas > 4) stats.alertas++;
+                    }
+                    else if (estado === 'EN_SERVICE' || estado === 'MANTENIMIENTO') stats[suc].service++;
+                }
+            });
+            
+            document.getElementById('malOperativos').textContent = stats.MALAGUEÑO.operativos;
+            document.getElementById('brkOperativos').textContent = stats.BARKER.operativos;
+            document.getElementById('lpaOperativos').textContent = stats.LA_PAMPITA.operativos;
+            document.getElementById('totalAlertas').textContent = stats.alertas;
+        }
+
+        function actualizarGraficos(datos) {
+            // Gráfico de estado por sucursal
+            const ctxEstado = document.getElementById('chartEstado').getContext('2d');
+            
+            const datosPorSucursal = {
+                'Malagueño': { operativo: 0, parado: 0, service: 0 },
+                'Barker': { operativo: 0, parado: 0, service: 0 },
+                'La Pampita': { operativo: 0, parado: 0, service: 0 }
+            };
+            
+            datos.forEach(d => {
+                const suc = d.sucursal;
+                const estado = (d.Estado || '').toLowerCase();
+                
+                if (datosPorSucursal[suc]) {
+                    if (estado === 'operativo') datosPorSucursal[suc].operativo++;
+                    else if (estado === 'parado') datosPorSucursal[suc].parado++;
+                    else if (estado === 'en_service' || estado === 'mantenimiento') datosPorSucursal[suc].service++;
+                }
+            });
+            
+            if (chartEstado) chartEstado.destroy();
+            chartEstado = new Chart(ctxEstado, {
+                type: 'bar',
+                 {
+                    labels: ['Malagueño', 'Barker', 'La Pampita'],
+                    datasets: [
+                        { label: 'Operativos',  [datosPorSucursal['Malagueño'].operativo, datosPorSucursal['Barker'].operativo, datosPorSucursal['La Pampita'].operativo], backgroundColor: '#34d399' },
+                        { label: 'Parados',  [datosPorSucursal['Malagueño'].parado, datosPorSucursal['Barker'].parado, datosPorSucursal['La Pampita'].parado], backgroundColor: '#fbbf24' },
+                        { label: 'En Service',  [datosPorSucursal['Malagueño'].service, datosPorSucursal['Barker'].service, datosPorSucursal['La Pampita'].service], backgroundColor: '#f87171' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#e2e8f0' } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#e2e8f0' } }
+                    }
+                }
+            });
+            
+            // Gráfico de tiempo muerto
+            const ctxTiempo = document.getElementById('chartTiempo').getContext('2d');
+            const tiempos = {
+                'Malagueño': calcularTiempoMuertoTotal(datos.filter(d => d.sucursal === 'MALAGUEÑO')),
+                'Barker': calcularTiempoMuertoTotal(datos.filter(d => d.sucursal === 'BARKER')),
+                'La Pampita': calcularTiempoMuertoTotal(datos.filter(d => d.sucursal === 'LA_PAMPITA'))
+            };
+            
+            if (chartTiempo) chartTiempo.destroy();
+            chartTiempo = new Chart(ctxTiempo, {
+                type: 'doughnut',
+                 {
+                    labels: ['Malagueño', 'Barker', 'La Pampita'],
+                    datasets: [{
+                         [tiempos['Malagueño'], tiempos['Barker'], tiempos['La Pampita']],
+                        backgroundColor: ['#38bdf8', '#a78bfa', '#4ade80'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#e2e8f0' } }
+                    }
+                }
+            });
+        }
+
+        function calcularTiempoMuertoTotal(datos) {
+            let totalHoras = 0;
+            datos.forEach(d => {
+                if ((d.Estado || '').toUpperCase() === 'PARADO' && d.Timestamp_Parada) {
+                    totalHoras += obtenerHorasParada(d.Timestamp_Parada);
+                }
+            });
+            return totalHoras.toFixed(1);
         }
 
         function calcularTiempoParada(timestamp, estado) {
-            if (!timestamp || estado === 'OPERATIVO') return '-';
+            if (!timestamp || estado !== 'PARADO') return '-';
             
             try {
                 const inicio = new Date(timestamp);
@@ -265,6 +524,76 @@
             } catch (e) {
                 return '-';
             }
+        }
+
+        function obtenerHorasParada(timestamp) {
+            if (!timestamp) return 0;
+            try {
+                const inicio = new Date(timestamp);
+                const ahora = new Date();
+                return (ahora - inicio) / 3600000;
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function mostrarDetalleEquipo(index) {
+            const datos = sucursalActual === 'TODAS' ? todosLosDatos : todosLosDatos.filter(d => d.sucursal === sucursalActual);
+            const equipo = datos[index];
+            
+            if (!equipo) return;
+            
+            document.getElementById('modalTitulo').textContent = `📋 ${equipo.Equipo || 'Equipo'}`;
+            
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">📍 Sucursal:</span>
+                    <span class="detail-value">${equipo.sucursal}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">🔢 ID Equipo:</span>
+                    <span class="detail-value">${equipo.ID_Equipo || '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label"> Estado:</span>
+                    <span class="detail-value">${equipo.Estado || '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">⏱️ Horómetro/Km:</span>
+                    <span class="detail-value">${equipo['Horó./Kilómetro'] || '-'} ${equipo.Lectura ? '(' + equipo.Lectura + ')' : ''}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">👷 Reportante:</span>
+                    <span class="detail-value">${equipo.Reportante || '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">📅 Fecha Carga:</span>
+                    <span class="detail-value">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span>
+                </div>
+                ${equipo.Motivo_Parada ? `
+                <div class="detail-row">
+                    <span class="detail-label">⚠️ Motivo:</span>
+                    <span class="detail-value">${equipo.Motivo_Parada}</span>
+                </div>
+                ` : ''}
+                ${equipo.Observaciones ? `
+                <div class="detail-row">
+                    <span class="detail-label">📝 Observaciones:</span>
+                    <span class="detail-value">${equipo.Observaciones}</span>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('modalDetalle').classList.add('active');
+        }
+
+        function mostrarModal(tipo) {
+            alert('Modal de ' + tipo + ' - Funcionalidad similar al dashboard de seguridad');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalDetalle').classList.remove('active');
         }
 
         async function cargarDatos() {
@@ -295,8 +624,8 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('contenido').innerHTML = 
-                    '<div class="sin-datos" style="color: #f87171;">❌ Error al cargar datos<br>' + error.message + '</div>';
+                document.getElementById('contenidoTabla').innerHTML = 
+                    '<div class="loading" style="color: #f87171;">❌ Error al cargar datos<br>' + error.message + '</div>';
             }
         }
 
@@ -322,6 +651,11 @@
             
             return datos;
         }
+
+        // Cerrar modal al hacer click fuera
+        document.getElementById('modalDetalle').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
 
         // Cargar al iniciar
         window.onload = () => cargarDatos();
