@@ -1,208 +1,959 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Minerar 2026 - Panel de Flota</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/><style>:root{--bg:#0b1120;--card:#1e293b;--border:#334155;--text:#f1f5f9;--muted:#94a3b8;--green:#00ff88;--orange:#ff9900;--red:#ff3333;--blue:#00ccff}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}header{background:linear-gradient(180deg,#1e293b,#0b1120);border-bottom:1px solid var(--border);padding:1rem 2rem;position:sticky;top:0;z-index:100}.header-top{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}.logo{height:50px;border-radius:8px}.header-title h1{font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,#fff,var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.header-title p{font-size:0.85rem;color:var(--muted)}.header-actions{margin-top:1rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}.sync-status{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--green)}.branch-filter{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.4rem 1rem;border-radius:99px;cursor:pointer}.branch-filter.active{background:var(--blue);color:#000;border-color:var(--blue)}.alert-badge{background:rgba(255,51,51,0.1);color:var(--red);padding:0.4rem 0.8rem;border-radius:8px;border:1px solid var(--red);cursor:pointer}.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;padding:1.5rem 2rem}.kpi-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border);cursor:pointer}.kpi-card:hover{transform:translateY(-5px)}.kpi-label{font-size:0.75rem;color:var(--muted);text-transform:uppercase}.kpi-value{font-size:2rem;font-weight:800;margin:0.3rem 0;color:#fff}.filters{padding:0 2rem 1rem;display:flex;gap:1rem;flex-wrap:wrap;background:rgba(11,17,32,0.8);border-bottom:1px solid var(--border)}.filter-select{padding:0.4rem 0.8rem;border:1px solid var(--border);border-radius:6px;background:var(--card);color:#fff}.btn-refresh{background:var(--blue);color:#fff;border:none;padding:0.5rem 1rem;border-radius:6px;font-weight:600;cursor:pointer}.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(450px,1fr));gap:1.5rem;padding:1.5rem 2rem}.chart-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border)}.chart-card h3{font-size:1rem;margin-bottom:1rem;color:#fff}.chart-container{position:relative;height:300px}.table-section{padding:0 2rem 2rem}.table-card{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden}.table-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}table{width:100%;border-collapse:collapse;font-size:0.9rem}thead{background:rgba(0,0,0,0.3)}th{padding:0.8rem 1rem;text-align:left;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border)}td{padding:0.8rem 1rem;border-bottom:1px solid var(--border);color:#cbd5e1}tr:hover{background:rgba(255,255,255,0.05);cursor:pointer}.status-badge{padding:0.25rem 0.6rem;border-radius:99px;font-size:0.75rem;font-weight:700}.status-operativo{background:rgba(0,255,136,0.15);color:var(--green);border:1px solid var(--green)}.status-parado{background:rgba(255,153,0,0.15);color:var(--orange);border:1px solid var(--orange)}.status-service{background:rgba(255,51,51,0.15);color:var(--red);border:1px solid var(--red)}.cronometro{font-family:'Courier New',monospace;font-weight:800;color:var(--orange)}.cronometro.parado-largo{color:var(--red)}.loading{text-align:center;padding:3rem;color:var(--muted)}.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;visibility:hidden;transition:all 0.3s}.modal-overlay.active{opacity:1;visibility:visible}.modal-content{background:var(--card);border-radius:20px;border:1px solid var(--border);width:90%;max-width:700px;max-height:85vh;overflow-y:auto;transform:scale(0.8) translateY(50px);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}.modal-overlay.active .modal-content{transform:scale(1) translateY(0)}.modal-header{background:linear-gradient(135deg,var(--blue),#005f85);padding:1.5rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center}.modal-header h2{font-size:1.3rem;color:#fff;display:flex;align-items:center;gap:0.75rem}.modal-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer}.modal-body{padding:1.5rem}.summary-list{list-style:none}.summary-item{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);border-radius:8px;margin-bottom:0.5rem}.summary-title{font-weight:700;color:#fff}.summary-subtitle{font-size:0.8rem;color:var(--muted)}.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}.detail-card{background:rgba(0,0,0,0.3);padding:1rem;border-radius:10px;border-left:4px solid var(--blue)}.detail-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase}.detail-value{font-size:1.2rem;font-weight:700;color:#fff}.info-row{display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(51,65,85,0.3)}.modal-actions{display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}.btn{flex:1;padding:0.8rem 1rem;border:none;border-radius:8px;font-weight:700;cursor:pointer}.btn-primary{background:var(--blue);color:#000}.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}@media(max-width:768px){header,.kpi-grid,.charts-grid,.filters,.table-section{padding-left:1rem;padding-right:1rem}.charts-grid{grid-template-columns:1fr}.modal-content{width:95%}}</style></head><body><header><div class="header-top"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="logo"/><div class="header-title"><h1>PANEL DE FLOTA MINERA 2026 🚜</h1><p>CONTROL DE HORÓMETROS · MONITOREO EN VIVO</p></div></div><div class="header-actions"><div class="sync-status" id="sync-status"><i class="fas fa-sync-alt"></i><span id="sync-text">Cargando...</span></div><div style="display:flex;gap:0.3rem"><button class="branch-filter active" data-sheet="ALL">🏭 TODAS</button><button class="branch-filter" data-sheet="MALAGUEÑO">📍 MALAGUEÑO</button><button class="branch-filter" data-sheet="BARKER">📍 BARKER</button><button class="branch-filter" data-sheet="LA_PAMPITA">📍 LA PAMPITA</button></div><div class="alert-badge" onclick="mostrarModalResumen('alertas')"><i class="fas fa-exclamation-triangle"></i><span id="alert-count">⚠️ Alertas: <strong>0</strong></span></div></div></header><section class="kpi-grid"><div class="kpi-card" onclick="mostrarModalResumen('todos')"><div class="kpi-label">Disponibilidad</div><div class="kpi-value" id="kpi-disponibilidad">0%</div><div class="kpi-desc">Click para ver flota</div></div><div class="kpi-card" onclick="mostrarModalResumen('operativos')"><div class="kpi-label">Operativos</div><div class="kpi-value"><span id="kpi-operativos">0</span>/<span id="kpi-total">0</span></div><div class="kpi-desc">Click para lista</div></div><div class="kpi-card" onclick="mostrarModalResumen('inactivos')"><div class="kpi-label">Tiempo Muerto</div><div class="kpi-value" id="kpi-tiempo-muerto">0h</div><div class="kpi-desc">Click para ver parados</div></div><div class="kpi-card" onclick="mostrarModalResumen('alertas')"><div class="kpi-label">Alertas</div><div class="kpi-value" id="kpi-alertas">0</div><div class="kpi-desc">Click para críticas</div></div></section><section class="filters"><div style="display:flex;align-items:center;gap:0.5rem"><label style="color:var(--muted)">Propiedad</label><select class="filter-select" id="filter-propiedad"><option value="ALL">Todas</option><option value="PROPIO">Propio</option><option value="ALQUILADO">Alquilado</option></select></div><div style="display:flex;align-items:center;gap:0.5rem"><label style="color:var(--muted)">Tipo</label><select class="filter-select" id="filter-tipo"><option value="ALL">Todos</option><option value="Excavadora">Excavadora</option><option value="Camión">Camión</option><option value="Retroexcavadora">Retro</option><option value="Cargador">Cargador</option></select></div><button class="btn-refresh" id="btn-actualizar" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> ACTUALIZAR</button></section><section class="charts-grid"><div class="chart-card"><h3>📊 HORAS POR SUCURSAL</h3><div class="chart-container"><canvas id="chart-horas"></canvas></div></div><div class="chart-card"><h3>🍩 ESTADO DE EQUIPOS</h3><div class="chart-container"><canvas id="chart-estado"></canvas></div></div></section><section class="table-section"><div class="table-card"><div class="table-header"><h3>📋 FLOTA EN TIEMPO REAL</h3><button class="btn-refresh" style="padding:0.3rem 0.7rem;font-size:0.85rem" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> Actualizar</button></div><div style="overflow-x:auto"><table id="tabla-flota"><thead><tr><th>ID</th><th>EQUIPO</th><th>SUCURSAL</th><th>PROPIEDAD</th><th>ESTADO</th><th>LECTURA</th><th>⏱️ PARADA</th><th>MOTIVO</th><th>REPORTANTE</th><th>ÚLTIMA ACT.</th></tr></thead><tbody id="tabla-body"></tbody></table><div id="tabla-loading" class="loading"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Cargando datos...</p></div><div id="tabla-empty" style="display:none;text-align:center;padding:2rem;color:var(--muted)"><i class="fas fa-search fa-2x"></i><p>No hay datos</p></div></div></div></section><div class="modal-overlay" id="modal-detalle"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-truck-monster"></i><span id="modal-titulo">Detalle</span></h2><button class="modal-close" onclick="cerrarModal('modal-detalle')">×</button></div><div class="modal-body"><div class="detail-grid"><div class="detail-card"><div class="detail-label">ID</div><div class="detail-value" id="modal-id">-</div></div><div class="detail-card"><div class="detail-label">Nombre</div><div class="detail-value" id="modal-nombre">-</div></div><div class="detail-card"><div class="detail-label">Sucursal</div><div class="detail-value" id="modal-sucursal">-</div></div><div class="detail-card"><div class="detail-label">Estado</div><div class="detail-value" id="modal-estado">-</div></div></div><div style="margin-bottom:1.5rem"><h3 style="color:var(--blue);margin-bottom:0.75rem">Info General</h3><div class="info-row"><span style="color:var(--muted)">Tipo</span><span id="modal-tipo">-</span></div><div class="info-row"><span style="color:var(--muted)">Propiedad</span><span id="modal-propiedad">-</span></div><div class="info-row"><span style="color:var(--muted)">Lectura</span><span id="modal-lectura">-</span></div></div><div class="modal-actions"><button class="btn btn-secondary" onclick="cerrarModal('modal-detalle')">Cerrar</button></div></div></div></div><div class="modal-overlay" id="modal-resumen"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-list"></i><span id="modal-resumen-titulo">Resumen</span></h2><button class="modal-close" onclick="cerrarModal('modal-resumen')">×</button></div><div class="modal-body"><ul class="summary-list" id="modal-resumen-lista"></ul><div id="modal-resumen-empty" style="display:none;text-align:center;color:var(--muted);padding:2rem">Sin datos</div></div></div></div><script>
-// 📊 URLs PUBLICADAS DE GOOGLE SHEETS (CSV)
-const SHEETS = {
-  'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
-  'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
-  'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv'
-};
-const ALERT_HOURS = 4;
-let equipos = [], currentSheet = 'ALL', chartHoras = null, chartEstado = null, cronInt = null;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minerar 2026 - Panel de Flota | Horómetros y Kilómetros</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
 
-// Parsear CSV simple
-function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  if (lines.length < 2) return [];
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-  const result = [];
-  for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-    if (values.length === headers.length) {
-      const row = {};
-      headers.forEach((h, j) => row[h] = values[j]);
-      result.push(row);
-    }
-  }
-  return result;
-}
+        /* HEADER */
+        .header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #3b82f6;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
 
-// Obtener datos de una hoja publicada
-async function fetchSheet(name) {
-  if (!SHEETS[name]) return [];
-  const res = await fetch(SHEETS[name], { cache: 'no-store' });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const text = await res.text();
-  return parseCSV(text);
-}
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
 
-// Formateadores
-function fmtH(h) { if (!h || isNaN(h)) return '0h'; const n = parseFloat(h); return n >= 1000 ? (n/1000).toFixed(1) + 'k h' : Math.round(n) + ' h'; }
-function fmtDur(ms) { if (ms < 0) ms = 0; const s = Math.floor(ms/1000), h = Math.floor(s/3600), m = Math.floor(s%3600/60), sec = s%60; return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); }
-function timeAgo(d) { if (!d) return '-'; const dt = new Date(d), diff = Date.now() - dt.getTime(), min = Math.floor(diff/6e4); if (min < 1) return 'Ahora'; if (min < 60) return `Hace ${min} min`; const hr = Math.floor(min/60); return hr < 24 ? `Hace ${hr} h` : `Hace ${Math.floor(hr/24)} d`; }
-function badge(e) { const st = (e||'').toLowerCase(); if (st === 'operativo' || st === 'activo') return '<span class="status-badge status-operativo">✅ Operativo</span>'; if (st === 'parado') return '<span class="status-badge status-parado">⏸️ Parado</span>'; return '<span class="status-badge status-service">🔧 Service</span>'; }
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-// Cálculos
-function calcHorometro(eq) {
-  const base = parseFloat(eq['Horó./Kilómetro'] || eq['Lectura']) || 0;
-  const lect = parseFloat(eq['Lectura']) || 0;
-  const st = (eq['Estado'] || '').toLowerCase();
-  const tot = base + lect;
-  if ((st === 'operativo' || st === 'activo') && eq['Fecha_Carga']) {
-    const inicio = new Date(eq['Fecha_Carga'] + 'T' + (eq['Hora_Carga'] || '00:00'));
-    if (!isNaN(inicio)) return tot + Math.max(0, (Date.now() - inicio.getTime()) / 36e5);
-  }
-  return tot;
-}
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+        }
 
-function getParadaMs(eq) {
-  const st = (eq['Estado'] || '').toLowerCase();
-  if (st !== 'parado') return 0;
-  if (!eq['Timestamp_Parada']) return 0;
-  const ts = new Date(eq['Timestamp_Parada']).getTime();
-  if (isNaN(ts)) return 0;
-  return Date.now() - ts;
-}
+        .title h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+        }
 
-// Render KPIs
-function renderKPIs(data) {
-  if (!data || !data.length) return;
-  const total = data.length;
-  const op = data.filter(e => ['operativo', 'activo'].includes((e['Estado'] || '').toLowerCase())).length;
-  const alerts = data.filter(e => getParadaMs(e) > ALERT_HOURS * 36e5).length;
-  const tm = data.reduce((s, e) => { const ms = getParadaMs(e); return ms > 36e5 ? s + ms/36e5 : s; }, 0);
-  $('#kpi-total').textContent = total;
-  $('#kpi-operativos').textContent = op;
-  $('#kpi-disponibilidad').textContent = total > 0 ? Math.round(op/total*100) + '%' : '0%';
-  $('#kpi-tiempo-muerto').textContent = tm.toFixed(1) + 'h';
-  $('#kpi-alertas').textContent = alerts;
-  $('#alert-count').innerHTML = `⚠️ Alertas: <strong>${alerts}</strong>`;
-}
+        .title p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
 
-// Render Tabla
-function renderTable(data) {
-  const tbody = $('#tabla-body'), load = $('#tabla-loading'), empty = $('#tabla-empty');
-  if (!tbody) return;
-  if (!data || !data.length) { tbody.innerHTML = ''; if (load) load.style.display = 'none'; if (empty) empty.style.display = 'block'; return; }
-  if (load) load.style.display = 'none'; if (empty) empty.style.display = 'none';
-  tbody.innerHTML = data.map((eq, i) => {
-    const ms = getParadaMs(eq), cron = ms > 0 ? fmtDur(ms) : '--:--:--', cls = ms > ALERT_HOURS*36e5 ? 'cronometro parado-largo' : 'cronometro';
-    return `<tr onclick="abrirModal(equipos[${i}])"><td><strong>${eq['ID_Equipo']||eq['ID']||'-'}</strong></td><td>${eq['Equipo']||eq['Nombre']||'-'}</td><td>${eq['Sucursal']||'-'}</td><td>${(eq['Propiedad']||'').toUpperCase()}</td><td>${badge(eq['Estado'])}</td><td><strong>${fmtH(calcHorometro(eq))}</strong></td><td><span class="${cls}">${cron}</span></td><td>${eq['Motivo_Parada']||'-'}</td><td>${eq['Reportante']||'-'}</td><td>${timeAgo(eq['Fecha_Carga']||eq['Timestamp_Parada'])}</td></tr>`;
-  }).join('');
-}
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid #22c55e;
+        }
 
-// Render Gráficos
-function renderCharts(data) {
-  if (!data || !data.length) return;
-  const suc = ['Malagueño', 'Barker', 'La Pampita'];
-  const hrs = suc.map(s => data.filter(e => (e['Sucursal']||'').toLowerCase() === s.toLowerCase()).reduce((sum, e) => sum + calcHorometro(e), 0));
-  if (chartHoras) chartHoras.destroy();
-  chartHoras = new Chart($('#chart-horas'), {
-    type: 'bar',
-    data: { labels: suc, datasets: [{ label: 'Horas', data: hrs, backgroundColor: ['#00ff88', '#ff9900', '#00ccff'], borderRadius: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#f8fafc' } } } }
-  });
-  const est = {
-    'Operativo': data.filter(e => ['operativo', 'activo'].includes((e['Estado']||'').toLowerCase())).length,
-    'Parado': data.filter(e => (e['Estado']||'').toLowerCase() === 'parado').length,
-    'Service': data.filter(e => ['en service', 'mantenimiento'].includes((e['Estado']||'').toLowerCase())).length
-  };
-  if (chartEstado) chartEstado.destroy();
-  chartEstado = new Chart($('#chart-estado'), {
-    type: 'doughnut',
-    data: { labels: Object.keys(est), datasets: [{ data: Object.values(est), backgroundColor: ['#00ff88', '#ff9900', '#ff3333'], borderWidth: 0 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#f8fafc' } }, tooltip: { backgroundColor: 'rgba(11,17,32,0.9)', titleColor: '#fff', bodyColor: '#cbd5e1' } } }
-  });
-}
+        .pulse {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
 
-// Actualizar cronómetros en vivo
-function updateCronos() {
-  $$('#tabla-body tr').forEach((row, i) => {
-    const eq = equipos[i]; if (!eq) return;
-    const ms = getParadaMs(eq);
-    if (ms > 0) {
-      const cell = row.querySelector('.cronometro');
-      if (cell) { cell.textContent = fmtDur(ms); if (ms > ALERT_HOURS*36e5) cell.classList.add('parado-largo'); }
-    }
-  });
-}
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
 
-// Filtrar datos
-function getFiltered() {
-  if (!equipos || !equipos.length) return [];
-  let d = [...equipos];
-  if (currentSheet !== 'ALL') d = d.filter(e => (e['Sucursal']||'').toLowerCase() === currentSheet.toLowerCase());
-  const prop = $('#filter-propiedad').value; if (prop !== 'ALL') d = d.filter(e => (e['Propiedad']||'').toUpperCase() === prop);
-  const tipo = $('#filter-tipo').value; if (tipo !== 'ALL') d = d.filter(e => e['Tipo_Equipo'] === tipo);
-  return d;
-}
+        /* FILTROS SUCURSALES */
+        .branch-filters {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
 
-// Cargar dashboard principal
-async function loadDashboard() {
-  const btn = $('#btn-actualizar'), syncTxt = $('#sync-text'), syncSt = $('#sync-status');
-  if (btn) btn.disabled = true; if (syncSt) syncSt.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Sync...';
-  try {
-    if (currentSheet === 'ALL') {
-      const [m, b, l] = await Promise.all([fetchSheet('MALAGUEÑO'), fetchSheet('BARKER'), fetchSheet('LA_PAMPITA')]);
-      equipos = [...m, ...b, ...l].filter(e => e['Equipo'] || e['Nombre']);
-    } else {
-      equipos = await fetchSheet(currentSheet);
-    }
-    renderKPIs(equipos); renderCharts(equipos); renderTable(getFiltered());
-    if (syncSt) syncSt.innerHTML = '<i class="fas fa-check"></i> OK'; if (syncTxt) syncTxt.textContent = `Actualizado: ${new Date().toLocaleTimeString('es-AR')}`;
-    if (cronInt) clearInterval(cronInt); cronInt = setInterval(updateCronos, 1000);
-  } catch (err) { console.error(err); if (syncSt) syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; if (syncTxt) syncTxt.textContent = 'Error de conexión'; }
-  finally { if (btn) btn.disabled = false; }
-}
+        .branch-btn {
+            padding: 0.75rem 2rem;
+            border: 2px solid #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
 
-// Modal Detalle
-function abrirModal(eq) {
-  const ov = $('#modal-detalle'); if (!ov) return;
-  $('#modal-id').textContent = eq['ID_Equipo']||eq['ID']||'-';
-  $('#modal-nombre').textContent = eq['Equipo']||eq['Nombre']||'-';
-  $('#modal-sucursal').textContent = eq['Sucursal']||'-';
-  $('#modal-estado').innerHTML = badge(eq['Estado']);
-  $('#modal-tipo').textContent = eq['Tipo_Equipo']||'-';
-  $('#modal-propiedad').textContent = (eq['Propiedad']||'-').toUpperCase();
-  $('#modal-lectura').textContent = fmtH(calcHorometro(eq));
-  ov.classList.add('active'); document.body.style.overflow = 'hidden';
-}
+        .branch-btn:hover, .branch-btn.active {
+            background: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
 
-// Modal Resumen
-function mostrarModalResumen(tipo) {
-  const ov = $('#modal-resumen'), lista = $('#modal-resumen-lista'), empty = $('#modal-resumen-empty'), tit = $('#modal-resumen-titulo');
-  if (!ov || !lista) return;
-  let data = [], title = '';
-  if (tipo === 'todos') { title = '📋 Toda la Flota'; data = [...equipos]; }
-  else if (tipo === 'operativos') { title = '✅ Operativos'; data = equipos.filter(e => ['operativo', 'activo'].includes((e['Estado']||'').toLowerCase())); }
-  else if (tipo === 'inactivos') { title = '🟠 Parados'; data = equipos.filter(e => ['parado', 'en service'].includes((e['Estado']||'').toLowerCase())); }
-  else if (tipo === 'alertas') { title = '🚨 Críticas'; data = equipos.filter(e => getParadaMs(e) > ALERT_HOURS*36e5); }
-  tit.textContent = title; lista.innerHTML = '';
-  if (!data.length) { lista.style.display = 'none'; empty.style.display = 'block'; }
-  else { lista.style.display = 'block'; empty.style.display = 'none'; data.forEach(eq => {
-    const li = document.createElement('li'); li.className = 'summary-item';
-    li.innerHTML = `<div><div class="summary-title">${eq['Equipo']||eq['Nombre']}</div><div class="summary-subtitle">${eq['Sucursal']} · ${(eq['Propiedad']||'').toUpperCase()}</div></div><div>${badge(eq['Estado'])}</div>`;
-    lista.appendChild(li);
-  }); }
-  ov.classList.add('active'); document.body.style.overflow = 'hidden';
-}
+        /* KPIs */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-function cerrarModal(id) { const m = $(`#${id}`); if (m) { m.classList.remove('active'); document.body.style.overflow = ''; } }
+        .kpi-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
 
-// Event listeners
-window.addEventListener('click', e => { if (e.target.id === 'modal-detalle' || e.target.id === 'modal-resumen') cerrarModal(e.target.id); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarModal('modal-detalle'); cerrarModal('modal-resumen'); } });
-document.addEventListener('DOMContentLoaded', () => {
-  $$('.branch-filter').forEach(btn => btn.addEventListener('click', e => {
-    $$('.branch-filter').forEach(b => b.classList.remove('active'));
-    e.currentTarget.classList.add('active');
-    currentSheet = e.currentTarget.dataset.sheet;
-    loadDashboard();
-  }));
-  $('#filter-propiedad')?.addEventListener('change', () => renderTable(getFiltered()));
-  $('#filter-tipo')?.addEventListener('change', () => renderTable(getFiltered()));
-  loadDashboard();
-});
-window.addEventListener('beforeunload', () => { if (cronInt) clearInterval(cronInt); });
-</script></body></html>
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-title {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .kpi-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .kpi-icon.green { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .kpi-icon.blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .kpi-icon.red { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .kpi-icon.orange { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-subtitle {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        /* GRÁFICOS */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .chart-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* TABLA */
+        .table-container {
+            padding: 0 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .table-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        tbody tr {
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-operativo {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+
+        .status-parado {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .status-service {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+            border: 1px solid #f97316;
+        }
+
+        .timer {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+        }
+
+        .property-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .property-propio {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .property-alquilado {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        /* FILTROS ADICIONALES */
+        .extra-filters {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 0.5rem 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            color: #e2e8f0;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .title h1 {
+                font-size: 1.125rem;
+            }
+
+            .branch-filters {
+                flex-direction: column;
+            }
+
+            .branch-btn {
+                width: 100%;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+                padding: 0 1rem 1rem;
+            }
+
+            .kpi-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        /* LOADING */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ALERTAS */
+        .alert-banner {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
+
+        .alert-banner.show {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-top">
+            <div class="logo-section">
+                <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar Logo" class="logo">
+                <div class="title">
+                    <h1>PANEL DE FLOTA MINERA 2026 🚜⛏️</h1>
+                    <p>👷 CONTROL DE HORÓMETROS Y KILÓMETROS · MONITOREO EN VIVO 👷</p>
+                </div>
+            </div>
+            <div class="sync-status">
+                <div class="pulse"></div>
+                <span id="syncTime">Sincronizando...</span>
+            </div>
+        </div>
+        
+        <!-- FILTROS POR SUCURSAL -->
+        <div class="branch-filters">
+            <button class="branch-btn active" onclick="filterBranch('all')">🏭 TODAS</button>
+            <button class="branch-btn" onclick="filterBranch('Malagueño')">📍 MALAGUEÑO</button>
+            <button class="branch-btn" onclick="filterBranch('Barker')">📍 BARKER</button>
+            <button class="branch-btn" onclick="filterBranch('La Pampita')">📍 LA PAMPITA</button>
+        </div>
+    </header>
+
+    <!-- ALERTAS -->
+    <div id="alertBanner" class="alert-banner">
+        <div class="alert-icon">⚠️</div>
+        <div>
+            <strong>Alertas Activas:</strong>
+            <span id="alertText">3 equipos con parada > 4 horas</span>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-container">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">DISPONIBILIDAD DE FLOTA</span>
+                <div class="kpi-icon green"><i class="fas fa-check-circle"></i></div>
+            </div>
+            <div class="kpi-value" id="kpiDisponibilidad">87%</div>
+            <div class="kpi-subtitle">Equipos operativos vs total</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">EQUIPOS OPERATIVOS</span>
+                <div class="kpi-icon blue"><i class="fas fa-truck-monster"></i></div>
+            </div>
+            <div class="kpi-value" id="kpiOperativos">42</div>
+            <div class="kpi-subtitle">De <span id="kpiTotal">50</span> equipos totales</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">TIEMPO MUERTO ACUMULADO</span>
+                <div class="kpi-icon red"><i class="fas fa-clock"></i></div>
+            </div>
+            <div class="kpi-value" id="kpiTiempoMuerto">156.3h</div>
+            <div class="kpi-subtitle">Este mes</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">ALERTAS ACTIVAS</span>
+                <div class="kpi-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
+            </div>
+            <div class="kpi-value" id="kpiAlertas">5</div>
+            <div class="kpi-subtitle">Paradas > 4h / Services vencidos</div>
+        </div>
+    </div>
+
+    <!-- FILTROS ADICIONALES -->
+    <div class="extra-filters">
+        <div class="filter-group">
+            <label class="filter-label">📋 PROPIEDAD</label>
+            <select class="filter-select" id="filterPropiedad" onchange="applyFilters()">
+                <option value="all">Todas</option>
+                <option value="Propio">Propio</option>
+                <option value="Alquilado">Alquilado</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">🚜 TIPO DE EQUIPO</label>
+            <select class="filter-select" id="filterTipo" onchange="applyFilters()">
+                <option value="all">Todos</option>
+                <option value="Excavadora">Excavadora</option>
+                <option value="Camión">Camión</option>
+                <option value="Retroexcavadora">Retroexcavadora</option>
+                <option value="Cargador">Cargador</option>
+                <option value="Otros">Otros</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">🔄 ACTUALIZAR</label>
+            <button class="refresh-btn" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+        </div>
+    </div>
+
+    <!-- GRÁFICOS -->
+    <div class="charts-container">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">📊 HORAS TRABAJADAS VS TIEMPO MUERTO POR SUCURSAL</h3>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="hoursChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">🍩 ESTADO DE EQUIPOS (OPERATIVO / PARADO / EN SERVICE)</h3>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-container">
+        <div class="table-card">
+            <div class="table-header">
+                <h3 class="table-title">📋 FLOTA EN TIEMPO REAL</h3>
+                <button class="refresh-btn" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>EQUIPO</th>
+                        <th>SUCURSAL</th>
+                        <th>PROPIEDAD</th>
+                        <th>ESTADO</th>
+                        <th>LECTURA ACTUAL</th>
+                        <th>⏱️ CRONÓMETRO PARADA</th>
+                        <th>MOTIVO</th>
+                        <th>REPORTANTE</th>
+                        <th>ÚLTIMA ACT.</th>
+                    </tr>
+                </thead>
+                <tbody id="equipmentTable">
+                    <!-- DATOS DE EJEMPLO - Se reemplazarán con datos reales -->
+                    <tr data-branch="Malagueño" data-property="Propio" data-type="Excavadora">
+                        <td><strong>MAL-EXC-01</strong></td>
+                        <td>CAT 320F</td>
+                        <td>Malagueño</td>
+                        <td><span class="property-badge property-propio">PROPIO</span></td>
+                        <td><span class="status-badge status-operativo"><i class="fas fa-check-circle"></i> Operativo</span></td>
+                        <td>4,892 h</td>
+                        <td>--:--:--</td>
+                        <td>-</td>
+                        <td>Juan Pérez</td>
+                        <td>Hace 2 min</td>
+                    </tr>
+                    <tr data-branch="Barker" data-property="Alquilado" data-type="Camión">
+                        <td><strong>BKR-CAM-03</strong></td>
+                        <td>Volvo FH540</td>
+                        <td>Barker</td>
+                        <td><span class="property-badge property-alquilado">ALQUILADO</span></td>
+                        <td><span class="status-badge status-parado"><i class="fas fa-times-circle"></i> Parado</span></td>
+                        <td>1,205 h</td>
+                        <td><span class="timer" id="timer-BKR-CAM-03">04:12:33</span></td>
+                        <td>Bomba hidráulica</td>
+                        <td>Ana Rodríguez</td>
+                        <td>Hace 8 min</td>
+                    </tr>
+                    <tr data-branch="La Pampita" data-property="Propio" data-type="Retroexcavadora">
+                        <td><strong>LPA-RET-01</strong></td>
+                        <td>JCB 3CX</td>
+                        <td>La Pampita</td>
+                        <td><span class="property-badge property-propio">PROPIO</span></td>
+                        <td><span class="status-badge status-service"><i class="fas fa-wrench"></i> En Service</span></td>
+                        <td>8,440 h</td>
+                        <td><span class="timer" id="timer-LPA-RET-01">12:05:00</span></td>
+                        <td>Cambio de aceite</td>
+                        <td>Carlos Martínez</td>
+                        <td>Hace 15 min</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // VARIABLES GLOBALES
+        let currentBranch = 'all';
+        let charts = {};
+        let timers = {};
+
+        // DATOS DE EJEMPLO (Se reemplazarán con Google Sheets)
+        let equipmentData = [
+            {
+                id: 'MAL-EXC-01',
+                name: 'CAT 320F',
+                branch: 'Malagueño',
+                property: 'Propio',
+                type: 'Excavadora',
+                status: 'Operativo',
+                reading: 4892,
+                readingType: 'h',
+                downtimeStart: null,
+                reason: '-',
+                reporter: 'Juan Pérez',
+                lastUpdate: new Date(Date.now() - 2 * 60000)
+            },
+            {
+                id: 'BKR-CAM-03',
+                name: 'Volvo FH540',
+                branch: 'Barker',
+                property: 'Alquilado',
+                type: 'Camión',
+                status: 'Parado',
+                reading: 1205,
+                readingType: 'h',
+                downtimeStart: new Date(Date.now() - 4.2 * 3600000),
+                reason: 'Bomba hidráulica',
+                reporter: 'Ana Rodríguez',
+                lastUpdate: new Date(Date.now() - 8 * 60000)
+            },
+            {
+                id: 'LPA-RET-01',
+                name: 'JCB 3CX',
+                branch: 'La Pampita',
+                property: 'Propio',
+                type: 'Retroexcavadora',
+                status: 'En Service',
+                reading: 8440,
+                readingType: 'h',
+                downtimeStart: new Date(Date.now() - 12.08 * 3600000),
+                reason: 'Cambio de aceite',
+                reporter: 'Carlos Martínez',
+                lastUpdate: new Date(Date.now() - 15 * 60000)
+            }
+        ];
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            startTimers();
+            updateSyncTime();
+            setInterval(updateSyncTime, 30000);
+            setInterval(startTimers, 1000);
+        });
+
+        // GRÁFICOS
+        function initCharts() {
+            // Gráfico de Barras - Horas por Sucursal
+            const hoursCtx = document.getElementById('hoursChart').getContext('2d');
+            charts.hours = new Chart(hoursCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Malagueño', 'Barker', 'La Pampita'],
+                    datasets: [
+                        {
+                            label: 'Horas Trabajadas',
+                            data: [65, 58, 72],
+                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                            borderColor: '#22c55e',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Tiempo Muerto',
+                            data: [15, 22, 18],
+                            backgroundColor: 'rgba(249, 115, 22, 0.8)',
+                            borderColor: '#f97316',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'En Service',
+                             [8, 12, 10],
+                            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                            borderColor: '#ef4444',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e2e8f0' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            stacked: true,
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico Donut - Estado de Equipos
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            charts.status = new Chart(statusCtx, {
+                type: 'doughnut',
+                 {
+                    labels: ['Operativo', 'Parado', 'En Service'],
+                    datasets: [{
+                         [68, 22, 10],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(249, 115, 22, 0.8)'
+                        ],
+                        borderColor: [
+                            '#22c55e',
+                            '#ef4444',
+                            '#f97316'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#e2e8f0' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // CRONÓMETROS
+        function startTimers() {
+            equipmentData.forEach(eq => {
+                if (eq.status === 'Parado' || eq.status === 'En Service') {
+                    const timerElement = document.getElementById(`timer-${eq.id}`);
+                    if (timerElement && eq.downtimeStart) {
+                        const diff = Date.now() - new Date(eq.downtimeStart).getTime();
+                        const hours = Math.floor(diff / 3600000);
+                        const minutes = Math.floor((diff % 3600000) / 60000);
+                        const seconds = Math.floor((diff % 60000) / 1000);
+                        timerElement.textContent = 
+                            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    }
+                }
+            });
+        }
+
+        // FILTROS
+        function filterBranch(branch) {
+            currentBranch = branch;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.branch-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const propiedadFilter = document.getElementById('filterPropiedad').value;
+            const tipoFilter = document.getElementById('filterTipo').value;
+            
+            const rows = document.querySelectorAll('#equipmentTable tr');
+            
+            rows.forEach(row => {
+                const branch = row.getAttribute('data-branch');
+                const property = row.getAttribute('data-property');
+                const type = row.getAttribute('data-type');
+                
+                const showBranch = currentBranch === 'all' || branch === currentBranch;
+                const showProperty = propiedadFilter === 'all' || property === propiedadFilter;
+                const showType = tipoFilter === 'all' || type === tipoFilter;
+                
+                row.style.display = (showBranch && showProperty && showType) ? '' : 'none';
+            });
+            
+            updateKPIs();
+        }
+
+        // ACTUALIZAR KPIs
+        function updateKPIs() {
+            const visibles = document.querySelectorAll('#equipmentTable tr[style=""]');
+            const total = visibles.length || equipmentData.length;
+            const operativos = equipmentData.filter(eq => eq.status === 'Operativo').length;
+            const parados = equipmentData.filter(eq => eq.status === 'Parado').length;
+            const enService = equipmentData.filter(eq => eq.status === 'En Service').length;
+            
+            const disponibilidad = total > 0 ? Math.round((operativos / total) * 100) : 0;
+            
+            document.getElementById('kpiDisponibilidad').textContent = `${disponibilidad}%`;
+            document.getElementById('kpiOperativos').textContent = operativos;
+            document.getElementById('kpiTotal').textContent = total;
+            document.getElementById('kpiAlertas').textContent = parados + enService;
+            
+            // Actualizar gráfico de estado
+            if (charts.status) {
+                charts.status.data.datasets[0].data = [operativos, parados, enService];
+                charts.status.update();
+            }
+        }
+
+        // ACTUALIZAR SINCRONIZACIÓN
+        function updateSyncTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('es-AR');
+            document.getElementById('syncTime').textContent = `Última sync: ${timeStr}`;
+        }
+
+        // REFRESCAR DATOS
+        function refreshData() {
+            const btn = event.target.closest('.refresh-btn');
+            const icon = btn.querySelector('i');
+            icon.classList.add('fa-spin');
+            
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+                updateSyncTime();
+                updateKPIs();
+            }, 1000);
+        }
+
+        // CONEXIÓN CON GOOGLE SHEETS (Para implementar después)
+        async function loadFromGoogleSheets() {
+            // URL de tu Apps Script
+            const SCRIPT_URL = 'TU_URL_DE_APPS_SCRIPT_AQUI';
+            
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                equipmentData = data;
+                renderTable();
+                updateKPIs();
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('equipmentTable');
+            tbody.innerHTML = '';
+            
+            equipmentData.forEach(eq => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-branch', eq.branch);
+                row.setAttribute('data-property', eq.property);
+                row.setAttribute('data-type', eq.type);
+                
+                const statusClass = eq.status === 'Operativo' ? 'status-operativo' : 
+                                   eq.status === 'Parado' ? 'status-parado' : 'status-service';
+                const statusIcon = eq.status === 'Operativo' ? 'fa-check-circle' : 
+                                  eq.status === 'Parado' ? 'fa-times-circle' : 'fa-wrench';
+                
+                const timerHtml = (eq.status === 'Parado' || eq.status === 'En Service') && eq.downtimeStart ?
+                    `<span class="timer" id="timer-${eq.id}">00:00:00</span>` : '--:--:--';
+                
+                row.innerHTML = `
+                    <td><strong>${eq.id}</strong></td>
+                    <td>${eq.name}</td>
+                    <td>${eq.branch}</td>
+                    <td><span class="property-badge property-${eq.property.toLowerCase()}">${eq.property.toUpperCase()}</span></td>
+                    <td><span class="status-badge ${statusClass}"><i class="fas ${statusIcon}"></i> ${eq.status}</span></td>
+                    <td>${eq.reading.toLocaleString()} ${eq.readingType}</td>
+                    <td>${timerHtml}</td>
+                    <td>${eq.reason}</td>
+                    <td>${eq.reporter}</td>
+                    <td>${timeAgo(eq.lastUpdate)}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            startTimers();
+        }
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'Hace un momento';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `Hace ${minutes} min`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `Hace ${hours} h`;
+            return `Hace ${Math.floor(hours / 24)} días`;
+        }
+    </script>
+</body>
+</html>
