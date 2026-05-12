@@ -1,5 +1,114 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Minerar 2026 - Panel de Flota</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/><style>:root{--bg:#0b1120;--card:#1e293b;--border:#334155;--text:#f1f5f9;--muted:#94a3b8;--green:#00ff88;--orange:#ff9900;--red:#ff3333;--blue:#00ccff}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}header{background:linear-gradient(180deg,#1e293b,#0b1120);border-bottom:1px solid var(--border);padding:1rem 2rem;position:sticky;top:0;z-index:100}.header-top{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}.logo{height:50px;border-radius:8px}.header-title h1{font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,#fff,var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.header-title p{font-size:0.85rem;color:var(--muted)}.header-actions{margin-top:1rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}.sync-status{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--green)}.branch-filter{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.4rem 1rem;border-radius:99px;cursor:pointer}.branch-filter.active{background:var(--blue);color:#000;border-color:var(--blue)}.alert-badge{background:rgba(255,51,51,0.1);color:var(--red);padding:0.4rem 0.8rem;border-radius:8px;border:1px solid var(--red);cursor:pointer}.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;padding:1.5rem 2rem}.kpi-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border);cursor:pointer}.kpi-card:hover{transform:translateY(-5px)}.kpi-label{font-size:0.75rem;color:var(--muted);text-transform:uppercase}.kpi-value{font-size:2rem;font-weight:800;margin:0.3rem 0;color:#fff}.filters{padding:0 2rem 1rem;display:flex;gap:1rem;flex-wrap:wrap;background:rgba(11,17,32,0.8);border-bottom:1px solid var(--border)}.filter-group{display:flex;align-items:center;gap:0.5rem}.filter-group label{color:var(--muted);font-size:0.85rem}.filter-select{padding:0.4rem 0.8rem;border:1px solid var(--border);border-radius:6px;background:var(--card);color:#fff}.btn-refresh{background:var(--blue);color:#fff;border:none;padding:0.5rem 1rem;border-radius:6px;font-weight:600;cursor:pointer}.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(450px,1fr));gap:1.5rem;padding:1.5rem 2rem}.chart-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border)}.chart-card h3{font-size:1rem;margin-bottom:1rem;color:#fff}.chart-container{position:relative;height:300px}.table-section{padding:0 2rem 2rem}.table-card{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden}.table-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}table{width:100%;border-collapse:collapse;font-size:0.9rem}thead{background:rgba(0,0,0,0.3)}th{padding:0.8rem 1rem;text-align:left;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border)}td{padding:0.8rem 1rem;border-bottom:1px solid var(--border);color:#cbd5e1}tr:hover{background:rgba(255,255,255,0.05);cursor:pointer}.status-badge{padding:0.25rem 0.6rem;border-radius:99px;font-size:0.75rem;font-weight:700}.status-operativo{background:rgba(0,255,136,0.15);color:var(--green);border:1px solid var(--green)}.status-parado{background:rgba(255,153,0,0.15);color:var(--orange);border:1px solid var(--orange)}.status-service{background:rgba(255,51,51,0.15);color:var(--red);border:1px solid var(--red)}.cronometro{font-family:'Courier New',monospace;font-weight:800;color:var(--orange)}.cronometro.parado-largo{color:var(--red)}.loading{text-align:center;padding:3rem;color:var(--muted)}.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;visibility:hidden;transition:all 0.3s}.modal-overlay.active{opacity:1;visibility:visible}.modal-content{background:var(--card);border-radius:20px;border:1px solid var(--border);width:90%;max-width:700px;max-height:85vh;overflow-y:auto;transform:scale(0.8) translateY(50px);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}.modal-overlay.active .modal-content{transform:scale(1) translateY(0)}.modal-header{background:linear-gradient(135deg,var(--blue),#005f85);padding:1.5rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center}.modal-header h2{font-size:1.3rem;color:#fff;display:flex;align-items:center;gap:0.75rem}.modal-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer}.modal-body{padding:1.5rem}.summary-list{list-style:none}.summary-item{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);border-radius:8px;margin-bottom:0.5rem}.summary-title{font-weight:700;color:#fff}.summary-subtitle{font-size:0.8rem;color:var(--muted)}.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}.detail-card{background:rgba(0,0,0,0.3);padding:1rem;border-radius:10px;border-left:4px solid var(--blue)}.detail-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase}.detail-value{font-size:1.2rem;font-weight:700;color:#fff}.info-row{display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(51,65,85,0.3)}.modal-actions{display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}.btn{flex:1;padding:0.8rem 1rem;border:none;border-radius:8px;font-weight:700;cursor:pointer}.btn-primary{background:var(--blue);color:#000}.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}@media(max-width:768px){header,.kpi-grid,.charts-grid,.filters,.table-section{padding-left:1rem;padding-right:1rem}.charts-grid{grid-template-columns:1fr}.modal-content{width:95%}}</style></head><body><header><div class="header-top"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="logo"/><div class="header-title"><h1>PANEL DE FLOTA MINERA 2026 🚜</h1><p>CONTROL DE HORÓMETROS · MONITOREO EN VIVO</p></div></div><div class="header-actions"><div class="sync-status" id="sync-status"><i class="fas fa-sync-alt"></i><span id="sync-text">Cargando...</span></div><div style="display:flex;gap:0.3rem"><button class="branch-filter active" data-sheet="ALL">🏭 TODAS</button><button class="branch-filter" data-sheet="MALAGUEÑO">📍 MALAGUEÑO</button><button class="branch-filter" data-sheet="BARKER">📍 BARKER</button><button class="branch-filter" data-sheet="LA_PAMPITA">📍 LA PAMPITA</button></div><div class="alert-badge" onclick="mostrarModalResumen('alertas')"><i class="fas fa-exclamation-triangle"></i><span id="alert-count">⚠️ Alertas: <strong>0</strong></span></div></div></header><section class="kpi-grid"><div class="kpi-card" onclick="mostrarModalResumen('todos')"><div class="kpi-label">Disponibilidad</div><div class="kpi-value" id="kpi-disponibilidad">0%</div><div class="kpi-desc">Click para ver flota</div></div><div class="kpi-card" onclick="mostrarModalResumen('operativos')"><div class="kpi-label">Operativos</div><div class="kpi-value"><span id="kpi-operativos">0</span>/<span id="kpi-total">0</span></div><div class="kpi-desc">Click para lista</div></div><div class="kpi-card" onclick="mostrarModalResumen('inactivos')"><div class="kpi-label">Tiempo Muerto</div><div class="kpi-value" id="kpi-tiempo-muerto">0h</div><div class="kpi-desc">Click para ver parados</div></div><div class="kpi-card" onclick="mostrarModalResumen('alertas')"><div class="kpi-label">Alertas</div><div class="kpi-value" id="kpi-alertas">0</div><div class="kpi-desc">Click para críticas</div></div></section><section class="filters"><div class="filter-group"><label>Propiedad</label><select class="filter-select" id="filter-propiedad"><option value="ALL">Todas</option><option value="PROPIO">Propio</option><option value="ALQUILADO">Alquilado</option></select></div><div class="filter-group"><label>Tipo</label><select class="filter-select" id="filter-tipo"><option value="ALL">Todos</option><option value="Excavadora">Excavadora</option><option value="Camión">Camión</option><option value="Retroexcavadora">Retro</option><option value="Cargador">Cargador</option></select></div><button class="btn-refresh" id="btn-actualizar" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> ACTUALIZAR</button></section><section class="charts-grid"><div class="chart-card"><h3>📊 HORAS POR SUCURSAL</h3><div class="chart-container"><canvas id="chart-horas"></canvas></div></div><div class="chart-card"><h3>🍩 ESTADO DE EQUIPOS</h3><div class="chart-container"><canvas id="chart-estado"></canvas></div></div></section><section class="table-section"><div class="table-card"><div class="table-header"><h3>📋 FLOTA EN TIEMPO REAL</h3><button class="btn-refresh" style="padding:0.3rem 0.7rem;font-size:0.85rem" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> Actualizar</button></div><div style="overflow-x:auto"><table id="tabla-flota"><thead><tr><th>ID</th><th>EQUIPO</th><th>SUCURSAL</th><th>PROPIEDAD</th><th>ESTADO</th><th>LECTURA</th><th>⏱️ PARADA</th><th>MOTIVO</th><th>REPORTANTE</th><th>ÚLTIMA ACT.</th></tr></thead><tbody id="tabla-body"></tbody></table><div id="tabla-loading" class="loading"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Cargando datos...</p></div><div id="tabla-empty" style="display:none;text-align:center;padding:2rem;color:var(--muted)"><i class="fas fa-search fa-2x"></i><p>No hay datos</p></div></div></div></section><div class="modal-overlay" id="modal-detalle"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-truck-monster"></i><span id="modal-titulo">Detalle</span></h2><button class="modal-close" onclick="cerrarModal('modal-detalle')">×</button></div><div class="modal-body"><div class="detail-grid"><div class="detail-card"><div class="detail-label">ID</div><div class="detail-value" id="modal-id">-</div></div><div class="detail-card"><div class="detail-label">Nombre</div><div class="detail-value" id="modal-nombre">-</div></div><div class="detail-card"><div class="detail-label">Sucursal</div><div class="detail-value" id="modal-sucursal">-</div></div><div class="detail-card"><div class="detail-label">Estado</div><div class="detail-value" id="modal-estado">-</div></div></div><div style="margin-bottom:1.5rem"><h3 style="color:var(--blue);margin-bottom:0.75rem">Info General</h3><div class="info-row"><span style="color:var(--muted)">Tipo</span><span id="modal-tipo">-</span></div><div class="info-row"><span style="color:var(--muted)">Propiedad</span><span id="modal-propiedad">-</span></div><div class="info-row"><span style="color:var(--muted)">Lectura</span><span id="modal-lectura">-</span></div></div><div class="modal-actions"><button class="btn btn-secondary" onclick="cerrarModal('modal-detalle')">Cerrar</button></div></div></div></div><div class="modal-overlay" id="modal-resumen"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-list"></i><span id="modal-resumen-titulo">Resumen</span></h2><button class="modal-close" onclick="cerrarModal('modal-resumen')">×</button></div><div class="modal-body"><ul class="summary-list" id="modal-resumen-lista"></ul><div id="modal-resumen-empty" style="display:none;text-align:center;color:var(--muted);padding:2rem">Sin datos</div></div></div></div><script>
-// 📊 URLs DE GOOGLE SHEETS PUBLICADAS - CON GID CORRECTOS ✅
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Minerar 2026 - Panel de Flota</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/><style>
+:root{--bg:#0b1120;--card:#1e293b;--border:#334155;--text:#f1f5f9;--muted:#94a3b8;--green:#00ff88;--orange:#ff9900;--red:#ff3333;--blue:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+header{background:linear-gradient(180deg,#1e293b,#0b1120);border-bottom:1px solid var(--border);padding:1rem 2rem;position:sticky;top:0;z-index:100}
+.header-top{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.logo{height:50px;border-radius:8px}
+.header-title h1{font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,#fff,var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-title p{font-size:0.85rem;color:var(--muted)}
+.header-actions{margin-top:1rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}
+.sync-status{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem}
+.sync-status.ok{color:var(--green)}.sync-status.error{color:var(--red)}
+.branch-filter{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.4rem 1rem;border-radius:99px;cursor:pointer}
+.branch-filter.active{background:var(--blue);color:#000;border-color:var(--blue)}
+.alert-badge{background:rgba(255,51,51,0.1);color:var(--red);padding:0.4rem 0.8rem;border-radius:8px;border:1px solid var(--red);cursor:pointer}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;padding:1.5rem 2rem}
+.kpi-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border);cursor:pointer}
+.kpi-card:hover{transform:translateY(-5px)}
+.kpi-label{font-size:0.75rem;color:var(--muted);text-transform:uppercase}
+.kpi-value{font-size:2rem;font-weight:800;margin:0.3rem 0;color:#fff}
+.filters{padding:0 2rem 1rem;display:flex;gap:1rem;flex-wrap:wrap;background:rgba(11,17,32,0.8);border-bottom:1px solid var(--border)}
+.filter-group{display:flex;align-items:center;gap:0.5rem}
+.filter-group label{color:var(--muted);font-size:0.85rem}
+.filter-select{padding:0.4rem 0.8rem;border:1px solid var(--border);border-radius:6px;background:var(--card);color:#fff}
+.btn-refresh{background:var(--blue);color:#fff;border:none;padding:0.5rem 1rem;border-radius:6px;font-weight:600;cursor:pointer}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(450px,1fr));gap:1.5rem;padding:1.5rem 2rem}
+.chart-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border)}
+.chart-card h3{font-size:1rem;margin-bottom:1rem;color:#fff}
+.chart-container{position:relative;height:300px}
+.table-section{padding:0 2rem 2rem}
+.table-card{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden}
+.table-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+table{width:100%;border-collapse:collapse;font-size:0.9rem}
+thead{background:rgba(0,0,0,0.3)}
+th{padding:0.8rem 1rem;text-align:left;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border)}
+td{padding:0.8rem 1rem;border-bottom:1px solid var(--border);color:#cbd5e1}
+tr:hover{background:rgba(255,255,255,0.05);cursor:pointer}
+.status-badge{padding:0.25rem 0.6rem;border-radius:99px;font-size:0.75rem;font-weight:700}
+.status-operativo{background:rgba(0,255,136,0.15);color:var(--green);border:1px solid var(--green)}
+.status-parado{background:rgba(255,153,0,0.15);color:var(--orange);border:1px solid var(--orange)}
+.status-service{background:rgba(255,51,51,0.15);color:var(--red);border:1px solid var(--red)}
+.cronometro{font-family:'Courier New',monospace;font-weight:800;color:var(--orange)}
+.cronometro.parado-largo{color:var(--red)}
+.loading,.empty-msg{text-align:center;padding:3rem;color:var(--muted)}
+.empty-msg i{font-size:3rem;margin-bottom:1rem;color:var(--border)}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;visibility:hidden;transition:all 0.3s}
+.modal-overlay.active{opacity:1;visibility:visible}
+.modal-content{background:var(--card);border-radius:20px;border:1px solid var(--border);width:90%;max-width:700px;max-height:85vh;overflow-y:auto;transform:scale(0.8) translateY(50px);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+.modal-overlay.active .modal-content{transform:scale(1) translateY(0)}
+.modal-header{background:linear-gradient(135deg,var(--blue),#005f85);padding:1.5rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center}
+.modal-header h2{font-size:1.3rem;color:#fff;display:flex;align-items:center;gap:0.75rem}
+.modal-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer}
+.modal-body{padding:1.5rem}
+.summary-list{list-style:none}
+.summary-item{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);border-radius:8px;margin-bottom:0.5rem}
+.summary-title{font-weight:700;color:#fff}
+.summary-subtitle{font-size:0.8rem;color:var(--muted)}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+.detail-card{background:rgba(0,0,0,0.3);padding:1rem;border-radius:10px;border-left:4px solid var(--blue)}
+.detail-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase}
+.detail-value{font-size:1.2rem;font-weight:700;color:#fff}
+.info-row{display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(51,65,85,0.3)}
+.modal-actions{display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn{flex:1;padding:0.8rem 1rem;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--blue);color:#000}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+@media(max-width:768px){header,.kpi-grid,.charts-grid,.filters,.table-section{padding-left:1rem;padding-right:1rem}.charts-grid{grid-template-columns:1fr}.modal-content{width:95%}}
+</style></head><body>
+<header><div class="header-top"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="logo"/><div class="header-title"><h1>PANEL DE FLOTA MINERA 2026 🚜</h1><p>CONTROL DE HORÓMETROS · MONITOREO EN VIVO</p></div></div>
+<div class="header-actions"><div class="sync-status" id="sync-status"><i class="fas fa-sync-alt"></i><span id="sync-text">Cargando...</span></div>
+<div style="display:flex;gap:0.3rem"><button class="branch-filter active" data-sheet="ALL">🏭 TODAS</button><button class="branch-filter" data-sheet="MALAGUEÑO">📍 MALAGUEÑO</button><button class="branch-filter" data-sheet="BARKER">📍 BARKER</button><button class="branch-filter" data-sheet="LA_PAMPITA">📍 LA PAMPITA</button></div>
+<div class="alert-badge" onclick="mostrarModalResumen('alertas')"><i class="fas fa-exclamation-triangle"></i><span id="alert-count">⚠️ Alertas: <strong>0</strong></span></div></div></header>
+
+<section class="kpi-grid">
+<div class="kpi-card" onclick="mostrarModalResumen('todos')"><div class="kpi-label">Disponibilidad</div><div class="kpi-value" id="kpi-disponibilidad">0%</div><div class="kpi-desc">Click para ver flota</div></div>
+<div class="kpi-card" onclick="mostrarModalResumen('operativos')"><div class="kpi-label">Operativos</div><div class="kpi-value"><span id="kpi-operativos">0</span>/<span id="kpi-total">0</span></div><div class="kpi-desc">Click para lista</div></div>
+<div class="kpi-card" onclick="mostrarModalResumen('inactivos')"><div class="kpi-label">Tiempo Muerto</div><div class="kpi-value" id="kpi-tiempo-muerto">0h</div><div class="kpi-desc">Click para ver parados</div></div>
+<div class="kpi-card" onclick="mostrarModalResumen('alertas')"><div class="kpi-label">Alertas</div><div class="kpi-value" id="kpi-alertas">0</div><div class="kpi-desc">Click para críticas</div></div>
+</section>
+
+<section class="filters">
+<div class="filter-group"><label>Propiedad</label><select class="filter-select" id="filter-propiedad"><option value="ALL">Todas</option><option value="PROPIO">Propio</option><option value="ALQUILADO">Alquilado</option></select></div>
+<div class="filter-group"><label>Tipo</label><select class="filter-select" id="filter-tipo"><option value="ALL">Todos</option><option value="Excavadora">Excavadora</option><option value="Camión">Camión</option><option value="Retroexcavadora">Retro</option><option value="Cargador">Cargador</option></select></div>
+<button class="btn-refresh" id="btn-actualizar" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> ACTUALIZAR</button>
+</section>
+
+<section class="charts-grid">
+<div class="chart-card"><h3>📊 HORAS POR SUCURSAL</h3><div class="chart-container"><canvas id="chart-horas"></canvas></div></div>
+<div class="chart-card"><h3>🍩 ESTADO DE EQUIPOS</h3><div class="chart-container"><canvas id="chart-estado"></canvas></div></div>
+</section>
+
+<section class="table-section">
+<div class="table-card"><div class="table-header"><h3>📋 FLOTA EN TIEMPO REAL</h3><button class="btn-refresh" style="padding:0.3rem 0.7rem;font-size:0.85rem" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> Actualizar</button></div>
+<div style="overflow-x:auto"><table id="tabla-flota"><thead><tr><th>ID</th><th>EQUIPO</th><th>SUCURSAL</th><th>PROPIEDAD</th><th>ESTADO</th><th>LECTURA</th><th>⏱️ PARADA</th><th>MOTIVO</th><th>REPORTANTE</th><th>ÚLTIMA ACT.</th></tr></thead><tbody id="tabla-body"></tbody></table>
+<div id="tabla-loading" class="loading"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Cargando datos...</p></div>
+<div id="tabla-empty" class="empty-msg" style="display:none"><i class="fas fa-database"></i><p>📭 No hay datos en esta sucursal</p><small>Verificá que la hoja tenga registros</small></div></div></div>
+</section>
+
+<div class="modal-overlay" id="modal-detalle"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-truck-monster"></i><span id="modal-titulo">Detalle</span></h2><button class="modal-close" onclick="cerrarModal('modal-detalle')">×</button></div>
+<div class="modal-body"><div class="detail-grid"><div class="detail-card"><div class="detail-label">ID</div><div class="detail-value" id="modal-id">-</div></div><div class="detail-card"><div class="detail-label">Nombre</div><div class="detail-value" id="modal-nombre">-</div></div><div class="detail-card"><div class="detail-label">Sucursal</div><div class="detail-value" id="modal-sucursal">-</div></div><div class="detail-card"><div class="detail-label">Estado</div><div class="detail-value" id="modal-estado">-</div></div></div>
+<div style="margin-bottom:1.5rem"><h3 style="color:var(--blue);margin-bottom:0.75rem">Info General</h3>
+<div class="info-row"><span style="color:var(--muted)">Tipo</span><span id="modal-tipo">-</span></div>
+<div class="info-row"><span style="color:var(--muted)">Propiedad</span><span id="modal-propiedad">-</span></div>
+<div class="info-row"><span style="color:var(--muted)">Lectura</span><span id="modal-lectura">-</span></div></div>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="cerrarModal('modal-detalle')">Cerrar</button></div></div></div></div>
+
+<div class="modal-overlay" id="modal-resumen"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-list"></i><span id="modal-resumen-titulo">Resumen</span></h2><button class="modal-close" onclick="cerrarModal('modal-resumen')">×</button></div>
+<div class="modal-body"><ul class="summary-list" id="modal-resumen-lista"></ul><div id="modal-resumen-empty" style="display:none;text-align:center;color:var(--muted);padding:2rem">Sin datos</div></div></div></div>
+
+<script>
+// 📊 URLs CON GID CORRECTOS
 const SHEETS = {
   'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
   'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=847775149&single=true&output=csv',
@@ -10,7 +119,6 @@ let equipos = [], currentSheet = 'ALL', chartHoras = null, chartEstado = null, c
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
-// Parsear CSV robusto
 function parseCSV(text) {
   if (!text || !text.trim()) return [];
   const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
@@ -37,7 +145,6 @@ function parseCSV(text) {
   }
   return result;
 }
-
 function parseCSVLine(line) {
   const result = []; let current = '', inQuotes = false;
   for (let i = 0; i < line.length; i++) {
@@ -49,17 +156,8 @@ function parseCSVLine(line) {
   result.push(current);
   return result.map(v => v.replace(/^"|"$/g, '').trim());
 }
-
 function normalizeKey(k) {
-  const map = {
-    'sucursal': 'Sucursal', 'equipo': 'Equipo', 'estado': 'Estado',
-    'id_equipo': 'ID_Equipo', 'tipo_equipo': 'Tipo_Equipo',
-    'horometro': 'Horó./Kilómetro', 'horómetro': 'Horó./Kilómetro',
-    'lectura': 'Lectura', 'propiedad': 'Propiedad',
-    'motivo_parada': 'Motivo_Parada', 'reportante': 'Reportante',
-    'fecha_carga': 'Fecha_Carga', 'hora_carga': 'Hora_Carga',
-    'timestamp_parada': 'Timestamp_Parada', 'observaciones': 'Observaciones'
-  };
+  const map = {'sucursal':'Sucursal','equipo':'Equipo','estado':'Estado','id_equipo':'ID_Equipo','tipo_equipo':'Tipo_Equipo','horometro':'Horó./Kilómetro','horómetro':'Horó./Kilómetro','lectura':'Lectura','propiedad':'Propiedad','motivo_parada':'Motivo_Parada','reportante':'Reportante','fecha_carga':'Fecha_Carga','hora_carga':'Hora_Carga','timestamp_parada':'Timestamp_Parada','observaciones':'Observaciones'};
   const lk = k.toLowerCase().replace(/[^a-z0-9]/g, '');
   return map[lk] || k;
 }
@@ -67,33 +165,17 @@ function normalizeKey(k) {
 async function fetchSheet(name) {
   try {
     const url = name === 'ALL' ? null : SHEETS[name];
-    if (!url) return getDatosEjemplo('ALL');
+    if (!url) return [];
     const res = await fetch(url, { cache: 'no-store', mode: 'cors' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const text = await res.text();
     const data = parseCSV(text);
-    if (name !== 'ALL' && data.length > 0 && !data[0].Sucursal) {
-      data.forEach(row => row.Sucursal = name);
-    }
+    if (name !== 'ALL' && data.length > 0 && !data[0].Sucursal) data.forEach(row => row.Sucursal = name);
     return data.filter(e => e['Equipo'] || e['Nombre'] || e['ID_Equipo']);
   } catch (err) {
     console.warn('Error cargando ' + name + ':', err);
-    return getDatosEjemplo(name);
+    return [];
   }
-}
-
-function getDatosEjemplo(sucursal) {
-  const base = [
-    { 'ID_Equipo': 'MAL-EXC-01', 'Equipo': 'CAT 320F', 'Sucursal': 'Malagueño', 'Propiedad': 'PROPIO', 'Estado': 'Operativo', 'Horó./Kilómetro': '4892', 'Lectura': '0', 'Tipo_Equipo': 'Excavadora', 'Motivo_Parada': '', 'Reportante': 'Juan Pérez', 'Fecha_Carga': new Date().toISOString().split('T')[0], 'Hora_Carga': '08:30', 'Timestamp_Parada': '' },
-    { 'ID_Equipo': 'BKR-CAM-03', 'Equipo': 'Volvo FH540', 'Sucursal': 'Barker', 'Propiedad': 'ALQUILADO', 'Estado': 'Parado', 'Horó./Kilómetro': '1205', 'Lectura': '0', 'Tipo_Equipo': 'Camión', 'Motivo_Parada': 'Bomba hidráulica', 'Reportante': 'Ana Rodríguez', 'Fecha_Carga': new Date().toISOString().split('T')[0], 'Hora_Carga': '14:15', 'Timestamp_Parada': new Date(Date.now() - 4.2 * 36e5).toISOString() },
-    { 'ID_Equipo': 'LPA-RET-01', 'Equipo': 'JCB 3CX', 'Sucursal': 'La Pampita', 'Propiedad': 'PROPIO', 'Estado': 'En Service', 'Horó./Kilómetro': '8440', 'Lectura': '0', 'Tipo_Equipo': 'Retroexcavadora', 'Motivo_Parada': 'Cambio de aceite', 'Reportante': 'Carlos Martínez', 'Fecha_Carga': new Date().toISOString().split('T')[0], 'Hora_Carga': '10:00', 'Timestamp_Parada': new Date(Date.now() - 12 * 36e5).toISOString() }
-  ];
-  if (!sucursal || sucursal === 'ALL') return base;
-  return base.filter(e => {
-    const s1 = (e['Sucursal']||'').toLowerCase().trim();
-    const s2 = sucursal.toLowerCase().trim();
-    return s1 === s2 || s1.replace(' ','_') === s2 || s1 === s2.replace('_',' ');
-  });
 }
 
 function fmtH(h) { if (!h || isNaN(h)) return '0h'; const n = parseFloat(h); return n >= 1000 ? (n/1000).toFixed(1) + 'k h' : Math.round(n) + ' h'; }
@@ -170,12 +252,14 @@ function renderCharts(data) {
     const eqSuc = (e['Sucursal']||e['sucursal']||'').toLowerCase().trim();
     return eqSuc === s.toLowerCase() || eqSuc.replace(' ','_') === s.toLowerCase();
   }).reduce((sum, e) => sum + calcHorometro(e), 0));
+  
   if (chartHoras) chartHoras.destroy();
   chartHoras = new Chart($('#chart-horas'), {
     type: 'bar',
     data: { labels: suc, datasets: [{ label: 'Horas', data: hrs, backgroundColor: ['#00ff88', '#ff9900', '#00ccff'], borderRadius: 6 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#f8fafc' } } } }
   });
+  
   const est = {
     'Operativo': chartData.filter(e => ['operativo', 'activo'].includes((e['Estado']||e['estado']||'').toLowerCase())).length,
     'Parado': chartData.filter(e => (e['Estado']||e['estado']||'').toLowerCase() === 'parado').length,
@@ -217,7 +301,7 @@ function getFiltered() {
 
 async function loadDashboard() {
   const btn = $('#btn-actualizar'), syncTxt = $('#sync-text'), syncSt = $('#sync-status');
-  if (btn) btn.disabled = true; if (syncSt) syncSt.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Sync...';
+  if (btn) btn.disabled = true; if (syncSt) { syncSt.className = 'sync-status'; syncSt.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Sync...'; }
   try {
     if (currentSheet === 'ALL') {
       const [m, b, l] = await Promise.all([fetchSheet('MALAGUEÑO'), fetchSheet('BARKER'), fetchSheet('LA_PAMPITA')]);
@@ -226,10 +310,16 @@ async function loadDashboard() {
       equipos = await fetchSheet(currentSheet);
     }
     console.log('📊 Datos cargados:', equipos.length, '| Sucursal:', currentSheet);
+    if (equipos.length === 0) {
+      if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Sin datos'; }
+      if (syncTxt) syncTxt.textContent = 'Hoja vacía - agregá registros';
+    } else {
+      if (syncSt) { syncSt.className = 'sync-status ok'; syncSt.innerHTML = '<i class="fas fa-check"></i> OK'; }
+      if (syncTxt) syncTxt.textContent = `Actualizado: ${new Date().toLocaleTimeString('es-AR')} | ${equipos.length} equipos`;
+    }
     renderKPIs(equipos); renderCharts(equipos); renderTable(equipos);
-    if (syncSt) syncSt.innerHTML = '<i class="fas fa-check"></i> OK'; if (syncTxt) syncTxt.textContent = `Actualizado: ${new Date().toLocaleTimeString('es-AR')} | ${equipos.length} equipos`;
     if (cronInt) clearInterval(cronInt); cronInt = setInterval(updateCronos, 1000);
-  } catch (err) { console.error('❌ Error:', err); if (syncSt) syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; if (syncTxt) syncTxt.textContent = 'Error - usando ejemplo'; equipos = getDatosEjemplo(currentSheet); renderKPIs(equipos); renderCharts(equipos); renderTable(equipos); }
+  } catch (err) { console.error('❌ Error:', err); if (syncSt) { syncSt.className = 'sync-status error'; syncSt.innerHTML = '<i class="fas fa-exclamation"></i> Error'; } if (syncTxt) syncTxt.textContent = 'Error de conexión'; }
   finally { if (btn) btn.disabled = false; }
 }
 
