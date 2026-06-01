@@ -16,14 +16,18 @@
             font-size: 12px;
             min-height: 100vh;
             position: relative;
+            overflow-x: hidden;
         }
         body::before {
             content: "";
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), 
                               linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
             background-size: 35px 35px;
-            pointer-events: none; z-index: 0;
+            pointer-events: none;
+            z-index: 0;
         }
         .glass-card {
             background: rgba(15, 20, 30, 0.75);
@@ -58,12 +62,18 @@
         .sucursal-btn {
             padding: 8px 20px;
             border-radius: 30px;
-            font-weight: 700; font-size: 13px;
-            transition: all 0.3s ease; cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            cursor: pointer;
             background: rgba(20, 25, 35, 0.7);
-            border: 2px solid rgba(100,100,150,0.4); color: #b0c4de;
+            border: 2px solid rgba(100,100,150,0.4);
+            color: #b0c4de;
         }
-        .sucursal-btn.active { animation: pulse-border 1.5s ease-out infinite; color: #fff !important; }
+        .sucursal-btn.active {
+            animation: pulse-border 1.5s ease-out infinite;
+            color: #fff !important;
+        }
         .btn-todas.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
         .btn-malagueno.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
         .btn-barker.active { border-color: #ff8800 !important; box-shadow: 0 0 15px rgba(255,136,0,0.6); }
@@ -81,25 +91,42 @@
         .status-service { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
         
         .btn-filter {
-            transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700;
-            padding: 8px 12px; border-radius: 10px; width: 100%; text-align: left;
-            border: 1px solid rgba(100,100,150,0.4); background: rgba(20,25,35,0.7); color: #b0c4de;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 10px;
+            width: 100%;
+            text-align: left;
+            border: 1px solid rgba(100,100,150,0.4);
+            background: rgba(20,25,35,0.7);
+            color: #b0c4de;
         }
         .btn-filter.active {
             background: linear-gradient(95deg, #00ff88, #00cc66);
-            border-color: #00ff88; color: #05050a; box-shadow: 0 0 10px rgba(0,255,136,0.3);
+            border-color: #00ff88;
+            color: #05050a;
+            box-shadow: 0 0 10px rgba(0,255,136,0.3);
         }
         
         .cronometro-box {
             font-family: 'Courier New', monospace;
             background: linear-gradient(135deg, #fef3c7, #fde68a);
-            padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 14px;
-            text-align: center; color: #92400e; border: 2px solid #f59e0b; min-width: 70px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 14px;
+            text-align: center;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+            min-width: 70px;
         }
         .cronometro-parado {
             animation: blink-red 1s infinite;
             background: linear-gradient(135deg, #fee2e2, #fecaca);
-            color: #991b1b; border-color: #ef4444;
+            color: #991b1b;
+            border-color: #ef4444;
         }
         @keyframes blink-red { 0%,100% { opacity:1; box-shadow:0 0 5px #ef4444; } 50% { opacity:0.4; box-shadow:0 0 15px #ef4444; } }
         
@@ -116,10 +143,21 @@
         select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; width: 100%; }
         .siren-alert { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
         .toast-notification {
-            position: fixed; bottom: 20px; right: 20px; background: #0f1520; border: 1px solid #00ff88;
-            backdrop-filter: blur(10px); color: white; padding: 12px 16px; border-radius: 12px;
-            border-left: 4px solid #00ff88; box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2);
-            z-index: 1000; animation: slideInRight 0.3s ease-out; max-width: 350px; font-size: 11px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0f1520;
+            border: 1px solid #00ff88;
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-left: 4px solid #00ff88;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            max-width: 350px;
+            font-size: 11px;
         }
         @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
@@ -130,14 +168,13 @@
     </style>
 </head>
 <body>
-<!-- ✅ FIX: Contenedor ensanchado al 98% -->
 <div class="w-[98%] mx-auto relative z-10 p-4">
     <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
             <div>
-                <h1 class="text-2xl font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL DE FLOTA MINERA 2026 🚜️</h1>
+                <h1 class="text-2xl font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL DE FLOTA MINERA 2026 🚜⛏️</h1>
                 <p class="text-xs text-emerald-400 font-mono">👷 CONTROL DE HORÓMETROS Y KILÓMETROS · MONITOREO EN VIVO 👷</p>
             </div>
         </div>
@@ -262,8 +299,8 @@
                                 </tr>
                             </thead>
                             <tbody id="equipmentTableBody">
-    <tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>
-</tbody>
+                                <tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -287,32 +324,29 @@
 </div>
 
 <script>
-// ✅ FIX: Limpieza total de caché y datos iniciales vacíos
-// ✅ LIMPIAR CACHÉ Y DATOS LOCALES
-localStorage.clear();
-sessionStorage.clear();
+// ==================== CONSTANTES ====================
+let currentSucursal = 'TODAS';
+let EQUIPMENT_DATA = [];
+let filteredData = [];
+let horasChart = null, estadoChart = null;
+let cronometroInterval = null;
+let alertasNovedades = 0;
 
-// Forzar recarga sin caché en cada petición
-fetchSheet = async function(url, sucursal) {
-    const response = await fetch(url + '&t=' + Date.now(), {
-        cache: 'no-store',
-        headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        }
-    });
-    const text = await response.text();
-    return parseCSV(text, sucursal);
+// ✅ URLs CORRECTAS DE TUS SHEETS PUBLICADOS
+const SHEETS_URLS = {
+    'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
+    'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=149809572&single=true&output=csv',
+    'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv'
 };
+
+// ==================== FUNCIONES PRINCIPALES ====================
 
 async function loadData() {
     try {
-        console.log('🔄 Cargando datos frescos...');
+        console.log('🔄 Cargando todas las sucursales...');
         document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>';
         
         let allData = [];
-        // ✅ FIX: Siempre carga las 3 hojas y filtra en cliente
         for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
             const data = await fetchSheet(url, sucursal);
             allData = allData.concat(data);
@@ -334,8 +368,14 @@ async function loadData() {
 }
 
 async function fetchSheet(url, sucursal) {
-    // ✅ FIX: Timestamp único para evitar caché del navegador
-    const response = await fetch(url + '&t=' + Date.now());
+    const response = await fetch(url + '&t=' + Date.now(), {
+        cache: 'no-store',
+        headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        }
+    });
     const text = await response.text();
     return parseCSV(text, sucursal);
 }
@@ -343,19 +383,26 @@ async function fetchSheet(url, sucursal) {
 function parseCSV(text, sucursal) {
     const lines = text.trim().split('\n').filter(l => l.trim());
     if (lines.length < 2) return [];
+    
     const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
     const data = [];
+    
     for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
+        
         const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
         const row = {};
-        headers.forEach((header, index) => { row[header] = values[index] || ''; });
-        // ✅ FIX: Solo agrega si tiene ID válido
+        
+        headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+        });
+        
         if (row['ID_Equipo'] && row['ID_Equipo'].trim()) {
             row.sucursal = sucursal;
             data.push(row);
         }
     }
+    
     return data;
 }
 
@@ -414,8 +461,24 @@ function updateCharts() {
     if (horasChart) horasChart.destroy();
     horasChart = new Chart(ctxHoras, {
         type: 'bar',
-        data: { labels: sucursales, datasets: [{ label: 'Horas', data: horasData, backgroundColor: ['#00ff88', '#ff8800', '#c084fc'], borderRadius: 8 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } }
+        data: {
+            labels: sucursales,
+            datasets: [{
+                label: 'Horas Trabajadas',
+                data: horasData,
+                backgroundColor: ['#00ff88', '#ff8800', '#c084fc'],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } },
+                x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
+            }
+        }
     });
     
     const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
@@ -426,22 +489,39 @@ function updateCharts() {
     if (estadoChart) estadoChart.destroy();
     estadoChart = new Chart(ctxEstado, {
         type: 'doughnut',
-        data: { labels: ['Operativo', 'Parado', 'En Service'], datasets: [{ data: [operativos, parados, service], backgroundColor: ['#00ff88', '#ff8800', '#f87171'], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } } }
+        data: {
+            labels: ['Operativo', 'Parado', 'En Service'],
+            datasets: [{
+                data: [operativos, parados, service],
+                backgroundColor: ['#00ff88', '#ff8800', '#f87171'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { position: 'right', labels: { color: '#cbd5e1' } }
+            }
+        }
     });
 }
 
 function renderTable() {
     const tbody = document.getElementById('equipmentTableBody');
     tbody.innerHTML = '';
+    
     if (filteredData.length === 0) {
         tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">📭 No hay datos disponibles para esta selección</td></tr>';
         return;
     }
+    
     filteredData.slice(0, 100).forEach(e => {
         const tr = document.createElement('tr');
         tr.className = 'border-b border-slate-700/50 hover:bg-emerald-950/20';
         tr.onclick = () => openEquipmentModal(e);
+        
         const tiempoParada = calcularTiempoParada(e);
         const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : (e.Estado === 'PARADO' ? 'status-parado' : 'status-service');
         const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : (e.Estado === 'PARADO' ? '⏸️ Parado' : ' En Service');
@@ -458,6 +538,7 @@ function renderTable() {
             <td class="p-2">${e.Reportante || '-'}</td>
             <td class="p-2">${e.Fecha_Carga || '-'} ${e.Hora_Carga || ''}</td>
         `;
+        
         tbody.appendChild(tr);
     });
 }
@@ -519,6 +600,7 @@ function openEquipmentModal(equipo) {
     modal.querySelector('.modal-bounce').classList.add('modal-bounce');
     
     const tiempoParada = calcularTiempoParada(equipo);
+    
     content.innerHTML = `
         <div class="grid md:grid-cols-2 gap-4 mb-4">
             <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30"><div class="text-xs text-slate-400 mb-1">🔢 ID Equipo</div><div class="text-xl font-bold text-emerald-300">${equipo.ID_Equipo}</div></div>
@@ -538,6 +620,7 @@ function openEquipmentModal(equipo) {
             ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/30 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
         </div>
     `;
+    
     document.getElementById('modalTitle').innerText = `📋 ${equipo.Equipo} (${equipo.ID_Equipo})`;
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
@@ -556,7 +639,9 @@ function cambiarSucursal(sucursal) {
     aplicarFiltros();
 }
 
-function forceRefreshData() { loadData(); }
+function forceRefreshData() {
+    loadData();
+}
 
 function showToast(tipo, titulo, mensaje) {
     const toast = document.createElement('div');
@@ -568,6 +653,7 @@ function showToast(tipo, titulo, mensaje) {
     setTimeout(() => toast.remove(), 5000);
 }
 
+// INICIALIZACIÓN
 window.onload = () => {
     loadData();
     setInterval(loadData, 60000);
