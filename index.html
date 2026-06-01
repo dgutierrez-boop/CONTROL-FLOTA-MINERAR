@@ -19,13 +19,11 @@
         }
         body::before {
             content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), 
                               linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
             background-size: 35px 35px;
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
         .glass-card {
             background: rgba(15, 20, 30, 0.75);
@@ -34,7 +32,7 @@
             border: 1px solid rgba(0, 255, 136, 0.2);
             box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
             transition: all 0.2s ease;
-            overflow: hidden; /* ✅ FIX: Evita desbordes */
+            overflow: hidden;
         }
         .header-container {
             background: rgba(8,12,20,0.9);
@@ -60,18 +58,12 @@
         .sucursal-btn {
             padding: 8px 20px;
             border-radius: 30px;
-            font-weight: 700;
-            font-size: 13px;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            font-weight: 700; font-size: 13px;
+            transition: all 0.3s ease; cursor: pointer;
             background: rgba(20, 25, 35, 0.7);
-            border: 2px solid rgba(100,100,150,0.4);
-            color: #b0c4de;
+            border: 2px solid rgba(100,100,150,0.4); color: #b0c4de;
         }
-        .sucursal-btn.active {
-            animation: pulse-border 1.5s ease-out infinite;
-            color: #fff !important;
-        }
+        .sucursal-btn.active { animation: pulse-border 1.5s ease-out infinite; color: #fff !important; }
         .btn-todas.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
         .btn-malagueno.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
         .btn-barker.active { border-color: #ff8800 !important; box-shadow: 0 0 15px rgba(255,136,0,0.6); }
@@ -115,10 +107,10 @@
         @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
         
         .chart-container { position: relative; height: 260px; width: 100%; margin-top: 16px; }
-        .table-scroll { max-height: 400px; overflow-y: auto; border-radius: 12px; width: 100%; }
-        .table-scroll::-webkit-scrollbar { width: 5px; background: #1a1f2e; border-radius: 10px; }
+        .table-scroll { max-height: 400px; overflow-x: auto; overflow-y: auto; border-radius: 12px; width: 100%; }
+        .table-scroll::-webkit-scrollbar { width: 5px; height: 5px; background: #1a1f2e; border-radius: 10px; }
         .table-scroll::-webkit-scrollbar-thumb { background: #00ff88; border-radius: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; } /* ✅ FIX: Min-width para scroll horizontal */
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         table thead th { position: sticky; top: 0; background: #0f1520; z-index: 10; color: #00ff88; font-weight: 700; border-bottom: 1px solid rgba(0,255,136,0.3); }
         tr:hover { background-color: rgba(0,255,136,0.08); cursor: pointer; }
         select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; width: 100%; }
@@ -138,13 +130,14 @@
     </style>
 </head>
 <body>
-<div class="max-w-7xl mx-auto relative z-10 p-4">
+<!-- ✅ FIX: Contenedor ensanchado al 98% -->
+<div class="w-[98%] mx-auto relative z-10 p-4">
     <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
             <div>
-                <h1 class="text-2xl font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL DE FLOTA MINERA 2026 🚜⛏️</h1>
+                <h1 class="text-2xl font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL DE FLOTA MINERA 2026 🚜️</h1>
                 <p class="text-xs text-emerald-400 font-mono">👷 CONTROL DE HORÓMETROS Y KILÓMETROS · MONITOREO EN VIVO 👷</p>
             </div>
         </div>
@@ -168,9 +161,8 @@
     <!-- SUCURSALES -->
     <div class="glass-card p-5 mb-6">
         <div class="text-center mb-4">
-            <!-- ✅ FIX: Botones correctamente mapeados -->
             <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
-                <button id="btnTodas" class="sucursal-btn btn-todas active" onclick="cambiarSucursal('TODAS')">🏭 TODAS</button>
+                <button id="btnTodas" class="sucursal-btn btn-todas active" onclick="cambiarSucursal('TODAS')"> TODAS</button>
                 <button id="btnMalagueno" class="sucursal-btn btn-malagueno" onclick="cambiarSucursal('MALAGUENO')"> MALAGUEÑO</button>
                 <button id="btnBarker" class="sucursal-btn btn-barker" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
                 <button id="btnPampita" class="sucursal-btn btn-pampita" onclick="cambiarSucursal('LA_PAMPITA')"> LA PAMPITA</button>
@@ -207,7 +199,7 @@
             <aside>
                 <div class="glass-card p-4 h-full">
                     <h3 class="font-black mb-2 text-emerald-400">📋 FILTROS ️</h3>
-                    <label class="text-xs font-bold text-slate-300">📋 PROPIEDAD</label>
+                    <label class="text-xs font-bold text-slate-300"> PROPIEDAD</label>
                     <select id="filterPropiedad" class="select-neon w-full mb-3" onchange="aplicarFiltros()">
                         <option value="TODAS">Todas</option>
                         <option value="PROPIO">Propio</option>
@@ -226,7 +218,7 @@
                     </select>
                     <div class="mt-4 p-3 bg-emerald-950/20 rounded-xl border border-emerald-500/30">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-[9px] font-bold uppercase text-emerald-400">📢 ALERTAS ACTIVAS</span>
+                            <span class="text-[9px] font-bold uppercase text-emerald-400"> ALERTAS ACTIVAS</span>
                             <div id="alertasLedSmall" class="siren-alert"></div>
                         </div>
                         <div id="realTimeAlerts" class="text-[9px] max-h-48 overflow-y-auto">
@@ -263,7 +255,7 @@
                                     <th>PROPIEDAD</th>
                                     <th>ESTADO</th>
                                     <th>LECTURA ACTUAL</th>
-                                    <th>⏱️ CRONÓMETRO PARADA</th>
+                                    <th>️ CRONÓMETRO PARADA</th>
                                     <th>MOTIVO</th>
                                     <th>REPORTANTE</th>
                                     <th>ÚLTIMA ACT.</th>
@@ -295,9 +287,10 @@
 </div>
 
 <script>
-// ==================== CONSTANTES ====================
-let currentSucursal = 'TODAS'; // ✅ FIX: Default correcto
-let EQUIPMENT_DATA = [];
+// ✅ FIX: Limpieza total de caché y datos iniciales vacíos
+localStorage.clear();
+let currentSucursal = 'TODAS';
+let EQUIPMENT_DATA = []; // 🚫 CERO datos hardcodeados
 let filteredData = [];
 let horasChart = null, estadoChart = null;
 let cronometroInterval = null;
@@ -309,14 +302,13 @@ const SHEETS_URLS = {
     'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv'
 };
 
-// ==================== FUNCIONES PRINCIPALES ====================
 async function loadData() {
     try {
-        console.log('🔄 Cargando todas las sucursales...');
+        console.log('🔄 Cargando datos frescos...');
         document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>';
         
         let allData = [];
-        // ✅ FIX: Siempre cargamos las 3 hojas y filtramos en el cliente
+        // ✅ FIX: Siempre carga las 3 hojas y filtra en cliente
         for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
             const data = await fetchSheet(url, sucursal);
             allData = allData.concat(data);
@@ -324,7 +316,7 @@ async function loadData() {
         }
         
         EQUIPMENT_DATA = allData;
-        console.log(` Total equipos cargados: ${EQUIPMENT_DATA.length}`);
+        console.log(`📊 Total real cargado: ${EQUIPMENT_DATA.length}`);
         
         aplicarFiltros();
         startCronometros();
@@ -333,11 +325,12 @@ async function loadData() {
         
     } catch (error) {
         console.error('❌ Error:', error);
-        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-red-400">❌ Error al cargar datos<br><small>' + error.message + '</small></td></tr>';
+        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-red-400"> Error al cargar datos<br><small>' + error.message + '</small></td></tr>';
     }
 }
 
 async function fetchSheet(url, sucursal) {
+    // ✅ FIX: Timestamp único para evitar caché del navegador
     const response = await fetch(url + '&t=' + Date.now());
     const text = await response.text();
     return parseCSV(text, sucursal);
@@ -353,15 +346,15 @@ function parseCSV(text, sucursal) {
         const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
         const row = {};
         headers.forEach((header, index) => { row[header] = values[index] || ''; });
+        // ✅ FIX: Solo agrega si tiene ID válido
         if (row['ID_Equipo'] && row['ID_Equipo'].trim()) {
-            row.sucursal = sucursal; // ✅ FIX: Asignación correcta
+            row.sucursal = sucursal;
             data.push(row);
         }
     }
     return data;
 }
 
-// ✅ FIX: Filtro que SÍ respeta la sucursal seleccionada
 function aplicarFiltros() {
     const propiedad = document.getElementById('filterPropiedad').value;
     const tipo = document.getElementById('filterTipo').value;
@@ -528,7 +521,7 @@ function openEquipmentModal(equipo) {
             <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30"><div class="text-xs text-slate-400 mb-1">🚜 Nombre</div><div class="text-lg font-bold text-white">${equipo.Equipo}</div></div>
         </div>
         <div class="space-y-3">
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-emerald-300">${equipo.sucursal}</span></div>
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400"> Sucursal</span><span class="font-bold text-emerald-300">${equipo.sucursal}</span></div>
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">🚜 Tipo</span><span class="font-bold text-emerald-300">${equipo.Tipo_Equipo}</span></div>
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">💰 Propiedad</span><span class="font-bold ${equipo.Propiedad === 'PROPIO' ? 'text-emerald-300' : 'text-purple-300'}">${equipo.Propiedad}</span></div>
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="status-badge ${equipo.Estado === 'OPERATIVO' ? 'status-operativo' : (equipo.Estado === 'PARADO' ? 'status-parado' : 'status-service')}">${equipo.Estado}</span></div>
@@ -551,14 +544,11 @@ function closeEquipmentModal() {
     document.getElementById('equipmentModal').style.display = 'none';
 }
 
-// ✅ FIX: Lógica de sucursal corregida
 function cambiarSucursal(sucursal) {
     currentSucursal = sucursal;
     document.querySelectorAll('.sucursal-btn').forEach(btn => btn.classList.remove('active'));
-    
     const btnMap = { 'TODAS': 'btnTodas', 'MALAGUENO': 'btnMalagueno', 'BARKER': 'btnBarker', 'LA_PAMPITA': 'btnPampita' };
     if(btnMap[sucursal]) document.getElementById(btnMap[sucursal]).classList.add('active');
-    
     aplicarFiltros();
 }
 
