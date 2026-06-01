@@ -600,11 +600,23 @@ function checkAlertas() {
 
 function openEquipmentModal(equipo) {
     const modal = document.getElementById('equipmentModal');
-    const content = document.getElementById('modalContent');
-    modal.querySelector('.modal-bounce').classList.remove('modal-bounce');
-    void modal.querySelector('.modal-bounce').offsetHeight;
-    modal.querySelector('.modal-bounce').classList.add('modal-bounce');
+    if (!modal) {
+        console.error('❌ Modal no encontrado');
+        return;
+    }
     
+    const modalContent = modal.querySelector('.modal-bounce');
+    if (!modalContent) {
+        console.error('❌ Modal content no encontrado');
+        return;
+    }
+    
+    // Remover y agregar la clase para reiniciar la animación
+    modalContent.classList.remove('modal-bounce');
+    void modalContent.offsetHeight; // Forzar reflow
+    modalContent.classList.add('modal-bounce');
+    
+    const content = document.getElementById('modalContent');
     const tiempoParada = calcularTiempoParada(equipo);
     
     content.innerHTML = `
@@ -613,13 +625,13 @@ function openEquipmentModal(equipo) {
             <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30"><div class="text-xs text-slate-400 mb-1">🚜 Nombre</div><div class="text-lg font-bold text-white">${equipo.Equipo}</div></div>
         </div>
         <div class="space-y-3">
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400"> Sucursal</span><span class="font-bold text-emerald-300">${equipo.sucursal}</span></div>
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-emerald-300">${equipo.sucursal}</span></div>
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">🚜 Tipo</span><span class="font-bold text-emerald-300">${equipo.Tipo_Equipo}</span></div>
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">💰 Propiedad</span><span class="font-bold ${equipo.Propiedad === 'PROPIO' ? 'text-emerald-300' : 'text-purple-300'}">${equipo.Propiedad}</span></div>
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="status-badge ${equipo.Estado === 'OPERATIVO' ? 'status-operativo' : (equipo.Estado === 'PARADO' ? 'status-parado' : 'status-service')}">${equipo.Estado}</span></div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">️ Horómetro/Km</span><span class="font-bold text-emerald-300">${equipo['Horó./Kilómetro']}</span></div>
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">⏱️ Horómetro/Km</span><span class="font-bold text-emerald-300">${equipo['Horó./Kilómetro']}</span></div>
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📈 Lectura Actual</span><span class="font-bold text-amber-300">${equipo.Lectura}</span></div>
-            ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">️ Motivo de Parada</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
+            ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">⚠️ Motivo de Parada</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">⏰ Tiempo de Parada</span><span class="font-bold font-mono ${equipo.Estado === 'PARADO' ? 'text-amber-400' : 'text-slate-400'}">${tiempoParada}</span></div>
             ${equipo.Reportante ? `<div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">👷 Reportante</span><span class="font-bold text-emerald-300">${equipo.Reportante}</span></div>` : ''}
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📅 Última Actualización</span><span class="font-bold text-emerald-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span></div>
