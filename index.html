@@ -11,7 +11,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(ellipse at 20% 30%, #0f0f1a, #05050a);
+            background: radial-gradient(ellipse at top, #0a1628, #020617);
             color: #e2e8f0;
             font-size: 12px;
             min-height: 100vh;
@@ -23,112 +23,177 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
-            background-size: 35px 35px;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px);
+            background-size: 40px 40px;
             pointer-events: none;
             z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
         }
         .glass-card {
-            background: rgba(15, 20, 30, 0.75);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
             border-radius: 20px;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.2), inset 0 1px 0 rgba(103, 232, 249, 0.1);
             transition: all 0.3s ease;
             overflow: hidden;
             cursor: pointer;
+            position: relative;
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .glass-card:hover::before {
+            left: 100%;
         }
         .glass-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(0, 255, 136, 0.5);
-            box-shadow: 0 8px 30px rgba(0,255,136,0.3);
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(6, 182, 212, 0.8);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.4), inset 0 1px 0 rgba(103, 232, 249, 0.2);
         }
         .header-container {
-            background: rgba(8,12,20,0.9);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
             border-radius: 20px;
-            border: 1px solid rgba(192,132,252,0.4);
+            border: 1px solid rgba(6, 182, 212, 0.5);
             padding: 16px 24px;
             margin-bottom: 24px;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
         }
         .logo-shield {
             width: 56px; height: 56px;
-            background: linear-gradient(135deg, #0f1520, #0a0f18);
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             border-radius: 18px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 10px rgba(0,255,136,0.2);
-            border: 1px solid #00ff88;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+            border: 2px solid #06b6d4;
             transition: all 0.3s ease;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.8), 0 0 40px rgba(6, 182, 212, 0.4); }
         }
         .logo-shield:hover {
             transform: rotate(15deg) scale(1.1);
-            box-shadow: 0 0 20px rgba(0,255,136,0.5);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.8);
         }
         .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
-        .kpi-cyan { border-left: 4px solid #00ff88; background: linear-gradient(115deg, rgba(0,255,136,0.08), rgba(0,255,136,0.02)); }
-        .kpi-amber { border-left: 4px solid #ff8800; background: linear-gradient(115deg, rgba(255,136,0,0.08), rgba(255,136,0,0.02)); }
-        .kpi-purple { border-left: 4px solid #c084fc; background: linear-gradient(115deg, rgba(192,132,252,0.08), rgba(192,132,252,0.02)); }
+        .kpi-cyan { 
+            border-left: 4px solid #06b6d4; 
+            background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05));
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+        .kpi-amber { 
+            border-left: 4px solid #f59e0b; 
+            background: linear-gradient(115deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+        }
+        .kpi-purple { 
+            border-left: 4px solid #a855f7; 
+            background: linear-gradient(115deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05));
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
         
         .sucursal-btn {
-            padding: 8px 20px;
+            padding: 10px 24px;
             border-radius: 30px;
             font-weight: 700;
             font-size: 13px;
             transition: all 0.3s ease;
             cursor: pointer;
-            background: rgba(20, 25, 35, 0.7);
-            border: 2px solid rgba(100,100,150,0.4);
-            color: #b0c4de;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(6, 182, 212, 0.5);
+            color: #67e8f9;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
         }
         .sucursal-btn:hover {
-            transform: translateY(-2px);
-            background: rgba(30, 40, 55, 0.9);
-            border-color: rgba(150,150,200,0.6);
+            transform: translateY(-3px);
+            background: rgba(6, 182, 212, 0.2);
+            border-color: #06b6d4;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+            text-shadow: 0 0 10px #06b6d4;
         }
         .sucursal-btn.active {
-            animation: pulse-border 1.5s ease-out infinite;
+            animation: pulse-border 2s ease-out infinite;
             color: #fff !important;
+            background: rgba(6, 182, 212, 0.3);
+            border-color: #06b6d4;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
         }
-        .btn-todas.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
-        .btn-malagueno.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
-        .btn-barker.active { border-color: #ff8800 !important; box-shadow: 0 0 15px rgba(255,136,0,0.6); }
-        .btn-pampita.active { border-color: #c084fc !important; box-shadow: 0 0 15px rgba(192,132,252,0.6); }
-        
         @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(0,255,136,0); }
-            100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
+            0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
         }
         
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 9px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-        .status-badge:hover { transform: scale(1.1); }
-        .status-operativo { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
-        .status-parado { background: rgba(255,136,0,0.2); color: #ff8800; border: 1px solid #ff8800; }
-        .status-service { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
+        .status-badge { 
+            padding: 6px 16px; 
+            border-radius: 20px; 
+            font-size: 9px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            border: 1px solid;
+        }
+        .status-badge:hover { 
+            transform: scale(1.15); 
+            filter: brightness(1.3);
+        }
+        .status-operativo { 
+            background: rgba(6,182,212,0.2); 
+            color: #22d3ee; 
+            border-color: #06b6d4;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+        }
+        .status-parado { 
+            background: rgba(245,158,11,0.2); 
+            color: #fbbf24; 
+            border-color: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        }
+        .status-service { 
+            background: rgba(239,68,68,0.2); 
+            color: #f87171; 
+            border-color: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
         
         .btn-filter {
-            transition: all 0.2s;
+            transition: all 0.3s;
             cursor: pointer;
             font-size: 10px;
             font-weight: 700;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 10px;
             width: 100%;
             text-align: left;
-            border: 1px solid rgba(100,100,150,0.4);
-            background: rgba(20,25,35,0.7);
-            color: #b0c4de;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            background: rgba(15, 23, 42, 0.8);
+            color: #67e8f9;
         }
         .btn-filter:hover {
-            background: rgba(30, 40, 55, 0.9);
-            border-color: rgba(150,150,200,0.6);
+            background: rgba(6, 182, 212, 0.2);
+            border-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
         }
         .btn-filter.active {
-            background: linear-gradient(95deg, #00ff88, #00cc66);
-            border-color: #00ff88;
-            color: #05050a;
-            box-shadow: 0 0 10px rgba(0,255,136,0.3);
+            background: linear-gradient(95deg, #06b6d4, #0891b2);
+            border-color: #22d3ee;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
         }
         
         .cronometro-box {
@@ -143,11 +208,11 @@
             border: 2px solid #f59e0b;
             min-width: 70px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         .cronometro-box:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(245,158,11,0.5);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(245,158,11,0.6);
         }
         .cronometro-parado {
             animation: blink-red 1s infinite;
@@ -155,47 +220,126 @@
             color: #991b1b;
             border-color: #ef4444;
         }
-        @keyframes blink-red { 0%,100% { opacity:1; box-shadow:0 0 5px #ef4444; } 50% { opacity:0.4; box-shadow:0 0 15px #ef4444; } }
+        @keyframes blink-red { 
+            0%,100% { opacity:1; box-shadow:0 0 10px #ef4444; } 
+            50% { opacity:0.5; box-shadow:0 0 20px #ef4444; } 
+        }
         
         .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
-        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes bounceIn { 
+            0% { opacity: 0; transform: scale(0.3); } 
+            50% { opacity: 1; transform: scale(1.05); } 
+            70% { transform: scale(0.95); } 
+            100% { opacity: 1; transform: scale(1); } 
+        }
         
-        .chart-container { position: relative; height: 260px; width: 100%; margin-top: 16px; cursor: pointer; }
-        .table-scroll { max-height: 400px; overflow-x: auto; overflow-y: auto; border-radius: 12px; width: 100%; }
-        .table-scroll::-webkit-scrollbar { width: 5px; height: 5px; background: #1a1f2e; border-radius: 10px; }
-        .table-scroll::-webkit-scrollbar-thumb { background: #00ff88; border-radius: 10px; }
+        .chart-container { 
+            position: relative; 
+            height: 280px; 
+            width: 100%; 
+            margin-top: 16px; 
+            cursor: pointer;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.5);
+        }
+        .table-scroll { 
+            max-height: 400px; 
+            overflow-x: auto; 
+            overflow-y: auto; 
+            border-radius: 12px; 
+            width: 100%;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+        .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; background: #0f172a; border-radius: 10px; }
+        .table-scroll::-webkit-scrollbar-thumb { 
+            background: linear-gradient(180deg, #06b6d4, #0891b2); 
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        table thead th { position: sticky; top: 0; background: #0f1520; z-index: 10; color: #00ff88; font-weight: 700; border-bottom: 1px solid rgba(0,255,136,0.3); cursor: pointer; }
-        table thead th:hover { background: #1a2530; }
-        tr { cursor: pointer; transition: all 0.2s; }
-        tr:hover { background-color: rgba(0,255,136,0.15); transform: scale(1.01); }
-        select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; width: 100%; cursor: pointer; transition: all 0.2s; }
-        select:hover, .select-neon:hover { border-color: #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.3); }
-        .siren-alert { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; cursor: pointer; }
+        table thead th { 
+            position: sticky; 
+            top: 0; 
+            background: rgba(15, 23, 42, 0.95); 
+            z-index: 10; 
+            color: #22d3ee; 
+            font-weight: 700; 
+            border-bottom: 2px solid rgba(6, 182, 212, 0.5);
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+        table thead th:hover { 
+            background: rgba(6, 182, 212, 0.2);
+        }
+        tr { 
+            cursor: pointer; 
+            transition: all 0.3s;
+            border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        tr:hover { 
+            background-color: rgba(6, 182, 212, 0.15); 
+            transform: scale(1.01);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+        select, .select-neon { 
+            background: rgba(15, 23, 42, 0.9); 
+            border: 1px solid #06b6d4; 
+            border-radius: 10px; 
+            padding: 8px 12px; 
+            color: #67e8f9; 
+            font-weight: 500; 
+            width: 100%; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+        select:hover, .select-neon:hover { 
+            border-color: #22d3ee; 
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+            color: #fff;
+        }
+        .siren-alert { 
+            width: 14px; 
+            height: 14px; 
+            background: #ef4444; 
+            border-radius: 50%; 
+            animation: blink-red 1s infinite; 
+            box-shadow: 0 0 15px #ef4444, 0 0 30px #ef4444; 
+            display: inline-block; 
+            cursor: pointer;
+        }
         .toast-notification {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #0f1520;
-            border: 1px solid #00ff88;
-            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #06b6d4;
+            backdrop-filter: blur(16px);
             color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border-left: 4px solid #00ff88;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border-left: 5px solid #06b6d4;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.6), 0 0 60px rgba(6, 182, 212, 0.3);
             z-index: 1000;
-            animation: slideInRight 0.3s ease-out;
-            max-width: 350px;
-            font-size: 11px;
+            animation: slideInRight 0.4s ease-out, glow 2s ease-in-out infinite;
+            max-width: 400px;
+            font-size: 12px;
             cursor: pointer;
         }
-        .toast-notification:hover { transform: scale(1.05); }
-        @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.6); }
+            50% { box-shadow: 0 0 50px rgba(6, 182, 212, 0.9), 0 0 80px rgba(6, 182, 212, 0.5); }
+        }
+        @keyframes slideInRight { 
+            from { transform: translateX(150px); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        }
         
         @media (max-width: 768px) { 
             .header-container { flex-direction: column; gap: 16px; text-align: center; } 
-            .chart-container { height: 220px; } 
+            .chart-container { height: 240px; } 
         }
     </style>
 </head>
@@ -204,134 +348,158 @@
     <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
-            <div class="logo-shield" onclick="window.location.reload()" title="Click para recargar"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
+            <div class="logo-shield" onclick="window.location.reload()" title="Click para recargar">
+                <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img">
+            </div>
             <div>
-                <h1 class="text-2xl font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL DE FLOTA MINERA 2026 🚜⛏️</h1>
-                <p class="text-xs text-emerald-400 font-mono">👷 CONTROL DE HORÓMETROS Y KILÓMETROS · MONITOREO EN VIVO 👷</p>
+                <h1 class="text-2xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent" style="text-shadow: 0 0 30px rgba(6,182,212,0.5);">
+                    PANEL DE FLOTA MINERA 2026 🚜⛏️
+                </h1>
+                <p class="text-xs text-cyan-300 font-mono">👷 CONTROL DE HORÓMETROS Y KILÓMETROS · MONITOREO EN VIVO 👷</p>
             </div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
-            <div class="glass-card px-4 py-2 text-center border-l-4 border-emerald-500" onclick="filtrarPorEstado('TODOS')" title="Click para ver todos">
-                <div class="text-[9px] font-bold uppercase text-emerald-400">EQUIPOS TOTALES</div>
-                <div id="totalEquipos" class="text-3xl font-black text-emerald-300">0</div>
+            <div class="glass-card px-4 py-3 text-center border-l-4 border-cyan-500" onclick="filtrarPorEstado('TODOS')" title="Click para ver todos">
+                <div class="text-[9px] font-bold uppercase text-cyan-400 tracking-wider">EQUIPOS TOTALES</div>
+                <div id="totalEquipos" class="text-3xl font-black text-cyan-300" style="text-shadow: 0 0 15px rgba(6,182,212,0.8);">0</div>
             </div>
-            <div class="glass-card px-4 py-2 text-center border-l-4 border-amber-500" onclick="filtrarPorEstado('PARADO')" title="Click para ver parados">
-                <div class="text-[9px] font-bold uppercase text-amber-400">⏸️ PARADOS</div>
-                <div id="totalParados" class="text-3xl font-black text-amber-300">0</div>
+            <div class="glass-card px-4 py-3 text-center border-l-4 border-amber-500" onclick="filtrarPorEstado('PARADO')" title="Click para ver parados">
+                <div class="text-[9px] font-bold uppercase text-amber-400 tracking-wider">⏸️ PARADOS</div>
+                <div id="totalParados" class="text-3xl font-black text-amber-300" style="text-shadow: 0 0 15px rgba(245,158,11,0.8);">0</div>
             </div>
-            <div class="glass-card px-4 py-2 text-center border-l-4 border-purple-500" onclick="filtrarPorEstado('SERVICE')" title="Click para ver en service">
-                <div class="text-[9px] font-bold uppercase text-purple-400">🔧 EN SERVICE</div>
-                <div id="totalService" class="text-3xl font-black text-purple-300">0</div>
+            <div class="glass-card px-4 py-3 text-center border-l-4 border-purple-500" onclick="filtrarPorEstado('SERVICE')" title="Click para ver en service">
+                <div class="text-[9px] font-bold uppercase text-purple-400 tracking-wider">🔧 EN SERVICE</div>
+                <div id="totalService" class="text-3xl font-black text-purple-300" style="text-shadow: 0 0 15px rgba(168,85,247,0.8);">0</div>
             </div>
-            <button onclick="forceRefreshData()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all flex items-center gap-2 hover:scale-105"> ACTUALIZAR 🔄</button>
+            <button onclick="forceRefreshData()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-lg transition-all flex items-center gap-2 hover:scale-110" style="box-shadow: 0 0 20px rgba(6,182,212,0.5);">
+                ACTUALIZAR 🔄
+            </button>
         </div>
     </div>
 
     <!-- SUCURSALES -->
-    <div class="glass-card p-5 mb-6">
-        <div class="text-center mb-4">
-            <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
-                <button id="btnTodas" class="sucursal-btn btn-todas active" onclick="cambiarSucursal('TODAS')"> TODAS</button>
-                <button id="btnMalagueno" class="sucursal-btn btn-malagueno" onclick="cambiarSucursal('MALAGUENO')"> MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn btn-barker" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
-                <button id="btnPampita" class="sucursal-btn btn-pampita" onclick="cambiarSucursal('LA_PAMPITA')"> LA PAMPITA</button>
+    <div class="glass-card p-6 mb-6">
+        <div class="text-center mb-6">
+            <h2 class="text-lg font-bold text-cyan-300 mb-4" style="text-shadow: 0 0 15px rgba(6,182,212,0.6);">📍 SELECCIONAR SUCURSAL</h2>
+            <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')">🏭 TODAS</button>
+                <button id="btnMalagueno" class="sucursal-btn" onclick="cambiarSucursal('MALAGUENO')">📍 MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
+                <button id="btnPampita" class="sucursal-btn" onclick="cambiarSucursal('LA_PAMPITA')">🌸 LA PAMPITA</button>
             </div>
         </div>
         
-        <div class="grid md:grid-cols-4 gap-4 my-4">
-            <div class="glass-card p-4 kpi-cyan" onclick="mostrarDetalleKPI('disponibilidad')" title="Click para ver detalle">
-                <div class="flex justify-between"><span class="font-bold text-emerald-400">✅ DISPONIBILIDAD</span></div>
-                <div id="kpiDisponibilidad" class="text-4xl font-black text-emerald-300 my-1">0%</div>
-                <div class="flex justify-between text-[11px]"><span>Equipos operativos</span></div>
+        <div class="grid md:grid-cols-4 gap-5 my-6">
+            <div class="glass-card p-5 kpi-cyan" onclick="mostrarDetalleKPI('disponibilidad')" title="Click para ver detalle completo">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-cyan-400 text-sm">✅ DISPONIBILIDAD</span>
+                    <span class="text-xs text-cyan-300">Click para detalles</span>
+                </div>
+                <div id="kpiDisponibilidad" class="text-5xl font-black text-cyan-300 my-2" style="text-shadow: 0 0 20px rgba(6,182,212,0.8);">0%</div>
+                <div class="flex justify-between text-[11px] text-cyan-200">
+                    <span>Equipos operativos</span>
+                    <span id="kpiTotal">0</span>
+                </div>
             </div>
-            <div class="glass-card p-4 kpi-cyan" onclick="mostrarDetalleKPI('operativos')" title="Click para ver detalle">
-                <div class="flex justify-between"><span class="font-bold text-emerald-400">🟢 OPERATIVOS</span></div>
-                <div id="kpiOperativos" class="text-4xl font-black text-emerald-300 my-1">0</div>
-                <div class="text-[11px]">De <span id="kpiTotal">0</span> equipos totales</div>
+            <div class="glass-card p-5 kpi-cyan" onclick="mostrarDetalleKPI('operativos')" title="Click para ver detalle completo">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-cyan-400 text-sm">🟢 OPERATIVOS</span>
+                    <span class="text-xs text-cyan-300">Click para detalles</span>
+                </div>
+                <div id="kpiOperativos" class="text-5xl font-black text-cyan-300 my-2" style="text-shadow: 0 0 20px rgba(6,182,212,0.8);">0</div>
+                <div class="text-[11px] text-cyan-200">De <span id="kpiTotalOperativos">0</span> equipos totales</div>
             </div>
-            <div class="glass-card p-4 kpi-amber" onclick="mostrarDetalleKPI('tiempoMuerto')" title="Click para ver detalle">
-                <div class="flex justify-between"><span class="font-bold text-amber-400">⏱️ TIEMPO MUERTO</span></div>
-                <div id="kpiTiempoMuerto" class="text-4xl font-black text-amber-300 my-1">0h</div>
-                <div class="text-[11px]">Este mes</div>
+            <div class="glass-card p-5 kpi-amber" onclick="mostrarDetalleKPI('tiempoMuerto')" title="Click para ver detalle completo">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-amber-400 text-sm">⏱️ TIEMPO MUERTO</span>
+                    <span class="text-xs text-amber-300">Click para detalles</span>
+                </div>
+                <div id="kpiTiempoMuerto" class="text-5xl font-black text-amber-300 my-2" style="text-shadow: 0 0 20px rgba(245,158,11,0.8);">0h</div>
+                <div class="text-[11px] text-amber-200">Este mes</div>
             </div>
-            <div class="glass-card p-4 kpi-purple" onclick="mostrarDetalleKPI('alertas')" title="Click para ver detalle">
-                <div class="flex justify-between items-center">
-                    <span class="font-bold text-purple-400">⚠️ ALERTAS</span>
+            <div class="glass-card p-5 kpi-purple" onclick="mostrarAlertasDetalle()" title="Click para ver alertas detalladas">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-purple-400 text-sm">⚠️ ALERTAS</span>
                     <div id="alertasLed" class="siren-alert"></div>
                 </div>
-                <div id="kpiAlertas" class="text-4xl font-black text-purple-300 my-1">0</div>
-                <div class="text-[11px]">Paradas > 4h / Services vencidos</div>
+                <div id="kpiAlertas" class="text-5xl font-black text-purple-300 my-2" style="text-shadow: 0 0 20px rgba(168,85,247,0.8);">0</div>
+                <div class="text-[11px] text-purple-200">Paradas > 4h / Services vencidos</div>
             </div>
         </div>
 
-        <div class="grid lg:grid-cols-[280px_1fr] gap-5">
+        <div class="grid lg:grid-cols-[300px_1fr] gap-6">
             <aside>
-                <div class="glass-card p-4 h-full">
-                    <h3 class="font-black mb-2 text-emerald-400">📋 FILTROS ️</h3>
-                    <label class="text-xs font-bold text-slate-300"> PROPIEDAD</label>
-                    <select id="filterPropiedad" class="select-neon w-full mb-3" onchange="aplicarFiltros()">
-                        <option value="TODAS">Todas</option>
-                        <option value="PROPIO">Propio</option>
-                        <option value="ALQUILADO">Alquilado</option>
+                <div class="glass-card p-5 h-full">
+                    <h3 class="font-black mb-4 text-cyan-400 text-sm" style="text-shadow: 0 0 10px rgba(6,182,212,0.6);">📋 FILTROS AVANZADOS ⚙️</h3>
+                    
+                    <label class="text-xs font-bold text-cyan-300 mb-2 block">🏢 PROPIEDAD</label>
+                    <select id="filterPropiedad" class="select-neon w-full mb-4" onchange="aplicarFiltros()">
+                        <option value="TODAS">Todas las propiedades</option>
+                        <option value="PROPIO">🟢 Propio</option>
+                        <option value="ALQUILADO">🔵 Alquilado</option>
                     </select>
-                    <label class="text-xs font-bold text-slate-300">🚜 TIPO DE EQUIPO</label>
-                    <select id="filterTipo" class="select-neon w-full mb-3" onchange="aplicarFiltros()">
-                        <option value="TODOS">Todos</option>
-                        <option value="Camión">Camión</option>
-                        <option value="Cargadora">Cargadora</option>
-                        <option value="Topador">Topador</option>
-                        <option value="Excavadora">Excavadora</option>
-                        <option value="Motoniveladora">Motoniveladora</option>
-                        <option value="Perforadora">Perforadora</option>
-                        <option value="Otros">Otros</option>
+                    
+                    <label class="text-xs font-bold text-cyan-300 mb-2 block">🚜 TIPO DE EQUIPO</label>
+                    <select id="filterTipo" class="select-neon w-full mb-5" onchange="aplicarFiltros()">
+                        <option value="TODOS">Todos los tipos</option>
+                        <option value="Camión">🚛 Camión</option>
+                        <option value="Cargadora">🏗️ Cargadora</option>
+                        <option value="Topador">⛏️ Topador</option>
+                        <option value="Excavadora">🔨 Excavadora</option>
+                        <option value="Motoniveladora">🛣️ Motoniveladora</option>
+                        <option value="Perforadora">⚡ Perforadora</option>
+                        <option value="Otros">📦 Otros</option>
                     </select>
-                    <div class="mt-4 p-3 bg-emerald-950/20 rounded-xl border border-emerald-500/30">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[9px] font-bold uppercase text-emerald-400"> ALERTAS ACTIVAS</span>
+                    
+                    <div class="mt-6 p-4 bg-cyan-950/30 rounded-xl border border-cyan-500/40" style="box-shadow: 0 0 20px rgba(6,182,212,0.2);">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-bold uppercase text-cyan-400 tracking-wider">🚨 ALERTAS ACTIVAS</span>
                             <div id="alertasLedSmall" class="siren-alert"></div>
                         </div>
-                        <div id="realTimeAlerts" class="text-[9px] max-h-48 overflow-y-auto">
-                            <p class="text-slate-400 text-center py-2"> Sin alertas</p>
+                        <div id="realTimeAlerts" class="text-[10px] max-h-56 overflow-y-auto space-y-2">
+                            <p class="text-cyan-200 text-center py-3">📭 Sin alertas activas</p>
                         </div>
                     </div>
                 </div>
             </aside>
             
             <main>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div class="glass-card p-4">
-                        <h3 class="font-black uppercase text-emerald-400 text-sm mb-2">📊 HORAS TRABAJADAS VS TIEMPO MUERTO POR SUCURSAL</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="glass-card p-5">
+                        <h3 class="font-black uppercase text-cyan-400 text-sm mb-3" style="text-shadow: 0 0 10px rgba(6,182,212,0.6);">📊 HORAS TRABAJADAS VS TIEMPO MUERTO POR SUCURSAL</h3>
                         <div class="chart-container"><canvas id="horasChart"></canvas></div>
                     </div>
-                    <div class="glass-card p-4">
-                        <h3 class="font-black uppercase text-purple-400 text-sm mb-2"> ESTADO DE EQUIPOS</h3>
+                    <div class="glass-card p-5">
+                        <h3 class="font-black uppercase text-purple-400 text-sm mb-3" style="text-shadow: 0 0 10px rgba(168,85,247,0.6);">🍩 ESTADO DE EQUIPOS</h3>
                         <div class="chart-container"><canvas id="estadoChart"></canvas></div>
                     </div>
                 </div>
                 
-                <div class="glass-card p-5">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-black uppercase text-emerald-400">📋 FLOTA EN TIEMPO REAL</h3>
-                        <button onclick="forceRefreshData()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg transition-all hover:scale-105">🔄 Actualizar</button>
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="font-black uppercase text-cyan-400 text-sm" style="text-shadow: 0 0 10px rgba(6,182,212,0.6);">📋 FLOTA EN TIEMPO REAL</h3>
+                        <button onclick="forceRefreshData()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg transition-all hover:scale-110" style="box-shadow: 0 0 15px rgba(6,182,212,0.5);">
+                            🔄 Actualizar
+                        </button>
                     </div>
                     <div class="table-scroll">
                         <table class="w-full text-left text-xs">
                             <thead>
                                 <tr>
-                                    <th class="p-2">ID</th>
+                                    <th class="p-3">ID</th>
                                     <th>EQUIPO</th>
                                     <th>SUCURSAL</th>
                                     <th>PROPIEDAD</th>
                                     <th>ESTADO</th>
                                     <th>LECTURA ACTUAL</th>
-                                    <th>️ CRONÓMETRO PARADA</th>
+                                    <th>⏱️ CRONÓMETRO</th>
                                     <th>MOTIVO</th>
                                     <th>REPORTANTE</th>
                                     <th>ÚLTIMA ACT.</th>
                                 </tr>
                             </thead>
                             <tbody id="equipmentTableBody">
-                                <tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>
+                                <tr><td colspan="10" class="p-6 text-center text-cyan-300">🔄 Sincronizando con Google Sheets...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -342,15 +510,33 @@
 </div>
 
 <!-- MODAL DETALLE EQUIPO -->
-<div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
-    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 w-full max-w-2xl modal-bounce max-h-[85vh] overflow-y-auto m-4">
-        <div class="flex justify-between items-center mb-4">
-            <h2 id="modalTitle" class="font-black text-2xl text-emerald-400">📋 Detalle del Equipo</h2>
-            <button onclick="closeEquipmentModal()" class="text-2xl text-slate-400 hover:text-white hover:rotate-90 transition-all">&times;</button>
+<div id="equipmentModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
+    <div class="bg-slate-900/95 rounded-2xl p-8 shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[90vh] overflow-y-auto m-4" style="box-shadow: 0 0 60px rgba(6,182,212,0.5);">
+        <div class="flex justify-between items-center mb-6">
+            <h2 id="modalTitle" class="font-black text-3xl text-cyan-400" style="text-shadow: 0 0 20px rgba(6,182,212,0.8);">📋 Detalle del Equipo</h2>
+            <button onclick="closeEquipmentModal()" class="text-3xl text-cyan-300 hover:text-white hover:rotate-90 transition-all" style="text-shadow: 0 0 10px rgba(6,182,212,0.6);">&times;</button>
         </div>
-        <div id="modalContent" class="text-slate-300 space-y-3"></div>
-        <div class="flex justify-end gap-3 mt-6">
-            <button onclick="closeEquipmentModal()" class="bg-emerald-700 hover:bg-emerald-600 px-5 py-2 rounded-xl text-sm font-bold transition-all hover:scale-105">Cerrar</button>
+        <div id="modalContent" class="text-slate-300 space-y-4"></div>
+        <div class="flex justify-end gap-4 mt-8">
+            <button onclick="closeEquipmentModal()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-6 py-3 rounded-xl text-sm font-bold transition-all hover:scale-110" style="box-shadow: 0 0 20px rgba(6,182,212,0.5);">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ALERTAS DETALLE -->
+<div id="alertasModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
+    <div class="bg-slate-900/95 rounded-2xl p-8 shadow-2xl border-2 border-purple-500/50 w-full max-w-3xl modal-bounce max-h-[90vh] overflow-y-auto m-4" style="box-shadow: 0 0 60px rgba(168,85,247,0.5);">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-black text-3xl text-purple-400" style="text-shadow: 0 0 20px rgba(168,85,247,0.8);">⚠️ ALERTAS DETALLADAS</h2>
+            <button onclick="closeAlertasModal()" class="text-3xl text-purple-300 hover:text-white hover:rotate-90 transition-all" style="text-shadow: 0 0 10px rgba(168,85,247,0.6);">&times;</button>
+        </div>
+        <div id="alertasModalContent" class="text-slate-300 space-y-4"></div>
+        <div class="flex justify-end gap-4 mt-8">
+            <button onclick="closeAlertasModal()" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-6 py-3 rounded-xl text-sm font-bold transition-all hover:scale-110" style="box-shadow: 0 0 20px rgba(168,85,247,0.5);">
+                Cerrar
+            </button>
         </div>
     </div>
 </div>
@@ -364,7 +550,7 @@ let horasChart = null, estadoChart = null;
 let cronometroInterval = null;
 let alertasNovedades = 0;
 
-// ✅ URLs - REEMPLAZAR CON LAS TUYAS PUBLICADAS
+// ✅ URLs CORRECTAS
 const SHEETS_URLS = {
     'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
     'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=788057714&single=true&output=csv',
@@ -376,7 +562,7 @@ const SHEETS_URLS = {
 async function loadData() {
     try {
         console.log('🔄 Cargando todas las sucursales...');
-        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>';
+        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-6 text-center text-cyan-300">🔄 Sincronizando con Google Sheets...</td></tr>';
         
         let allData = [];
         for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
@@ -391,11 +577,11 @@ async function loadData() {
         aplicarFiltros();
         startCronometros();
         checkAlertas();
-        showToast('success', 'Datos actualizados', `${allData.length} equipos cargados`);
+        showToast('success', 'Datos actualizados', `${allData.length} equipos cargados correctamente`);
         
     } catch (error) {
         console.error('❌ Error:', error);
-        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-red-400"> Error al cargar datos<br><small>' + error.message + '</small><br><button onclick="loadData()" class="mt-2 px-3 py-1 bg-emerald-600 rounded text-white text-xs hover:bg-emerald-500">🔄 Reintentar</button></td></tr>';
+        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-6 text-center text-red-400">❌ Error al cargar datos<br><small>' + error.message + '</small><br><button onclick="loadData()" class="mt-3 px-4 py-2 bg-cyan-600 rounded-lg text-white text-xs hover:bg-cyan-500 transition-all" style="box-shadow: 0 0 15px rgba(6,182,212,0.5);">🔄 Reintentar</button></td></tr>';
     }
 }
 
@@ -468,6 +654,7 @@ function updateKPIs() {
     
     document.getElementById('totalEquipos').innerText = total;
     document.getElementById('kpiTotal').innerText = total;
+    document.getElementById('kpiTotalOperativos').innerText = total;
     document.getElementById('kpiOperativos').innerText = operativos;
     document.getElementById('totalParados').innerText = parados;
     document.getElementById('totalService').innerText = service;
@@ -500,9 +687,10 @@ function updateCharts() {
             datasets: [{
                 label: 'Horas Trabajadas',
                 data: horasData,
-                backgroundColor: ['#00ff88', '#ff8800', '#c084fc'],
-                borderRadius: 8,
-                hoverBackgroundColor: ['#00ff88', '#ffaa00', '#d0a4fc'],
+                backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7'],
+                borderRadius: 10,
+                hoverBackgroundColor: ['#22d3ee', '#fbbf24', '#c084fc'],
+                borderWidth: 0,
             }]
         },
         options: {
@@ -513,9 +701,26 @@ function updateCharts() {
                     enabled: true,
                     mode: 'index',
                     intersect: false,
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#22d3ee',
+                    bodyColor: '#67e8f9',
+                    borderColor: '#06b6d4',
+                    borderWidth: 2,
+                    padding: 12,
+                    displayColors: true,
                 }
             },
-            scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } },
+            scales: { 
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(6,182,212,0.2)' }, 
+                    ticks: { color: '#67e8f9' } 
+                }, 
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#67e8f9' } 
+                } 
+            },
             onClick: (e) => {
                 const points = horasChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
                 if (points.length) {
@@ -539,16 +744,34 @@ function updateCharts() {
             labels: ['Operativo', 'Parado', 'En Service'],
             datasets: [{
                 data: [operativos, parados, service],
-                backgroundColor: ['#00ff88', '#ff8800', '#f87171'],
+                backgroundColor: ['#06b6d4', '#f59e0b', '#ef4444'],
                 borderWidth: 0,
-                hoverOffset: 15
+                hoverOffset: 20,
+                hoverBackgroundColor: ['#22d3ee', '#fbbf24', '#f87171'],
             }]
         },
         options: {
-            responsive: true, maintainAspectRatio: false, cutout: '70%',
+            responsive: true, maintainAspectRatio: false, 
+            cutout: '65%',
             plugins: { 
-                legend: { position: 'right', labels: { color: '#cbd5e1', usePointStyle: true } },
-                tooltip: { enabled: true }
+                legend: { 
+                    position: 'right', 
+                    labels: { 
+                        color: '#67e8f9', 
+                        usePointStyle: true,
+                        padding: 15,
+                        font: { size: 11, weight: 'bold' }
+                    } 
+                },
+                tooltip: { 
+                    enabled: true,
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#22d3ee',
+                    bodyColor: '#67e8f9',
+                    borderColor: '#06b6d4',
+                    borderWidth: 2,
+                    padding: 12,
+                }
             },
             onClick: (e) => {
                 const points = estadoChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
@@ -569,30 +792,30 @@ function renderTable() {
     tbody.innerHTML = '';
     
     if (filteredData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400"> No hay datos disponibles para esta selección</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="p-6 text-center text-cyan-300">📭 No hay datos disponibles para esta selección</td></tr>';
         return;
     }
     
     filteredData.slice(0, 100).forEach(e => {
         const tr = document.createElement('tr');
-        tr.className = 'border-b border-slate-700/50 hover:bg-emerald-950/20';
+        tr.className = 'border-b border-cyan-500/20 hover:bg-cyan-950/30';
         tr.onclick = () => openEquipmentModal(e);
         
         const tiempoParada = calcularTiempoParada(e);
         const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : (e.Estado === 'PARADO' ? 'status-parado' : 'status-service');
-        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : (e.Estado === 'PARADO' ? '⏸️ Parado' : ' En Service');
+        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : (e.Estado === 'PARADO' ? '⏸️ Parado' : '🔧 En Service');
         
         tr.innerHTML = `
-            <td class="p-2 font-bold text-emerald-300">${e.ID_Equipo}</td>
-            <td class="p-2 font-semibold">${e.Equipo}</td>
-            <td class="p-2">${e.sucursal}</td>
-            <td class="p-2">${e.Propiedad}</td>
-            <td class="p-2"><span class="status-badge ${badgeClass}">${badgeText}</span></td>
-            <td class="p-2">${e['Horó./Kilómetro']} (${e.Lectura})</td>
-            <td class="p-2"><span class="cronometro-box ${e.Estado === 'PARADO' ? 'cronometro-parado' : ''}">${tiempoParada}</span></td>
-            <td class="p-2 max-w-xs truncate" title="${e.Motivo_Parada || '-'}">${e.Motivo_Parada || '-'}</td>
-            <td class="p-2">${e.Reportante || '-'}</td>
-            <td class="p-2">${e.Fecha_Carga || '-'} ${e.Hora_Carga || ''}</td>
+            <td class="p-3 font-bold text-cyan-300">${e.ID_Equipo}</td>
+            <td class="p-3 font-semibold text-cyan-100">${e.Equipo}</td>
+            <td class="p-3 text-cyan-200">${e.sucursal}</td>
+            <td class="p-3 text-cyan-200">${e.Propiedad}</td>
+            <td class="p-3"><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+            <td class="p-3 text-cyan-100">${e['Horó./Kilómetro']} <span class="text-cyan-400">(${e.Lectura})</span></td>
+            <td class="p-3"><span class="cronometro-box ${e.Estado === 'PARADO' ? 'cronometro-parado' : ''}">${tiempoParada}</span></td>
+            <td class="p-3 max-w-xs truncate text-cyan-200" title="${e.Motivo_Parada || '-'}">${e.Motivo_Parada || '-'}</td>
+            <td class="p-3 text-cyan-200">${e.Reportante || '-'}</td>
+            <td class="p-3 text-cyan-200">${e.Fecha_Carga || '-'} <span class="text-cyan-400">${e.Hora_Carga || ''}</span></td>
         `;
         tbody.appendChild(tr);
     });
@@ -632,19 +855,24 @@ function checkAlertas() {
         alertasDiv.innerHTML = '';
         alertas.slice(-5).forEach(a => {
             const div = document.createElement('div');
-            div.className = 'mb-2 p-2 bg-red-950/30 rounded-lg border-l-4 border-red-500 cursor-pointer hover:bg-red-900/40';
+            div.className = 'p-3 bg-red-950/40 rounded-lg border-l-4 border-red-500 cursor-pointer hover:bg-red-900/50 transition-all';
+            div.style.boxShadow = '0 0 15px rgba(239,68,68,0.3)';
             div.onclick = () => openEquipmentModal(a);
             const horas = ((new Date()) - new Date(a.Timestamp_Parada)) / 3600000;
-            div.innerHTML = `<div class="font-bold text-red-300 text-xs">⚠️ ${a.ID_Equipo} - ${a.Equipo}</div><div class="text-slate-400 text-[10px]">⏱️ ${horas.toFixed(1)}h parado</div><div class="text-slate-500 text-[9px] truncate">${a.Motivo_Parada || 'Sin motivo'}</div>`;
+            div.innerHTML = `
+                <div class="font-bold text-red-300 text-xs mb-1">⚠️ ${a.ID_Equipo} - ${a.Equipo}</div>
+                <div class="text-cyan-200 text-[10px] mb-1"> ${a.sucursal} | ⏱️ ${horas.toFixed(1)}h parado</div>
+                <div class="text-cyan-300 text-[9px] truncate">${a.Motivo_Parada || 'Sin motivo registrado'}</div>
+            `;
             alertasDiv.appendChild(div);
         });
         if (alertas.length > alertasNovedades) {
             alertasNovedades = alertas.length;
-            showToast('alert', '⚠️ Alertas de Parada', `${alertas.length} equipos con más de 4h parados`);
+            showToast('alert', `⚠️ ${alertas.length} Alertas de Parada`, `Equipos con más de 4h parados`);
         }
     } else {
         document.getElementById('kpiAlertas').innerText = '0';
-        alertasDiv.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin alertas</p>';
+        alertasDiv.innerHTML = '<p class="text-cyan-200 text-center py-4">📭 Sin alertas activas</p>';
     }
 }
 
@@ -663,22 +891,67 @@ function openEquipmentModal(equipo) {
     const tiempoParada = calcularTiempoParada(equipo);
     
     content.innerHTML = `
-        <div class="grid md:grid-cols-2 gap-4 mb-4">
-            <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30"><div class="text-xs text-slate-400 mb-1">🔢 ID Equipo</div><div class="text-xl font-bold text-emerald-300">${equipo.ID_Equipo}</div></div>
-            <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30"><div class="text-xs text-slate-400 mb-1">🚜 Nombre</div><div class="text-lg font-bold text-white">${equipo.Equipo}</div></div>
+        <div class="grid md:grid-cols-2 gap-5 mb-6">
+            <div class="bg-slate-800/60 p-5 rounded-xl border border-cyan-500/40" style="box-shadow: 0 0 20px rgba(6,182,212,0.3);">
+                <div class="text-xs text-cyan-300 mb-2 font-bold">🔢 ID EQUIPO</div>
+                <div class="text-2xl font-black text-cyan-300">${equipo.ID_Equipo}</div>
+            </div>
+            <div class="bg-slate-800/60 p-5 rounded-xl border border-cyan-500/40" style="box-shadow: 0 0 20px rgba(6,182,212,0.3);">
+                <div class="text-xs text-cyan-300 mb-2 font-bold">🚜 NOMBRE</div>
+                <div class="text-2xl font-black text-cyan-100">${equipo.Equipo}</div>
+            </div>
         </div>
         <div class="space-y-3">
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400"> Sucursal</span><span class="font-bold text-emerald-300">${equipo.sucursal}</span></div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">🚜 Tipo</span><span class="font-bold text-emerald-300">${equipo.Tipo_Equipo}</span></div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">💰 Propiedad</span><span class="font-bold ${equipo.Propiedad === 'PROPIO' ? 'text-emerald-300' : 'text-purple-300'}">${equipo.Propiedad}</span></div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="status-badge ${equipo.Estado === 'OPERATIVO' ? 'status-operativo' : (equipo.Estado === 'PARADO' ? 'status-parado' : 'status-service')}">${equipo.Estado}</span></div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">️ Horómetro/Km</span><span class="font-bold text-emerald-300">${equipo['Horó./Kilómetro']}</span></div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📈 Lectura Actual</span><span class="font-bold text-amber-300">${equipo.Lectura}</span></div>
-            ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">️ Motivo de Parada</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400"> Tiempo de Parada</span><span class="font-bold font-mono ${equipo.Estado === 'PARADO' ? 'text-amber-400' : 'text-slate-400'}">${tiempoParada}</span></div>
-            ${equipo.Reportante ? `<div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">👷 Reportante</span><span class="font-bold text-emerald-300">${equipo.Reportante}</span></div>` : ''}
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📅 Última Actualización</span><span class="font-bold text-emerald-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span></div>
-            ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/30 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">📍 SUCURSAL</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo.sucursal}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">🚜 TIPO</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo.Tipo_Equipo}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">💰 PROPIEDAD</span>
+                <span class="font-bold ${equipo.Propiedad === 'PROPIO' ? 'text-cyan-300' : 'text-purple-300'} text-lg">${equipo.Propiedad}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">📊 ESTADO</span>
+                <span class="status-badge ${equipo.Estado === 'OPERATIVO' ? 'status-operativo' : (equipo.Estado === 'PARADO' ? 'status-parado' : 'status-service')} text-sm">${equipo.Estado}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">⏱️ HORÓMETRO/KM</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo['Horó./Kilómetro']}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">📈 LECTURA ACTUAL</span>
+                <span class="font-bold text-amber-300 text-lg">${equipo.Lectura}</span>
+            </div>
+            ${equipo.Motivo_Parada ? `
+            <div class="p-4 bg-amber-950/30 rounded-lg border border-amber-500/40" style="box-shadow: 0 0 15px rgba(245,158,11,0.2);">
+                <div class="text-xs text-amber-300 mb-2 font-bold">⚠️ MOTIVO DE PARADA</div>
+                <div class="text-cyan-100">${equipo.Motivo_Parada}</div>
+            </div>
+            ` : ''}
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">⏰ TIEMPO DE PARADA</span>
+                <span class="font-bold font-mono ${equipo.Estado === 'PARADO' ? 'text-amber-400 text-xl' : 'text-cyan-400'}">${tiempoParada}</span>
+            </div>
+            ${equipo.Reportante ? `
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">👷 REPORTANTE</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo.Reportante}</span>
+            </div>
+            ` : ''}
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">📅 ÚLTIMA ACTUALIZACIÓN</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo.Fecha_Carga || '-'} <span class="text-cyan-400">${equipo.Hora_Carga || ''}</span></span>
+            </div>
+            ${equipo.Observaciones ? `
+            <div class="p-4 bg-slate-800/60 rounded-lg border border-cyan-500/30">
+                <div class="text-xs text-cyan-300 mb-2 font-bold">📝 OBSERVACIONES</div>
+                <div class="text-cyan-100">${equipo.Observaciones}</div>
+            </div>
+            ` : ''}
         </div>
     `;
     
@@ -692,6 +965,56 @@ function closeEquipmentModal() {
     document.getElementById('equipmentModal').style.display = 'none';
 }
 
+function mostrarAlertasDetalle() {
+    const alertas = EQUIPMENT_DATA.filter(e => {
+        if (e.Estado !== 'PARADO' || !e.Timestamp_Parada) return false;
+        return ((new Date() - new Date(e.Timestamp_Parada)) / 3600000) > 4;
+    });
+    
+    const modal = document.getElementById('alertasModal');
+    const content = document.getElementById('alertasModalContent');
+    
+    if (alertas.length === 0) {
+        content.innerHTML = '<div class="text-center text-cyan-300 py-8 text-lg">📭 No hay alertas activas</div>';
+    } else {
+        content.innerHTML = `
+            <div class="mb-4 text-cyan-300 text-sm">Total alertas: <span class="font-bold text-xl text-purple-300">${alertas.length}</span></div>
+            <div class="space-y-3">
+                ${alertas.map(a => {
+                    const horas = ((new Date()) - new Date(a.Timestamp_Parada)) / 3600000;
+                    return `
+                        <div class="p-4 bg-red-950/40 rounded-lg border-l-4 border-red-500 cursor-pointer hover:bg-red-900/50 transition-all" onclick="openEquipmentModalById('${a.ID_Equipo}')" style="box-shadow: 0 0 20px rgba(239,68,68,0.3);">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="font-bold text-red-300 text-lg">⚠️ ${a.ID_Equipo} - ${a.Equipo}</div>
+                                <div class="text-amber-400 font-bold text-xl">${horas.toFixed(1)}h</div>
+                            </div>
+                            <div class="text-cyan-200 text-sm mb-2">📍 ${a.sucursal} | 🔢 ${a.Propiedad}</div>
+                            <div class="text-cyan-300 text-sm">${a.Motivo_Parada || 'Sin motivo registrado'}</div>
+                            <div class="text-cyan-400 text-xs mt-2">👷 ${a.Reportante || 'Sin reportante'} | 📅 ${a.Fecha_Carga || '-'} ${a.Hora_Carga || ''}</div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+    
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+}
+
+function openEquipmentModalById(id) {
+    const equipo = EQUIPMENT_DATA.find(e => e.ID_Equipo === id);
+    if (equipo) {
+        closeAlertasModal();
+        setTimeout(() => openEquipmentModal(equipo), 300);
+    }
+}
+
+function closeAlertasModal() {
+    document.getElementById('alertasModal').classList.add('hidden');
+    document.getElementById('alertasModal').style.display = 'none';
+}
+
 function cambiarSucursal(sucursal) {
     currentSucursal = sucursal;
     document.querySelectorAll('.sucursal-btn').forEach(btn => btn.classList.remove('active'));
@@ -703,23 +1026,15 @@ function cambiarSucursal(sucursal) {
 function forceRefreshData() { loadData(); }
 
 function filtrarPorEstado(estado) {
-    const select = document.getElementById('filterPropiedad');
     if (estado === 'PARADO') {
-        select.value = 'TODAS';
-        document.getElementById('filterTipo').value = 'TODOS';
-        currentSucursal = 'TODAS';
-        document.querySelectorAll('.sucursal-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('btnTodas').classList.add('active');
-        aplicarFiltros();
-        // Filtrar manualmente por estado PARADO
         filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'PARADO');
-        updateDashboard();
     } else if (estado === 'SERVICE') {
         filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'EN SERVICE');
-        updateDashboard();
     } else {
         aplicarFiltros();
     }
+    updateDashboard();
+    showToast('info', 'Filtro aplicado', `Mostrando equipos ${estado === 'TODOS' ? 'de todos los estados' : estado}`);
 }
 
 function aplicarFiltrosPorEstado(estado) {
@@ -727,45 +1042,1204 @@ function aplicarFiltrosPorEstado(estado) {
     else if (estado === 'PARADO') filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'PARADO');
     else if (estado === 'SERVICE') filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'EN SERVICE');
     updateDashboard();
+    showToast('info', 'Filtro desde gráfico', `Mostrando estado: ${estado}`);
 }
 
 function mostrarDetalleKPI(tipo) {
     let mensaje = '';
+    let titulo = '';
+    
     if (tipo === 'disponibilidad') {
         const total = filteredData.length;
         const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
-        mensaje = `📊 DISPONIBILIDAD\n\nTotal equipos: ${total}\nOperativos: ${operativos}\nDisponibilidad: ${total > 0 ? Math.round(operativos/total*100) : 0}%`;
+        const parados = filteredData.filter(e => e.Estado === 'PARADO').length;
+        const service = filteredData.filter(e => e.Estado === 'EN SERVICE').length;
+        titulo = '📊 DISPONIBILIDAD DETALLADA';
+        mensaje = `Total equipos: ${total}\n\n✅ Operativos: ${operativos}\n⏸️ Parados: ${parados}\n🔧 En Service: ${service}\n\nDisponibilidad: ${total > 0 ? Math.round(operativos/total*100) : 0}%`;
     } else if (tipo === 'operativos') {
         const total = filteredData.length;
-        const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
-        mensaje = `🟢 EQUIPOS OPERATIVOS\n\nTotal: ${operativos}\nDe ${total} equipos totales\n\nEquipos:\n${filteredData.filter(e => e.Estado === 'OPERATIVO').map(e => `- ${e.ID_Equipo}: ${e.Equipo}`).join('\n')}`;
+        const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO');
+        titulo = '🟢 EQUIPOS OPERATIVOS';
+        mensaje = `Total: ${operativos.length} de ${total} equipos\n\n` + operativos.map(e => `• ${e.ID_Equipo}: ${e.Equipo}\n  📍 ${e.sucursal} | 📈 ${e.Lectura}`).join('\n');
     } else if (tipo === 'tiempoMuerto') {
         let tiempoMuertoTotal = 0;
-        filteredData.forEach(e => {
-            if (e.Estado === 'PARADO' && e.Timestamp_Parada) {
+        const parados = filteredData.filter(e => e.Estado === 'PARADO');
+        parados.forEach(e => {
+            if (e.Timestamp_Parada) {
                 tiempoMuertoTotal += (new Date() - new Date(e.Timestamp_Parada)) / 3600000;
             }
         });
-        mensaje = `⏱️ TIEMPO MUERTO\n\nTotal este mes: ${tiempoMuertoTotal.toFixed(1)}h\n\nEquipos parados:\n${filteredData.filter(e => e.Estado === 'PARADO').map(e => `- ${e.ID_Equipo}: ${calcularTiempoParada(e)}`).join('\n')}`;
-    } else if (tipo === 'alertas') {
-        const alertas = EQUIPMENT_DATA.filter(e => {
-            if (e.Estado !== 'PARADO' || !e.Timestamp_Parada) return false;
-            return ((new Date() - new Date(e.Timestamp_Parada)) / 3600000) > 4;
-        });
-        mensaje = `⚠️ ALERTAS\n\nTotal alertas: ${alertas.length}\n\nEquipos con >4h parados:\n${alertas.map(a => `- ${a.ID_Equipo}: ${a.Equipo}`).join('\n')}`;
+        titulo = '⏱️ TIEMPO MUERTO DETALLADO';
+        mensaje = `Total este mes: ${tiempoMuertoTotal.toFixed(1)}h\n\nEquipos parados:\n` + parados.map(e => `• ${e.ID_Equipo}: ${calcularTiempoParada(e)}\n  📍 ${e.sucursal} | ${e.Motivo_Parada || 'Sin motivo'}`).join('\n');
     }
-    alert(mensaje);
+    
+    // Crear modal personalizado
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[1000]';
+    modal.innerHTML = `
+        <div class="bg-slate-900/95 rounded-2xl p-8 shadow-2xl border-2 border-cyan-500/50 w-full max-w-2xl modal-bounce max-h-[80vh] overflow-y-auto m-4" style="box-shadow: 0 0 60px rgba(6,182,212,0.5);">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-black text-3xl text-cyan-400" style="text-shadow: 0 0 20px rgba(6,182,212,0.8);">${titulo}</h2>
+                <button onclick="this.closest('.fixed').remove()" class="text-3xl text-cyan-300 hover:text-white hover:rotate-90 transition-all">&times;</button>
+            </div>
+            <div class="text-cyan-100 whitespace-pre-line font-mono text-sm leading-relaxed">${mensaje}</div>
+            <div class="flex justify-end mt-8">
+                <button onclick="this.closest('.fixed').remove()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-6 py-3 rounded-xl text-sm font-bold transition-all hover:scale-110" style="box-shadow: 0 0 20px rgba(6,182,212,0.5);">Cerrar</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 }
 
 function showToast(tipo, titulo, mensaje) {
     const toast = document.createElement('div');
     toast.className = 'toast-notification';
-    const color = tipo === 'alert' ? '#ef4444' : (tipo === 'success' ? '#00ff88' : '#c084fc');
+    const color = tipo === 'alert' ? '#ef4444' : (tipo === 'success' ? '#06b6d4' : '#22d3ee');
     toast.style.borderLeftColor = color;
-    toast.innerHTML = `<div class="flex items-center gap-2 mb-1"><span class="text-sm">${tipo === 'alert' ? '️' : '✅'}</span><strong class="text-xs" style="color: ${color}">${titulo}</strong></div><div class="text-[11px] text-slate-200">${mensaje}</div>`;
-    toast.onclick = () => toast.remove();
+    toast.innerHTML = `
+        <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">${tipo === 'alert' ? '⚠️' : '✅'}</span>
+            <div>
+                <strong class="text-lg block mb-1" style="color: ${color}; text-shadow: 0 0 10px ${color};">${titulo}</strong>
+                <span class="text-sm text-cyan-100">${mensaje}</span>
+            </div>
+        </div>
+    `;
+    toast.onclick = () => {
+        toast.style.transform = 'translateX(400px)';
+        setTimeout(() => toast.remove(), 300);
+    };
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 5000);
+    setTimeout(() => {
+        toast.style.transform = 'translateX(400px)';
+        toast.style.opa<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minerar 2026 - Panel de Flota</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(ellipse at top, #0a1628, #020617);
+            color: #e2e8f0;
+            font-size: 12px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.2), inset 0 1px 0 rgba(103, 232, 249, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .glass-card:hover::before {
+            left: 100%;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(6, 182, 212, 0.8);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.4), inset 0 1px 0 rgba(103, 232, 249, 0.2);
+        }
+        .header-container {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            border: 1px solid rgba(6, 182, 212, 0.5);
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+        }
+        .logo-shield {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+            border: 2px solid #06b6d4;
+            transition: all 0.3s ease;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.8), 0 0 40px rgba(6, 182, 212, 0.4); }
+        }
+        .logo-shield:hover {
+            transform: rotate(15deg) scale(1.1);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.8);
+        }
+        .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
+        .kpi-cyan { 
+            border-left: 4px solid #06b6d4; 
+            background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05));
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+        .kpi-amber { 
+            border-left: 4px solid #f59e0b; 
+            background: linear-gradient(115deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+        }
+        .kpi-purple { 
+            border-left: 4px solid #a855f7; 
+            background: linear-gradient(115deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05));
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+        
+        .sucursal-btn {
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(6, 182, 212, 0.5);
+            color: #67e8f9;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+        }
+        .sucursal-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(6, 182, 212, 0.2);
+            border-color: #06b6d4;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+            text-shadow: 0 0 10px #06b6d4;
+        }
+        .sucursal-btn.active {
+            animation: pulse-border 2s ease-out infinite;
+            color: #fff !important;
+            background: rgba(6, 182, 212, 0.3);
+            border-color: #06b6d4;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+        }
+        
+        .status-badge { 
+            padding: 6px 16px; 
+            border-radius: 20px; 
+            font-size: 9px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            border: 1px solid;
+        }
+        .status-badge:hover { 
+            transform: scale(1.15); 
+            filter: brightness(1.3);
+        }
+        .status-operativo { 
+            background: rgba(6,182,212,0.2); 
+            color: #22d3ee; 
+            border-color: #06b6d4;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+        }
+        .status-parado { 
+            background: rgba(245,158,11,0.2); 
+            color: #fbbf24; 
+            border-color: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        }
+        .status-service { 
+            background: rgba(239,68,68,0.2); 
+            color: #f87171; 
+            border-color: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-filter {
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 10px 14px;
+            border-radius: 10px;
+            width: 100%;
+            text-align: left;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            background: rgba(15, 23, 42, 0.8);
+            color: #67e8f9;
+        }
+        .btn-filter:hover {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+        .btn-filter.active {
+            background: linear-gradient(95deg, #06b6d4, #0891b2);
+            border-color: #22d3ee;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+        }
+        
+        .cronometro-box {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 14px;
+            text-align: center;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+            min-width: 70px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .cronometro-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(245,158,11,0.6);
+        }
+        .cronometro-parado {
+            animation: blink-red 1s infinite;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+        @keyframes blink-red { 
+            0%,100% { opacity:1; box-shadow:0 0 10px #ef4444; } 
+            50% { opacity:0.5; box-shadow:0 0 20px #ef4444; } 
+        }
+        
+        .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
+        @keyframes bounceIn { 
+            0% { opacity: 0; transform: scale(0.3); } 
+            50% { opacity: 1; transform: scale(1.05); } 
+            70% { transform: scale(0.95); } 
+            100% { opacity: 1; transform: scale(1); } 
+        }
+        
+        .chart-container { 
+            position: relative; 
+            height: 280px; 
+            width: 100%; 
+            margin-top: 16px; 
+            cursor: pointer;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.5);
+        }
+        .table-scroll { 
+            max-height: 400px; 
+            overflow-x: auto; 
+            overflow-y: auto; 
+            border-radius: 12px; 
+            width: 100%;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+        .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; background: #0f172a; border-radius: 10px; }
+        .table-scroll::-webkit-scrollbar-thumb { 
+            background: linear-gradient(180deg, #06b6d4, #0891b2); 
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        table thead th { 
+            position: sticky; 
+            top: 0; 
+            background: rgba(15, 23, 42, 0.95); 
+            z-index: 10; 
+            color: #22d3ee; 
+            font-weight: 700; 
+            border-bottom: 2px solid rgba(6, 182, 212, 0.5);
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+        table thead th:hover { 
+            background: rgba(6, 182, 212, 0.2);
+        }
+        tr { 
+            cursor: pointer; 
+            transition: all 0.3s;
+            border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        tr:hover { 
+            background-color: rgba(6, 182, 212, 0.15); 
+            transform: scale(1.01);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+        select, .select-neon { 
+            background: rgba(15, 23, 42, 0.9); 
+            border: 1px solid #06b6d4; 
+            border-radius: 10px; 
+            padding: 8px 12px; 
+            color: #67e8f9; 
+            font-weight: 500; 
+            width: 100%; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+        select:hover, .select-neon:hover { 
+            border-color: #22d3ee; 
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+            color: #fff;
+        }
+        .siren-alert { 
+            width: 14px; 
+            height: 14px; 
+            background: #ef4444; 
+            border-radius: 50%; 
+            animation: blink-red 1s infinite; 
+            box-shadow: 0 0 15px #ef4444, 0 0 30px #ef4444; 
+            display: inline-block; 
+            cursor: pointer;
+        }
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #06b6d4;
+            backdrop-filter: blur(16px);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 16px;
+            border-left: 5px solid #06b6d4;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.6), 0 0 60px rgba(6, 182, 212, 0.3);
+            z-index: 1000;
+            animation: slideInRight 0.4s ease-out, glow 2s ease-in-out infinite;
+            max-width: 400px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.6); }
+            50% { box-shadow: 0 0 50px rgba(6, 182, 212, 0.9), 0 0 80px rgba(6, 182, 212, 0.5); }
+        }
+        @keyframes slideInRight { 
+            from { transform: translateX(150px); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        }
+        
+        @media (max-width: 768px) { 
+            .header-container { flex-direction: column; gap: 16px; text-align: center; } 
+            .chart-container { height: 240px; } 
+        }
+    </style>
+</head>
+<body>
+<div class="w-[98%] mx-auto relative z-10 p-4">
+    <!-- HEADER -->
+    <div class="header-container flex flex-wrap justify-between items-center">
+        <div class="flex items-center gap-4">
+            <div class="logo-shield" onclick="window.location.reload()" title="Click para recargar">
+                <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img">
+            </div>
+            <div>
+                <h1 class="text-2xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent" style="text-shadow: 0 0 30px rgba(6,182,212,0.5);">
+                    PANEL DE FLOTA MINERA 2026 🚜⛏️
+                </h1>
+                <p class="text-xs text-cyan-300 font-mono">👷 CONTROL DE HORÓMETROS Y KILÓMETROS · MONITOREO EN VIVO 👷</p>
+            </div>
+        </div>
+        <div class="flex gap-3 items-center flex-wrap">
+            <div class="glass-card px-4 py-3 text-center border-l-4 border-cyan-500" onclick="filtrarPorEstado('TODOS')" title="Click para ver todos">
+                <div class="text-[9px] font-bold uppercase text-cyan-400 tracking-wider">EQUIPOS TOTALES</div>
+                <div id="totalEquipos" class="text-3xl font-black text-cyan-300" style="text-shadow: 0 0 15px rgba(6,182,212,0.8);">0</div>
+            </div>
+            <div class="glass-card px-4 py-3 text-center border-l-4 border-amber-500" onclick="filtrarPorEstado('PARADO')" title="Click para ver parados">
+                <div class="text-[9px] font-bold uppercase text-amber-400 tracking-wider">⏸️ PARADOS</div>
+                <div id="totalParados" class="text-3xl font-black text-amber-300" style="text-shadow: 0 0 15px rgba(245,158,11,0.8);">0</div>
+            </div>
+            <div class="glass-card px-4 py-3 text-center border-l-4 border-purple-500" onclick="filtrarPorEstado('SERVICE')" title="Click para ver en service">
+                <div class="text-[9px] font-bold uppercase text-purple-400 tracking-wider">🔧 EN SERVICE</div>
+                <div id="totalService" class="text-3xl font-black text-purple-300" style="text-shadow: 0 0 15px rgba(168,85,247,0.8);">0</div>
+            </div>
+            <button onclick="forceRefreshData()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-lg transition-all flex items-center gap-2 hover:scale-110" style="box-shadow: 0 0 20px rgba(6,182,212,0.5);">
+                ACTUALIZAR 🔄
+            </button>
+        </div>
+    </div>
+
+    <!-- SUCURSALES -->
+    <div class="glass-card p-6 mb-6">
+        <div class="text-center mb-6">
+            <h2 class="text-lg font-bold text-cyan-300 mb-4" style="text-shadow: 0 0 15px rgba(6,182,212,0.6);">📍 SELECCIONAR SUCURSAL</h2>
+            <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')">🏭 TODAS</button>
+                <button id="btnMalagueno" class="sucursal-btn" onclick="cambiarSucursal('MALAGUENO')">📍 MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
+                <button id="btnPampita" class="sucursal-btn" onclick="cambiarSucursal('LA_PAMPITA')">🌸 LA PAMPITA</button>
+            </div>
+        </div>
+        
+        <div class="grid md:grid-cols-4 gap-5 my-6">
+            <div class="glass-card p-5 kpi-cyan" onclick="mostrarDetalleKPI('disponibilidad')" title="Click para ver detalle completo">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-cyan-400 text-sm">✅ DISPONIBILIDAD</span>
+                    <span class="text-xs text-cyan-300">Click para detalles</span>
+                </div>
+                <div id="kpiDisponibilidad" class="text-5xl font-black text-cyan-300 my-2" style="text-shadow: 0 0 20px rgba(6,182,212,0.8);">0%</div>
+                <div class="flex justify-between text-[11px] text-cyan-200">
+                    <span>Equipos operativos</span>
+                    <span id="kpiTotal">0</span>
+                </div>
+            </div>
+            <div class="glass-card p-5 kpi-cyan" onclick="mostrarDetalleKPI('operativos')" title="Click para ver detalle completo">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-cyan-400 text-sm">🟢 OPERATIVOS</span>
+                    <span class="text-xs text-cyan-300">Click para detalles</span>
+                </div>
+                <div id="kpiOperativos" class="text-5xl font-black text-cyan-300 my-2" style="text-shadow: 0 0 20px rgba(6,182,212,0.8);">0</div>
+                <div class="text-[11px] text-cyan-200">De <span id="kpiTotalOperativos">0</span> equipos totales</div>
+            </div>
+            <div class="glass-card p-5 kpi-amber" onclick="mostrarDetalleKPI('tiempoMuerto')" title="Click para ver detalle completo">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-amber-400 text-sm">⏱️ TIEMPO MUERTO</span>
+                    <span class="text-xs text-amber-300">Click para detalles</span>
+                </div>
+                <div id="kpiTiempoMuerto" class="text-5xl font-black text-amber-300 my-2" style="text-shadow: 0 0 20px rgba(245,158,11,0.8);">0h</div>
+                <div class="text-[11px] text-amber-200">Este mes</div>
+            </div>
+            <div class="glass-card p-5 kpi-purple" onclick="mostrarAlertasDetalle()" title="Click para ver alertas detalladas">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-purple-400 text-sm">⚠️ ALERTAS</span>
+                    <div id="alertasLed" class="siren-alert"></div>
+                </div>
+                <div id="kpiAlertas" class="text-5xl font-black text-purple-300 my-2" style="text-shadow: 0 0 20px rgba(168,85,247,0.8);">0</div>
+                <div class="text-[11px] text-purple-200">Paradas > 4h / Services vencidos</div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-[300px_1fr] gap-6">
+            <aside>
+                <div class="glass-card p-5 h-full">
+                    <h3 class="font-black mb-4 text-cyan-400 text-sm" style="text-shadow: 0 0 10px rgba(6,182,212,0.6);">📋 FILTROS AVANZADOS ⚙️</h3>
+                    
+                    <label class="text-xs font-bold text-cyan-300 mb-2 block">🏢 PROPIEDAD</label>
+                    <select id="filterPropiedad" class="select-neon w-full mb-4" onchange="aplicarFiltros()">
+                        <option value="TODAS">Todas las propiedades</option>
+                        <option value="PROPIO">🟢 Propio</option>
+                        <option value="ALQUILADO">🔵 Alquilado</option>
+                    </select>
+                    
+                    <label class="text-xs font-bold text-cyan-300 mb-2 block">🚜 TIPO DE EQUIPO</label>
+                    <select id="filterTipo" class="select-neon w-full mb-5" onchange="aplicarFiltros()">
+                        <option value="TODOS">Todos los tipos</option>
+                        <option value="Camión">🚛 Camión</option>
+                        <option value="Cargadora">🏗️ Cargadora</option>
+                        <option value="Topador">⛏️ Topador</option>
+                        <option value="Excavadora">🔨 Excavadora</option>
+                        <option value="Motoniveladora">🛣️ Motoniveladora</option>
+                        <option value="Perforadora">⚡ Perforadora</option>
+                        <option value="Otros">📦 Otros</option>
+                    </select>
+                    
+                    <div class="mt-6 p-4 bg-cyan-950/30 rounded-xl border border-cyan-500/40" style="box-shadow: 0 0 20px rgba(6,182,212,0.2);">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-bold uppercase text-cyan-400 tracking-wider">🚨 ALERTAS ACTIVAS</span>
+                            <div id="alertasLedSmall" class="siren-alert"></div>
+                        </div>
+                        <div id="realTimeAlerts" class="text-[10px] max-h-56 overflow-y-auto space-y-2">
+                            <p class="text-cyan-200 text-center py-3">📭 Sin alertas activas</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <main>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="glass-card p-5">
+                        <h3 class="font-black uppercase text-cyan-400 text-sm mb-3" style="text-shadow: 0 0 10px rgba(6,182,212,0.6);">📊 HORAS TRABAJADAS VS TIEMPO MUERTO POR SUCURSAL</h3>
+                        <div class="chart-container"><canvas id="horasChart"></canvas></div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <h3 class="font-black uppercase text-purple-400 text-sm mb-3" style="text-shadow: 0 0 10px rgba(168,85,247,0.6);">🍩 ESTADO DE EQUIPOS</h3>
+                        <div class="chart-container"><canvas id="estadoChart"></canvas></div>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="font-black uppercase text-cyan-400 text-sm" style="text-shadow: 0 0 10px rgba(6,182,212,0.6);">📋 FLOTA EN TIEMPO REAL</h3>
+                        <button onclick="forceRefreshData()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg transition-all hover:scale-110" style="box-shadow: 0 0 15px rgba(6,182,212,0.5);">
+                            🔄 Actualizar
+                        </button>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr>
+                                    <th class="p-3">ID</th>
+                                    <th>EQUIPO</th>
+                                    <th>SUCURSAL</th>
+                                    <th>PROPIEDAD</th>
+                                    <th>ESTADO</th>
+                                    <th>LECTURA ACTUAL</th>
+                                    <th>⏱️ CRONÓMETRO</th>
+                                    <th>MOTIVO</th>
+                                    <th>REPORTANTE</th>
+                                    <th>ÚLTIMA ACT.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipmentTableBody">
+                                <tr><td colspan="10" class="p-6 text-center text-cyan-300">🔄 Sincronizando con Google Sheets...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DETALLE EQUIPO -->
+<div id="equipmentModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
+    <div class="bg-slate-900/95 rounded-2xl p-8 shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[90vh] overflow-y-auto m-4" style="box-shadow: 0 0 60px rgba(6,182,212,0.5);">
+        <div class="flex justify-between items-center mb-6">
+            <h2 id="modalTitle" class="font-black text-3xl text-cyan-400" style="text-shadow: 0 0 20px rgba(6,182,212,0.8);">📋 Detalle del Equipo</h2>
+            <button onclick="closeEquipmentModal()" class="text-3xl text-cyan-300 hover:text-white hover:rotate-90 transition-all" style="text-shadow: 0 0 10px rgba(6,182,212,0.6);">&times;</button>
+        </div>
+        <div id="modalContent" class="text-slate-300 space-y-4"></div>
+        <div class="flex justify-end gap-4 mt-8">
+            <button onclick="closeEquipmentModal()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-6 py-3 rounded-xl text-sm font-bold transition-all hover:scale-110" style="box-shadow: 0 0 20px rgba(6,182,212,0.5);">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ALERTAS DETALLE -->
+<div id="alertasModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
+    <div class="bg-slate-900/95 rounded-2xl p-8 shadow-2xl border-2 border-purple-500/50 w-full max-w-3xl modal-bounce max-h-[90vh] overflow-y-auto m-4" style="box-shadow: 0 0 60px rgba(168,85,247,0.5);">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-black text-3xl text-purple-400" style="text-shadow: 0 0 20px rgba(168,85,247,0.8);">⚠️ ALERTAS DETALLADAS</h2>
+            <button onclick="closeAlertasModal()" class="text-3xl text-purple-300 hover:text-white hover:rotate-90 transition-all" style="text-shadow: 0 0 10px rgba(168,85,247,0.6);">&times;</button>
+        </div>
+        <div id="alertasModalContent" class="text-slate-300 space-y-4"></div>
+        <div class="flex justify-end gap-4 mt-8">
+            <button onclick="closeAlertasModal()" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 px-6 py-3 rounded-xl text-sm font-bold transition-all hover:scale-110" style="box-shadow: 0 0 20px rgba(168,85,247,0.5);">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== CONSTANTES ====================
+let currentSucursal = 'TODAS';
+let EQUIPMENT_DATA = [];
+let filteredData = [];
+let horasChart = null, estadoChart = null;
+let cronometroInterval = null;
+let alertasNovedades = 0;
+
+// ✅ URLs CORRECTAS
+const SHEETS_URLS = {
+    'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
+    'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=788057714&single=true&output=csv',
+    'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv'
+};
+
+// ==================== FUNCIONES PRINCIPALES ====================
+
+async function loadData() {
+    try {
+        console.log('🔄 Cargando todas las sucursales...');
+        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-6 text-center text-cyan-300">🔄 Sincronizando con Google Sheets...</td></tr>';
+        
+        let allData = [];
+        for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
+            const data = await fetchSheet(url, sucursal);
+            allData = allData.concat(data);
+            console.log(`✅ ${sucursal}: ${data.length} filas`);
+        }
+        
+        EQUIPMENT_DATA = allData;
+        console.log(`📊 Total real cargado: ${EQUIPMENT_DATA.length}`);
+        
+        aplicarFiltros();
+        startCronometros();
+        checkAlertas();
+        showToast('success', 'Datos actualizados', `${allData.length} equipos cargados correctamente`);
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-6 text-center text-red-400">❌ Error al cargar datos<br><small>' + error.message + '</small><br><button onclick="loadData()" class="mt-3 px-4 py-2 bg-cyan-600 rounded-lg text-white text-xs hover:bg-cyan-500 transition-all" style="box-shadow: 0 0 15px rgba(6,182,212,0.5);">🔄 Reintentar</button></td></tr>';
+    }
+}
+
+async function fetchSheet(url, sucursal) {
+    try {
+        const freshUrl = url + '&t=' + Date.now();
+        const response = await fetch(freshUrl);
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        const text = await response.text();
+        return parseCSV(text, sucursal);
+    } catch (error) {
+        console.error(`❌ Error cargando ${sucursal}:`, error);
+        return [];
+    }
+}
+
+function parseCSV(text, sucursal) {
+    const lines = text.trim().split('\n').filter(l => l.trim());
+    if (lines.length < 2) return [];
+    
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const data = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        const row = {};
+        
+        headers.forEach((header, index) => { row[header] = values[index] || ''; });
+        
+        // ✅ CORRECCIÓN: Normalizar Estado
+        if (row.Estado && row.Estado.toUpperCase().includes('FUERA DE SERVICIO')) {
+            row.Estado = 'PARADO';
+        }
+        
+        if (row['ID_Equipo'] && row['ID_Equipo'].trim()) {
+            row.sucursal = sucursal;
+            data.push(row);
+        }
+    }
+    return data;
+}
+
+function aplicarFiltros() {
+    const propiedad = document.getElementById('filterPropiedad').value;
+    const tipo = document.getElementById('filterTipo').value;
+    
+    filteredData = EQUIPMENT_DATA.filter(e => {
+        const matchSucursal = currentSucursal === 'TODAS' || e.sucursal === currentSucursal;
+        const matchPropiedad = propiedad === 'TODAS' || e.Propiedad === propiedad;
+        const matchTipo = tipo === 'TODOS' || e.Tipo_Equipo === tipo;
+        return matchSucursal && matchPropiedad && matchTipo;
+    });
+    
+    updateDashboard();
+}
+
+function updateDashboard() {
+    updateKPIs();
+    updateCharts();
+    renderTable();
+}
+
+function updateKPIs() {
+    const total = filteredData.length;
+    const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
+    const parados = filteredData.filter(e => e.Estado === 'PARADO').length;
+    const service = filteredData.filter(e => e.Estado === 'EN SERVICE').length;
+    
+    document.getElementById('totalEquipos').innerText = total;
+    document.getElementById('kpiTotal').innerText = total;
+    document.getElementById('kpiTotalOperativos').innerText = total;
+    document.getElementById('kpiOperativos').innerText = operativos;
+    document.getElementById('totalParados').innerText = parados;
+    document.getElementById('totalService').innerText = service;
+    
+    const disponibilidad = total > 0 ? Math.round(operativos/total*100) : 0;
+    document.getElementById('kpiDisponibilidad').innerText = disponibilidad + '%';
+    
+    let tiempoMuertoTotal = 0;
+    filteredData.forEach(e => {
+        if (e.Estado === 'PARADO' && e.Timestamp_Parada) {
+            tiempoMuertoTotal += (new Date() - new Date(e.Timestamp_Parada)) / 3600000;
+        }
+    });
+    document.getElementById('kpiTiempoMuerto').innerText = tiempoMuertoTotal.toFixed(1) + 'h';
+}
+
+function updateCharts() {
+    const sucursales = ['Malagueño', 'Barker', 'La Pampita'];
+    const horasData = sucursales.map(suc => {
+        const equiposSuc = filteredData.filter(e => e.sucursal === suc.toUpperCase().replace(' ', '_'));
+        return equiposSuc.reduce((sum, e) => sum + (parseFloat(e.Lectura) || 0), 0);
+    });
+    
+    const ctxHoras = document.getElementById('horasChart').getContext('2d');
+    if (horasChart) horasChart.destroy();
+    horasChart = new Chart(ctxHoras, {
+        type: 'bar',
+        data: {
+            labels: sucursales,
+            datasets: [{
+                label: 'Horas Trabajadas',
+                data: horasData,
+                backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7'],
+                borderRadius: 10,
+                hoverBackgroundColor: ['#22d3ee', '#fbbf24', '#c084fc'],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#22d3ee',
+                    bodyColor: '#67e8f9',
+                    borderColor: '#06b6d4',
+                    borderWidth: 2,
+                    padding: 12,
+                    displayColors: true,
+                }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(6,182,212,0.2)' }, 
+                    ticks: { color: '#67e8f9' } 
+                }, 
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#67e8f9' } 
+                } 
+            },
+            onClick: (e) => {
+                const points = horasChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                if (points.length) {
+                    const firstPoint = points[0];
+                    const label = horasChart.data.labels[firstPoint.index];
+                    cambiarSucursal(label.toUpperCase().replace(' ', '_'));
+                }
+            }
+        }
+    });
+    
+    const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
+    const parados = filteredData.filter(e => e.Estado === 'PARADO').length;
+    const service = filteredData.filter(e => e.Estado === 'EN SERVICE').length;
+    
+    const ctxEstado = document.getElementById('estadoChart').getContext('2d');
+    if (estadoChart) estadoChart.destroy();
+    estadoChart = new Chart(ctxEstado, {
+        type: 'doughnut',
+        data: {
+            labels: ['Operativo', 'Parado', 'En Service'],
+            datasets: [{
+                data: [operativos, parados, service],
+                backgroundColor: ['#06b6d4', '#f59e0b', '#ef4444'],
+                borderWidth: 0,
+                hoverOffset: 20,
+                hoverBackgroundColor: ['#22d3ee', '#fbbf24', '#f87171'],
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, 
+            cutout: '65%',
+            plugins: { 
+                legend: { 
+                    position: 'right', 
+                    labels: { 
+                        color: '#67e8f9', 
+                        usePointStyle: true,
+                        padding: 15,
+                        font: { size: 11, weight: 'bold' }
+                    } 
+                },
+                tooltip: { 
+                    enabled: true,
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#22d3ee',
+                    bodyColor: '#67e8f9',
+                    borderColor: '#06b6d4',
+                    borderWidth: 2,
+                    padding: 12,
+                }
+            },
+            onClick: (e) => {
+                const points = estadoChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                if (points.length) {
+                    const firstPoint = points[0];
+                    const label = estadoChart.data.labels[firstPoint.index];
+                    if (label === 'Operativo') aplicarFiltrosPorEstado('OPERATIVO');
+                    else if (label === 'Parado') aplicarFiltrosPorEstado('PARADO');
+                    else if (label === 'En Service') aplicarFiltrosPorEstado('SERVICE');
+                }
+            }
+        }
+    });
+}
+
+function renderTable() {
+    const tbody = document.getElementById('equipmentTableBody');
+    tbody.innerHTML = '';
+    
+    if (filteredData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="p-6 text-center text-cyan-300">📭 No hay datos disponibles para esta selección</td></tr>';
+        return;
+    }
+    
+    filteredData.slice(0, 100).forEach(e => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-cyan-500/20 hover:bg-cyan-950/30';
+        tr.onclick = () => openEquipmentModal(e);
+        
+        const tiempoParada = calcularTiempoParada(e);
+        const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : (e.Estado === 'PARADO' ? 'status-parado' : 'status-service');
+        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : (e.Estado === 'PARADO' ? '⏸️ Parado' : '🔧 En Service');
+        
+        tr.innerHTML = `
+            <td class="p-3 font-bold text-cyan-300">${e.ID_Equipo}</td>
+            <td class="p-3 font-semibold text-cyan-100">${e.Equipo}</td>
+            <td class="p-3 text-cyan-200">${e.sucursal}</td>
+            <td class="p-3 text-cyan-200">${e.Propiedad}</td>
+            <td class="p-3"><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+            <td class="p-3 text-cyan-100">${e['Horó./Kilómetro']} <span class="text-cyan-400">(${e.Lectura})</span></td>
+            <td class="p-3"><span class="cronometro-box ${e.Estado === 'PARADO' ? 'cronometro-parado' : ''}">${tiempoParada}</span></td>
+            <td class="p-3 max-w-xs truncate text-cyan-200" title="${e.Motivo_Parada || '-'}">${e.Motivo_Parada || '-'}</td>
+            <td class="p-3 text-cyan-200">${e.Reportante || '-'}</td>
+            <td class="p-3 text-cyan-200">${e.Fecha_Carga || '-'} <span class="text-cyan-400">${e.Hora_Carga || ''}</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function calcularTiempoParada(equipo) {
+    if (equipo.Estado !== 'PARADO' || !equipo.Timestamp_Parada) return '--:--:--';
+    const diff = new Date() - new Date(equipo.Timestamp_Parada);
+    const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function startCronometros() {
+    if (cronometroInterval) clearInterval(cronometroInterval);
+    cronometroInterval = setInterval(() => {
+        document.querySelectorAll('.cronometro-box').forEach(cell => {
+            if (cell.classList.contains('cronometro-parado')) {
+                const row = cell.closest('tr');
+                const id = row.cells[0].innerText;
+                const equipo = EQUIPMENT_DATA.find(e => e.ID_Equipo === id);
+                if (equipo) cell.innerText = calcularTiempoParada(equipo);
+            }
+        });
+        checkAlertas();
+    }, 1000);
+}
+
+function checkAlertas() {
+    const alertasDiv = document.getElementById('realTimeAlerts');
+    const alertas = EQUIPMENT_DATA.filter(e => {
+        if (e.Estado !== 'PARADO' || !e.Timestamp_Parada) return false;
+        return ((new Date() - new Date(e.Timestamp_Parada)) / 3600000) > 4;
+    });
+    
+    if (alertas.length > 0) {
+        document.getElementById('kpiAlertas').innerText = alertas.length;
+        alertasDiv.innerHTML = '';
+        alertas.slice(-5).forEach(a => {
+            const div = document.createElement('div');
+            div.className = 'p-3 bg-red-950/40 rounded-lg border-l-4 border-red-500 cursor-pointer hover:bg-red-900/50 transition-all';
+            div.style.boxShadow = '0 0 15px rgba(239,68,68,0.3)';
+            div.onclick = () => openEquipmentModal(a);
+            const horas = ((new Date()) - new Date(a.Timestamp_Parada)) / 3600000;
+            div.innerHTML = `
+                <div class="font-bold text-red-300 text-xs mb-1">⚠️ ${a.ID_Equipo} - ${a.Equipo}</div>
+                <div class="text-cyan-200 text-[10px] mb-1"> ${a.sucursal} | ⏱️ ${horas.toFixed(1)}h parado</div>
+                <div class="text-cyan-300 text-[9px] truncate">${a.Motivo_Parada || 'Sin motivo registrado'}</div>
+            `;
+            alertasDiv.appendChild(div);
+        });
+        if (alertas.length > alertasNovedades) {
+            alertasNovedades = alertas.length;
+            showToast('alert', `⚠️ ${alertas.length} Alertas de Parada`, `Equipos con más de 4h parados`);
+        }
+    } else {
+        document.getElementById('kpiAlertas').innerText = '0';
+        alertasDiv.innerHTML = '<p class="text-cyan-200 text-center py-4">📭 Sin alertas activas</p>';
+    }
+}
+
+function openEquipmentModal(equipo) {
+    const modal = document.getElementById('equipmentModal');
+    if (!modal) return;
+    
+    const modalContent = modal.querySelector('.modal-bounce');
+    if (!modalContent) return;
+
+    modalContent.classList.remove('modal-bounce');
+    void modalContent.offsetHeight;
+    modalContent.classList.add('modal-bounce');
+    
+    const content = document.getElementById('modalContent');
+    const tiempoParada = calcularTiempoParada(equipo);
+    
+    content.innerHTML = `
+        <div class="grid md:grid-cols-2 gap-5 mb-6">
+            <div class="bg-slate-800/60 p-5 rounded-xl border border-cyan-500/40" style="box-shadow: 0 0 20px rgba(6,182,212,0.3);">
+                <div class="text-xs text-cyan-300 mb-2 font-bold">🔢 ID EQUIPO</div>
+                <div class="text-2xl font-black text-cyan-300">${equipo.ID_Equipo}</div>
+            </div>
+            <div class="bg-slate-800/60 p-5 rounded-xl border border-cyan-500/40" style="box-shadow: 0 0 20px rgba(6,182,212,0.3);">
+                <div class="text-xs text-cyan-300 mb-2 font-bold">🚜 NOMBRE</div>
+                <div class="text-2xl font-black text-cyan-100">${equipo.Equipo}</div>
+            </div>
+        </div>
+        <div class="space-y-3">
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">📍 SUCURSAL</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo.sucursal}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">🚜 TIPO</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo.Tipo_Equipo}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">💰 PROPIEDAD</span>
+                <span class="font-bold ${equipo.Propiedad === 'PROPIO' ? 'text-cyan-300' : 'text-purple-300'} text-lg">${equipo.Propiedad}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">📊 ESTADO</span>
+                <span class="status-badge ${equipo.Estado === 'OPERATIVO' ? 'status-operativo' : (equipo.Estado === 'PARADO' ? 'status-parado' : 'status-service')} text-sm">${equipo.Estado}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">⏱️ HORÓMETRO/KM</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo['Horó./Kilómetro']}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">📈 LECTURA ACTUAL</span>
+                <span class="font-bold text-amber-300 text-lg">${equipo.Lectura}</span>
+            </div>
+            ${equipo.Motivo_Parada ? `
+            <div class="p-4 bg-amber-950/30 rounded-lg border border-amber-500/40" style="box-shadow: 0 0 15px rgba(245,158,11,0.2);">
+                <div class="text-xs text-amber-300 mb-2 font-bold">⚠️ MOTIVO DE PARADA</div>
+                <div class="text-cyan-100">${equipo.Motivo_Parada}</div>
+            </div>
+            ` : ''}
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">⏰ TIEMPO DE PARADA</span>
+                <span class="font-bold font-mono ${equipo.Estado === 'PARADO' ? 'text-amber-400 text-xl' : 'text-cyan-400'}">${tiempoParada}</span>
+            </div>
+            ${equipo.Reportante ? `
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">👷 REPORTANTE</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo.Reportante}</span>
+            </div>
+            ` : ''}
+            <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg border border-cyan-500/30">
+                <span class="text-cyan-300 font-bold">📅 ÚLTIMA ACTUALIZACIÓN</span>
+                <span class="font-bold text-cyan-200 text-lg">${equipo.Fecha_Carga || '-'} <span class="text-cyan-400">${equipo.Hora_Carga || ''}</span></span>
+            </div>
+            ${equipo.Observaciones ? `
+            <div class="p-4 bg-slate-800/60 rounded-lg border border-cyan-500/30">
+                <div class="text-xs text-cyan-300 mb-2 font-bold">📝 OBSERVACIONES</div>
+                <div class="text-cyan-100">${equipo.Observaciones}</div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+    
+    document.getElementById('modalTitle').innerText = `📋 ${equipo.Equipo} (${equipo.ID_Equipo})`;
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+}
+
+function closeEquipmentModal() {
+    document.getElementById('equipmentModal').classList.add('hidden');
+    document.getElementById('equipmentModal').style.display = 'none';
+}
+
+function mostrarAlertasDetalle() {
+    const alertas = EQUIPMENT_DATA.filter(e => {
+        if (e.Estado !== 'PARADO' || !e.Timestamp_Parada) return false;
+        return ((new Date() - new Date(e.Timestamp_Parada)) / 3600000) > 4;
+    });
+    
+    const modal = document.getElementById('alertasModal');
+    const content = document.getElementById('alertasModalContent');
+    
+    if (alertas.length === 0) {
+        content.innerHTML = '<div class="text-center text-cyan-300 py-8 text-lg">📭 No hay alertas activas</div>';
+    } else {
+        content.innerHTML = `
+            <div class="mb-4 text-cyan-300 text-sm">Total alertas: <span class="font-bold text-xl text-purple-300">${alertas.length}</span></div>
+            <div class="space-y-3">
+                ${alertas.map(a => {
+                    const horas = ((new Date()) - new Date(a.Timestamp_Parada)) / 3600000;
+                    return `
+                        <div class="p-4 bg-red-950/40 rounded-lg border-l-4 border-red-500 cursor-pointer hover:bg-red-900/50 transition-all" onclick="openEquipmentModalById('${a.ID_Equipo}')" style="box-shadow: 0 0 20px rgba(239,68,68,0.3);">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="font-bold text-red-300 text-lg">⚠️ ${a.ID_Equipo} - ${a.Equipo}</div>
+                                <div class="text-amber-400 font-bold text-xl">${horas.toFixed(1)}h</div>
+                            </div>
+                            <div class="text-cyan-200 text-sm mb-2">📍 ${a.sucursal} | 🔢 ${a.Propiedad}</div>
+                            <div class="text-cyan-300 text-sm">${a.Motivo_Parada || 'Sin motivo registrado'}</div>
+                            <div class="text-cyan-400 text-xs mt-2">👷 ${a.Reportante || 'Sin reportante'} | 📅 ${a.Fecha_Carga || '-'} ${a.Hora_Carga || ''}</div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+    
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+}
+
+function openEquipmentModalById(id) {
+    const equipo = EQUIPMENT_DATA.find(e => e.ID_Equipo === id);
+    if (equipo) {
+        closeAlertasModal();
+        setTimeout(() => openEquipmentModal(equipo), 300);
+    }
+}
+
+function closeAlertasModal() {
+    document.getElementById('alertasModal').classList.add('hidden');
+    document.getElementById('alertasModal').style.display = 'none';
+}
+
+function cambiarSucursal(sucursal) {
+    currentSucursal = sucursal;
+    document.querySelectorAll('.sucursal-btn').forEach(btn => btn.classList.remove('active'));
+    const btnMap = { 'TODAS': 'btnTodas', 'MALAGUENO': 'btnMalagueno', 'BARKER': 'btnBarker', 'LA_PAMPITA': 'btnPampita' };
+    if(btnMap[sucursal]) document.getElementById(btnMap[sucursal]).classList.add('active');
+    aplicarFiltros();
+}
+
+function forceRefreshData() { loadData(); }
+
+function filtrarPorEstado(estado) {
+    if (estado === 'PARADO') {
+        filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'PARADO');
+    } else if (estado === 'SERVICE') {
+        filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'EN SERVICE');
+    } else {
+        aplicarFiltros();
+    }
+    updateDashboard();
+    showToast('info', 'Filtro aplicado', `Mostrando equipos ${estado === 'TODOS' ? 'de todos los estados' : estado}`);
+}
+
+function aplicarFiltrosPorEstado(estado) {
+    if (estado === 'OPERATIVO') filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'OPERATIVO');
+    else if (estado === 'PARADO') filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'PARADO');
+    else if (estado === 'SERVICE') filteredData = EQUIPMENT_DATA.filter(e => e.Estado === 'EN SERVICE');
+    updateDashboard();
+    showToast('info', 'Filtro desde gráfico', `Mostrando estado: ${estado}`);
+}
+
+function mostrarDetalleKPI(tipo) {
+    let mensaje = '';
+    let titulo = '';
+    
+    if (tipo === 'disponibilidad') {
+        const total = filteredData.length;
+        const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
+        const parados = filteredData.filter(e => e.Estado === 'PARADO').length;
+        const service = filteredData.filter(e => e.Estado === 'EN SERVICE').length;
+        titulo = '📊 DISPONIBILIDAD DETALLADA';
+        mensaje = `Total equipos: ${total}\n\n✅ Operativos: ${operativos}\n⏸️ Parados: ${parados}\n🔧 En Service: ${service}\n\nDisponibilidad: ${total > 0 ? Math.round(operativos/total*100) : 0}%`;
+    } else if (tipo === 'operativos') {
+        const total = filteredData.length;
+        const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO');
+        titulo = '🟢 EQUIPOS OPERATIVOS';
+        mensaje = `Total: ${operativos.length} de ${total} equipos\n\n` + operativos.map(e => `• ${e.ID_Equipo}: ${e.Equipo}\n  📍 ${e.sucursal} | 📈 ${e.Lectura}`).join('\n');
+    } else if (tipo === 'tiempoMuerto') {
+        let tiempoMuertoTotal = 0;
+        const parados = filteredData.filter(e => e.Estado === 'PARADO');
+        parados.forEach(e => {
+            if (e.Timestamp_Parada) {
+                tiempoMuertoTotal += (new Date() - new Date(e.Timestamp_Parada)) / 3600000;
+            }
+        });
+        titulo = '⏱️ TIEMPO MUERTO DETALLADO';
+        mensaje = `Total este mes: ${tiempoMuertoTotal.toFixed(1)}h\n\nEquipos parados:\n` + parados.map(e => `• ${e.ID_Equipo}: ${calcularTiempoParada(e)}\n  📍 ${e.sucursal} | ${e.Motivo_Parada || 'Sin motivo'}`).join('\n');
+    }
+    
+    // Crear modal personalizado
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[1000]';
+    modal.innerHTML = `
+        <div class="bg-slate-900/95 rounded-2xl p-8 shadow-2xl border-2 border-cyan-500/50 w-full max-w-2xl modal-bounce max-h-[80vh] overflow-y-auto m-4" style="box-shadow: 0 0 60px rgba(6,182,212,0.5);">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-black text-3xl text-cyan-400" style="text-shadow: 0 0 20px rgba(6,182,212,0.8);">${titulo}</h2>
+                <button onclick="this.closest('.fixed').remove()" class="text-3xl text-cyan-300 hover:text-white hover:rotate-90 transition-all">&times;</button>
+            </div>
+            <div class="text-cyan-100 whitespace-pre-line font-mono text-sm leading-relaxed">${mensaje}</div>
+            <div class="flex justify-end mt-8">
+                <button onclick="this.closest('.fixed').remove()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-6 py-3 rounded-xl text-sm font-bold transition-all hover:scale-110" style="box-shadow: 0 0 20px rgba(6,182,212,0.5);">Cerrar</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function showToast(tipo, titulo, mensaje) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    const color = tipo === 'alert' ? '#ef4444' : (tipo === 'success' ? '#06b6d4' : '#22d3ee');
+    toast.style.borderLeftColor = color;
+    toast.innerHTML = `
+        <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">${tipo === 'alert' ? '⚠️' : '✅'}</span>
+            <div>
+                <strong class="text-lg block mb-1" style="color: ${color}; text-shadow: 0 0 10px ${color};">${titulo}</strong>
+                <span class="text-sm text-cyan-100">${mensaje}</span>
+            </div>
+        </div>
+    `;
+    toast.onclick = () => {
+        toast.style.transform = 'translateX(400px)';
+        setTimeout(() => toast.remove(), 300);
+    };
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.transform = 'translateX(400px)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 6000);
+}
+
+window.onload = () => {
+    loadData();
+    setInterval(loadData, 60000);
+};
+</script>
+</body>
+</html>city = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 6000);
 }
 
 window.onload = () => {
