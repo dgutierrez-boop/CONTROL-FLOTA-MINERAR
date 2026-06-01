@@ -262,8 +262,8 @@
                                 </tr>
                             </thead>
                             <tbody id="equipmentTableBody">
-                                <tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>
-                            </tbody>
+    <tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -288,18 +288,22 @@
 
 <script>
 // ✅ FIX: Limpieza total de caché y datos iniciales vacíos
+// ✅ LIMPIAR CACHÉ Y DATOS LOCALES
 localStorage.clear();
-let currentSucursal = 'TODAS';
-let EQUIPMENT_DATA = []; // 🚫 CERO datos hardcodeados
-let filteredData = [];
-let horasChart = null, estadoChart = null;
-let cronometroInterval = null;
-let alertasNovedades = 0;
+sessionStorage.clear();
 
-const SHEETS_URLS = {
-    'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
-    'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=149809572&single=true&output=csv',
-    'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv'
+// Forzar recarga sin caché en cada petición
+fetchSheet = async function(url, sucursal) {
+    const response = await fetch(url + '&t=' + Date.now(), {
+        cache: 'no-store',
+        headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        }
+    });
+    const text = await response.text();
+    return parseCSV(text, sucursal);
 };
 
 async function loadData() {
