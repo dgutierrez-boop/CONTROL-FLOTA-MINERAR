@@ -368,16 +368,22 @@ async function loadData() {
 }
 
 async function fetchSheet(url, sucursal) {
-    const response = await fetch(url + '&t=' + Date.now(), {
-        cache: 'no-store',
-        headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
+    try {
+        // Agregamos la fecha a la URL para evitar caché (NO usamos headers)
+        const freshUrl = url + '&t=' + Date.now();
+        
+        const response = await fetch(freshUrl);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
         }
-    });
-    const text = await response.text();
-    return parseCSV(text, sucursal);
+        
+        const text = await response.text();
+        return parseCSV(text, sucursal);
+    } catch (error) {
+        console.error(`❌ Error cargando ${sucursal}:`, error);
+        return [];
+    }
 }
 
 function parseCSV(text, sucursal) {
