@@ -19,10 +19,15 @@
             overflow-x: hidden;
         }
         body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), 
                               linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
-            background-size: 35px 35px; pointer-events: none; z-index: 0;
+            background-size: 35px 35px;
+            pointer-events: none;
+            z-index: 0;
         }
         .glass-card {
             background: rgba(15, 20, 30, 0.75);
@@ -30,18 +35,24 @@
             border-radius: 20px;
             border: 1px solid rgba(0, 255, 136, 0.2);
             box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
-            transition: all 0.2s ease; overflow: hidden;
+            transition: all 0.2s ease;
+            overflow: hidden;
         }
         .header-container {
-            background: rgba(8,12,20,0.9); backdrop-filter: blur(12px);
-            border-radius: 20px; border: 1px solid rgba(192,132,252,0.4);
-            padding: 16px 24px; margin-bottom: 24px;
+            background: rgba(8,12,20,0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(192,132,252,0.4);
+            padding: 16px 24px;
+            margin-bottom: 24px;
         }
         .logo-shield {
             width: 56px; height: 56px;
             background: linear-gradient(135deg, #0f1520, #0a0f18);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 10px rgba(0,255,136,0.2); border: 1px solid #00ff88;
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 10px rgba(0,255,136,0.2);
+            border: 1px solid #00ff88;
         }
         .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
         .kpi-cyan { border-left: 4px solid #00ff88; background: linear-gradient(115deg, rgba(0,255,136,0.08), rgba(0,255,136,0.02)); }
@@ -49,11 +60,20 @@
         .kpi-purple { border-left: 4px solid #c084fc; background: linear-gradient(115deg, rgba(192,132,252,0.08), rgba(192,132,252,0.02)); }
         
         .sucursal-btn {
-            padding: 8px 20px; border-radius: 30px; font-weight: 700; font-size: 13px;
-            transition: all 0.3s ease; cursor: pointer;
-            background: rgba(20, 25, 35, 0.7); border: 2px solid rgba(100,100,150,0.4); color: #b0c4de;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(20, 25, 35, 0.7);
+            border: 2px solid rgba(100,100,150,0.4);
+            color: #b0c4de;
         }
-        .sucursal-btn.active { animation: pulse-border 1.5s ease-out infinite; color: #fff !important; }
+        .sucursal-btn.active {
+            animation: pulse-border 1.5s ease-out infinite;
+            color: #fff !important;
+        }
         .btn-todas.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
         .btn-malagueno.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
         .btn-barker.active { border-color: #ff8800 !important; box-shadow: 0 0 15px rgba(255,136,0,0.6); }
@@ -71,25 +91,42 @@
         .status-service { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
         
         .btn-filter {
-            transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700;
-            padding: 8px 12px; border-radius: 10px; width: 100%; text-align: left;
-            border: 1px solid rgba(100,100,150,0.4); background: rgba(20,25,35,0.7); color: #b0c4de;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 10px;
+            width: 100%;
+            text-align: left;
+            border: 1px solid rgba(100,100,150,0.4);
+            background: rgba(20,25,35,0.7);
+            color: #b0c4de;
         }
         .btn-filter.active {
             background: linear-gradient(95deg, #00ff88, #00cc66);
-            border-color: #00ff88; color: #05050a; box-shadow: 0 0 10px rgba(0,255,136,0.3);
+            border-color: #00ff88;
+            color: #05050a;
+            box-shadow: 0 0 10px rgba(0,255,136,0.3);
         }
         
         .cronometro-box {
             font-family: 'Courier New', monospace;
             background: linear-gradient(135deg, #fef3c7, #fde68a);
-            padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 14px;
-            text-align: center; color: #92400e; border: 2px solid #f59e0b; min-width: 70px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 14px;
+            text-align: center;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+            min-width: 70px;
         }
         .cronometro-parado {
             animation: blink-red 1s infinite;
             background: linear-gradient(135deg, #fee2e2, #fecaca);
-            color: #991b1b; border-color: #ef4444;
+            color: #991b1b;
+            border-color: #ef4444;
         }
         @keyframes blink-red { 0%,100% { opacity:1; box-shadow:0 0 5px #ef4444; } 50% { opacity:0.4; box-shadow:0 0 15px #ef4444; } }
         
@@ -106,10 +143,21 @@
         select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; width: 100%; }
         .siren-alert { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
         .toast-notification {
-            position: fixed; bottom: 20px; right: 20px; background: #0f1520; border: 1px solid #00ff88;
-            backdrop-filter: blur(10px); color: white; padding: 12px 16px; border-radius: 12px;
-            border-left: 4px solid #00ff88; box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2);
-            z-index: 1000; animation: slideInRight 0.3s ease-out; max-width: 350px; font-size: 11px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0f1520;
+            border: 1px solid #00ff88;
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-left: 4px solid #00ff88;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            max-width: 350px;
+            font-size: 11px;
         }
         @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
@@ -187,7 +235,7 @@
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
             <aside>
                 <div class="glass-card p-4 h-full">
-                    <h3 class="font-black mb-2 text-emerald-400"> FILTROS ️</h3>
+                    <h3 class="font-black mb-2 text-emerald-400">📋 FILTROS ️</h3>
                     <label class="text-xs font-bold text-slate-300"> PROPIEDAD</label>
                     <select id="filterPropiedad" class="select-neon w-full mb-3" onchange="aplicarFiltros()">
                         <option value="TODAS">Todas</option>
@@ -284,10 +332,10 @@ let horasChart = null, estadoChart = null;
 let cronometroInterval = null;
 let alertasNovedades = 0;
 
-// ✅ URLs CORRECTAS DE TUS SHEETS PUBLICADOS
+// ✅ URLs CORREGIDAS CON EL NUEVO GID DE BARKER
 const SHEETS_URLS = {
     'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
-    'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=149809572&single=true&output=csv',
+    'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=788057714&single=true&output=csv',
     'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv'
 };
 
@@ -347,8 +395,7 @@ function parseCSV(text, sucursal) {
         
         headers.forEach((header, index) => { row[header] = values[index] || ''; });
         
-        // ✅ CORRECCIÓN: Normalizar Estado para que los gráficos funcionen
-        // Si el sheet dice "FUERA DE SERVICIO", lo convertimos a "PARADO" para que lo entienda el gráfico
+        // ✅ CORRECCIÓN: Normalizar Estado
         if (row.Estado && row.Estado.toUpperCase().includes('FUERA DE SERVICIO')) {
             row.Estado = 'PARADO';
         }
@@ -470,7 +517,6 @@ function renderTable() {
         tr.onclick = () => openEquipmentModal(e);
         
         const tiempoParada = calcularTiempoParada(e);
-        // ✅ CORRECCIÓN: Usar el estado normalizado
         const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : (e.Estado === 'PARADO' ? 'status-parado' : 'status-service');
         const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : (e.Estado === 'PARADO' ? '⏸️ Parado' : ' En Service');
         
@@ -540,14 +586,12 @@ function checkAlertas() {
 }
 
 function openEquipmentModal(equipo) {
-    // ✅ CORRECCIÓN: Verificación de seguridad para evitar el error "null"
     const modal = document.getElementById('equipmentModal');
     if (!modal) return;
     
     const modalContent = modal.querySelector('.modal-bounce');
     if (!modalContent) return;
 
-    // Reiniciar animación
     modalContent.classList.remove('modal-bounce');
     void modalContent.offsetHeight;
     modalContent.classList.add('modal-bounce');
