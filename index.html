@@ -9,14 +9,13 @@
     <title>Minerar 2026 - Panel de Flota</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617);
-            color: #e2e8f0;
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); 
+            color: #e2e8f0; 
             font-size: clamp(11px, 2.5vw, 12px);
             min-height: 100vh;
             min-height: 100dvh;
@@ -464,45 +463,11 @@
                 justify-content: center;
                 flex-wrap: wrap;
             }
-            .glass-card {
-                padding: clamp(12px, 4vw, 16px);
-            }
-            .chart-container { 
-                height: clamp(200px, 50vw, 240px); 
-            }
-            .table-scroll { 
-                max-height: clamp(250px, 40vw, 300px);
-            }
-            table {
-                min-width: 900px;
-                font-size: clamp(10px, 2.8vw, 11px);
-            }
-            table th, table td {
-                padding: clamp(6px, 2vw, 8px);
-            }
-            .modal-bounce {
-                max-width: 95vw !important;
-                max-height: 95vh !important;
-                margin: 2.5vw !important;
-            }
-            #newReportAlert .alert-card {
-                border-radius: 20px;
-                padding: 20px 16px;
-            }
-            .sucursal-btn {
-                font-size: 12px;
-                padding: 8px 16px;
-                margin: 4px;
-            }
-            .kpi-cyan, .kpi-amber, .kpi-purple {
-                padding: clamp(12px, 4vw, 16px);
-            }
-            .kpi-cyan #kpiDisponibilidad,
-            .kpi-cyan #kpiOperativos,
-            .kpi-amber #kpiTiempoMuerto,
-            .kpi-purple #kpiAlertas {
-                font-size: clamp(36px, 10vw, 48px);
-            }
+            .header-container h1 { font-size: 18px; }
+            .glass-card { padding: clamp(12px, 4vw, 16px); }
+            .chart-container { height: clamp(200px, 50vw, 240px); }
+            .table-scroll { max-height: clamp(250px, 40vw, 300px); }
+            body { padding: 10px; font-size: 13px; }
         }
         
         @media (max-width: 480px) {
@@ -520,9 +485,9 @@
                 border-radius: 16px;
             }
             .sucursal-btn {
-                font-size: 11px;
-                padding: 6px 12px;
-                margin: 2px;
+                font-size: 12px;
+                padding: 8px 16px;
+                margin: 4px;
             }
             .btn-filter {
                 font-size: 9px;
@@ -813,6 +778,11 @@
 </div>
 
 <script>
+// ==================== FUNCIÓN CLAMP (CORREGIDA) ====================
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+
 // ==================== CONSTANTES ====================
 let currentSucursal = 'TODAS';
 let EQUIPMENT_DATA = [];
