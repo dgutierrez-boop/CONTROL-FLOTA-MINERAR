@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minerar 2026 - Panel de Flota | Horómetros y Kilómetros</title>
+    <title>Minerar 2026 - Panel de Flota</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -16,14 +16,13 @@
             font-size: 12px;
             min-height: 100vh;
             position: relative;
-            overflow-x: hidden;
         }
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
             background-size: 35px 35px;
             pointer-events: none;
             z-index: 0;
@@ -35,11 +34,7 @@
             border: 1px solid rgba(0, 255, 136, 0.2);
             box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
             transition: all 0.2s ease;
-        }
-        .glass-card:hover {
-            transform: translateY(-3px);
-            border-color: #00ff88;
-            box-shadow: 0 8px 25px rgba(0,255,136,0.15);
+            overflow: hidden; /* ✅ FIX: Evita desbordes */
         }
         .header-container {
             background: rgba(8,12,20,0.9);
@@ -61,6 +56,7 @@
         .kpi-cyan { border-left: 4px solid #00ff88; background: linear-gradient(115deg, rgba(0,255,136,0.08), rgba(0,255,136,0.02)); }
         .kpi-amber { border-left: 4px solid #ff8800; background: linear-gradient(115deg, rgba(255,136,0,0.08), rgba(255,136,0,0.02)); }
         .kpi-purple { border-left: 4px solid #c084fc; background: linear-gradient(115deg, rgba(192,132,252,0.08), rgba(192,132,252,0.02)); }
+        
         .sucursal-btn {
             padding: 8px 20px;
             border-radius: 30px;
@@ -74,88 +70,71 @@
         }
         .sucursal-btn.active {
             animation: pulse-border 1.5s ease-out infinite;
+            color: #fff !important;
         }
-        .btn-malagueno.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); color: #00ff88; }
-        .btn-barker.active { border-color: #ff8800 !important; box-shadow: 0 0 15px rgba(255,136,0,0.6); color: #ff8800; }
-        .btn-pampita.active { border-color: #c084fc !important; box-shadow: 0 0 15px rgba(192,132,252,0.6); color: #c084fc; }
+        .btn-todas.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
+        .btn-malagueno.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
+        .btn-barker.active { border-color: #ff8800 !important; box-shadow: 0 0 15px rgba(255,136,0,0.6); }
+        .btn-pampita.active { border-color: #c084fc !important; box-shadow: 0 0 15px rgba(192,132,252,0.6); }
+        
         @keyframes pulse-border {
             0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); }
             70% { box-shadow: 0 0 0 8px rgba(0,255,136,0); }
             100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
         }
+        
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
         .status-operativo { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
         .status-parado { background: rgba(255,136,0,0.2); color: #ff8800; border: 1px solid #ff8800; }
         .status-service { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
+        
         .btn-filter {
-            transition: all 0.2s;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 8px 12px;
-            border-radius: 10px;
-            width: 100%;
-            text-align: left;
-            border: 1px solid rgba(100,100,150,0.4);
-            background: rgba(20,25,35,0.7);
-            color: #b0c4de;
+            transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700;
+            padding: 8px 12px; border-radius: 10px; width: 100%; text-align: left;
+            border: 1px solid rgba(100,100,150,0.4); background: rgba(20,25,35,0.7); color: #b0c4de;
         }
         .btn-filter.active {
             background: linear-gradient(95deg, #00ff88, #00cc66);
-            border-color: #00ff88;
-            color: #05050a;
-            box-shadow: 0 0 10px rgba(0,255,136,0.3);
+            border-color: #00ff88; color: #05050a; box-shadow: 0 0 10px rgba(0,255,136,0.3);
         }
+        
         .cronometro-box {
             font-family: 'Courier New', monospace;
             background: linear-gradient(135deg, #fef3c7, #fde68a);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: 800;
-            font-size: 14px;
-            text-align: center;
-            color: #92400e;
-            border: 2px solid #f59e0b;
+            padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 14px;
+            text-align: center; color: #92400e; border: 2px solid #f59e0b; min-width: 70px;
         }
         .cronometro-parado {
             animation: blink-red 1s infinite;
             background: linear-gradient(135deg, #fee2e2, #fecaca);
-            color: #991b1b;
-            border-color: #ef4444;
+            color: #991b1b; border-color: #ef4444;
         }
-        @keyframes blink-red {
-            0%,100% { opacity:1; box-shadow:0 0 5px #ef4444; }
-            50% { opacity:0.4; box-shadow:0 0 15px #ef4444; }
-        }
-        .modal-bounce {
-            animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important;
-        }
-        @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3); }
-            50% { opacity: 1; transform: scale(1.05); }
-            70% { transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1); }
-        }
+        @keyframes blink-red { 0%,100% { opacity:1; box-shadow:0 0 5px #ef4444; } 50% { opacity:0.4; box-shadow:0 0 15px #ef4444; } }
+        
+        .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
+        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+        
         .chart-container { position: relative; height: 260px; width: 100%; margin-top: 16px; }
-        .table-scroll { max-height: 400px; overflow-y: auto; border-radius: 12px; }
+        .table-scroll { max-height: 400px; overflow-y: auto; border-radius: 12px; width: 100%; }
         .table-scroll::-webkit-scrollbar { width: 5px; background: #1a1f2e; border-radius: 10px; }
         .table-scroll::-webkit-scrollbar-thumb { background: #00ff88; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; } /* ✅ FIX: Min-width para scroll horizontal */
         table thead th { position: sticky; top: 0; background: #0f1520; z-index: 10; color: #00ff88; font-weight: 700; border-bottom: 1px solid rgba(0,255,136,0.3); }
         tr:hover { background-color: rgba(0,255,136,0.08); cursor: pointer; }
-        select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; }
+        select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; width: 100%; }
         .siren-alert { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
         .toast-notification {
-            position: fixed; bottom: 20px; right: 20px;
-            background: #0f1520; border: 1px solid #00ff88;
-            backdrop-filter: blur(10px); color: white;
-            padding: 12px 16px; border-radius: 12px;
-            border-left: 4px solid #00ff88;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2);
-            z-index: 1000; animation: slideInRight 0.3s ease-out;
-            max-width: 350px; font-size: 11px;
+            position: fixed; bottom: 20px; right: 20px; background: #0f1520; border: 1px solid #00ff88;
+            backdrop-filter: blur(10px); color: white; padding: 12px 16px; border-radius: 12px;
+            border-left: 4px solid #00ff88; box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2);
+            z-index: 1000; animation: slideInRight 0.3s ease-out; max-width: 350px; font-size: 11px;
         }
         @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } .chart-container { height: 220px; } }
+        
+        @media (max-width: 768px) { 
+            .header-container { flex-direction: column; gap: 16px; text-align: center; } 
+            .chart-container { height: 220px; } 
+        }
     </style>
 </head>
 <body>
@@ -182,42 +161,35 @@
                 <div class="text-[9px] font-bold uppercase text-purple-400">🔧 EN SERVICE</div>
                 <div id="totalService" class="text-3xl font-black text-purple-300">0</div>
             </div>
-            <button onclick="forceRefreshData()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all flex items-center gap-2">⟳ ACTUALIZAR 🔄</button>
+            <button onclick="forceRefreshData()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all flex items-center gap-2"> ACTUALIZAR 🔄</button>
         </div>
     </div>
 
     <!-- SUCURSALES -->
     <div class="glass-card p-5 mb-6">
         <div class="text-center mb-4">
+            <!-- ✅ FIX: Botones correctamente mapeados -->
             <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
-                <button id="btnMalagueno" class="sucursal-btn btn-malagueno active" onclick="cambiarSucursal('MALAGUENO')">🏭 TODAS</button>
-                <button id="btnBarker" class="sucursal-btn btn-barker" onclick="cambiarSucursal('BARKER')">📍 MALAGUEÑO</button>
-                <button id="btnPampita" class="sucursal-btn btn-pampita" onclick="cambiarSucursal('LA_PAMPITA')">📍 BARKER</button>
-                <button class="sucursal-btn" onclick="cambiarSucursal('LA_PAMPITA')">📍 LA PAMPITA</button>
+                <button id="btnTodas" class="sucursal-btn btn-todas active" onclick="cambiarSucursal('TODAS')">🏭 TODAS</button>
+                <button id="btnMalagueno" class="sucursal-btn btn-malagueno" onclick="cambiarSucursal('MALAGUENO')"> MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn btn-barker" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
+                <button id="btnPampita" class="sucursal-btn btn-pampita" onclick="cambiarSucursal('LA_PAMPITA')"> LA PAMPITA</button>
             </div>
         </div>
         
         <div class="grid md:grid-cols-4 gap-4 my-4">
             <div class="glass-card p-4 kpi-cyan">
-                <div class="flex justify-between">
-                    <span class="font-bold text-emerald-400">✅ DISPONIBILIDAD</span>
-                </div>
+                <div class="flex justify-between"><span class="font-bold text-emerald-400">✅ DISPONIBILIDAD</span></div>
                 <div id="kpiDisponibilidad" class="text-4xl font-black text-emerald-300 my-1">0%</div>
-                <div class="flex justify-between text-[11px]">
-                    <span>Equipos operativos</span>
-                </div>
+                <div class="flex justify-between text-[11px]"><span>Equipos operativos</span></div>
             </div>
             <div class="glass-card p-4 kpi-cyan">
-                <div class="flex justify-between">
-                    <span class="font-bold text-emerald-400">🟢 OPERATIVOS</span>
-                </div>
+                <div class="flex justify-between"><span class="font-bold text-emerald-400">🟢 OPERATIVOS</span></div>
                 <div id="kpiOperativos" class="text-4xl font-black text-emerald-300 my-1">0</div>
                 <div class="text-[11px]">De <span id="kpiTotal">0</span> equipos totales</div>
             </div>
             <div class="glass-card p-4 kpi-amber">
-                <div class="flex justify-between">
-                    <span class="font-bold text-amber-400">⏱️ TIEMPO MUERTO</span>
-                </div>
+                <div class="flex justify-between"><span class="font-bold text-amber-400">⏱️ TIEMPO MUERTO</span></div>
                 <div id="kpiTiempoMuerto" class="text-4xl font-black text-amber-300 my-1">0h</div>
                 <div class="text-[11px]">Este mes</div>
             </div>
@@ -233,33 +205,32 @@
 
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
             <aside>
-                <div class="glass-card p-4">
-                    <h3 class="font-black mb-2 text-emerald-400">📋 FILTROS ⚙️</h3>
-                    
+                <div class="glass-card p-4 h-full">
+                    <h3 class="font-black mb-2 text-emerald-400">📋 FILTROS ️</h3>
                     <label class="text-xs font-bold text-slate-300">📋 PROPIEDAD</label>
                     <select id="filterPropiedad" class="select-neon w-full mb-3" onchange="aplicarFiltros()">
                         <option value="TODAS">Todas</option>
                         <option value="PROPIO">Propio</option>
                         <option value="ALQUILADO">Alquilado</option>
                     </select>
-                    
                     <label class="text-xs font-bold text-slate-300">🚜 TIPO DE EQUIPO</label>
                     <select id="filterTipo" class="select-neon w-full mb-3" onchange="aplicarFiltros()">
                         <option value="TODOS">Todos</option>
-                        <option value="Excavadora">Excavadora</option>
                         <option value="Camión">Camión</option>
-                        <option value="Retroexcavadora">Retroexcavadora</option>
-                        <option value="Cargador">Cargador</option>
+                        <option value="Cargadora">Cargadora</option>
+                        <option value="Topador">Topador</option>
+                        <option value="Excavadora">Excavadora</option>
+                        <option value="Motoniveladora">Motoniveladora</option>
+                        <option value="Perforadora">Perforadora</option>
                         <option value="Otros">Otros</option>
                     </select>
-                    
                     <div class="mt-4 p-3 bg-emerald-950/20 rounded-xl border border-emerald-500/30">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-[9px] font-bold uppercase text-emerald-400">📢 ALERTAS ACTIVAS</span>
                             <div id="alertasLedSmall" class="siren-alert"></div>
                         </div>
                         <div id="realTimeAlerts" class="text-[9px] max-h-48 overflow-y-auto">
-                            <p class="text-slate-400 text-center py-2">📭 Sin alertas</p>
+                            <p class="text-slate-400 text-center py-2"> Sin alertas</p>
                         </div>
                     </div>
                 </div>
@@ -269,15 +240,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div class="glass-card p-4">
                         <h3 class="font-black uppercase text-emerald-400 text-sm mb-2">📊 HORAS TRABAJADAS VS TIEMPO MUERTO POR SUCURSAL</h3>
-                        <div class="chart-container">
-                            <canvas id="horasChart"></canvas>
-                        </div>
+                        <div class="chart-container"><canvas id="horasChart"></canvas></div>
                     </div>
                     <div class="glass-card p-4">
-                        <h3 class="font-black uppercase text-purple-400 text-sm mb-2">🍩 ESTADO DE EQUIPOS (OPERATIVO / PARADO / EN SERVICE)</h3>
-                        <div class="chart-container">
-                            <canvas id="estadoChart"></canvas>
-                        </div>
+                        <h3 class="font-black uppercase text-purple-400 text-sm mb-2"> ESTADO DE EQUIPOS</h3>
+                        <div class="chart-container"><canvas id="estadoChart"></canvas></div>
                     </div>
                 </div>
                 
@@ -303,12 +270,8 @@
                                 </tr>
                             </thead>
                             <tbody id="equipmentTableBody">
-    <tr>
-        <td colspan="10" class="p-4 text-center text-slate-400">
-            🔄 Cargando datos...
-        </td>
-    </tr>
-</tbody>
+                                <tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -333,14 +296,13 @@
 
 <script>
 // ==================== CONSTANTES ====================
-let currentSucursal = 'MALAGUENO';
+let currentSucursal = 'TODAS'; // ✅ FIX: Default correcto
 let EQUIPMENT_DATA = [];
 let filteredData = [];
 let horasChart = null, estadoChart = null;
 let cronometroInterval = null;
 let alertasNovedades = 0;
 
-// ✅ URLs CORREGIDAS CON GID CORRECTO
 const SHEETS_URLS = {
     'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
     'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=149809572&single=true&output=csv',
@@ -348,54 +310,30 @@ const SHEETS_URLS = {
 };
 
 // ==================== FUNCIONES PRINCIPALES ====================
-
 async function loadData() {
     try {
-        console.log('🔄 Cargando datos para:', currentSucursal);
+        console.log('🔄 Cargando todas las sucursales...');
         document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>';
         
         let allData = [];
-        
-        if (currentSucursal === 'MALAGUENO') {
-            // Cargar todas las sucursales
-            for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
-                console.log('📡 Cargando:', sucursal, url);
-                const data = await fetchSheet(url, sucursal);
-                console.log('✅', sucursal, ':', data.length, 'filas');
-                allData = allData.concat(data);
-            }
-        } else {
-            // Cargar sucursal específica
-            const url = SHEETS_URLS[currentSucursal];
-            console.log('📡 Cargando:', currentSucursal, url);
-            allData = await fetchSheet(url, currentSucursal);
-            console.log('✅', currentSucursal, ':', allData.length, 'filas');
-        }
-        
-        console.log('📊 Total equipos cargados:', allData.length);
-        
-        if (allData.length === 0) {
-            console.warn('⚠️ No se cargaron datos - Verificá que las hojas estén publicadas');
-            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-amber-400">⚠️ No hay datos disponibles<br><small>Verificá que las hojas estén publicadas en Google Sheets</small></td></tr>';
-            EQUIPMENT_DATA = [];
-            filteredData = [];
-            updateKPIs();
-            updateCharts();
-            return;
+        // ✅ FIX: Siempre cargamos las 3 hojas y filtramos en el cliente
+        for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
+            const data = await fetchSheet(url, sucursal);
+            allData = allData.concat(data);
+            console.log(`✅ ${sucursal}: ${data.length} filas`);
         }
         
         EQUIPMENT_DATA = allData;
-        filteredData = [...EQUIPMENT_DATA];
+        console.log(` Total equipos cargados: ${EQUIPMENT_DATA.length}`);
         
         aplicarFiltros();
         startCronometros();
         checkAlertas();
-        
-        console.log('✅ Dashboard actualizado');
+        showToast('success', 'Datos actualizados', `${allData.length} equipos cargados`);
         
     } catch (error) {
-        console.error('❌ Error crítico:', error);
-        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-red-400">❌ Error al cargar datos<br><small>' + error.message + '</small><br><button onclick="loadData()" class="mt-2 px-3 py-1 bg-emerald-600 rounded text-white text-xs">🔄 Reintentar</button></td></tr>';
+        console.error('❌ Error:', error);
+        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-red-400">❌ Error al cargar datos<br><small>' + error.message + '</small></td></tr>';
     }
 }
 
@@ -408,38 +346,31 @@ async function fetchSheet(url, sucursal) {
 function parseCSV(text, sucursal) {
     const lines = text.trim().split('\n').filter(l => l.trim());
     if (lines.length < 2) return [];
-    
     const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
     const data = [];
-    
     for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
-        
         const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
         const row = {};
-        
-        headers.forEach((header, index) => {
-            row[header] = values[index] || '';
-        });
-        
-        // Solo agregar si tiene ID
+        headers.forEach((header, index) => { row[header] = values[index] || ''; });
         if (row['ID_Equipo'] && row['ID_Equipo'].trim()) {
-            row.sucursal = sucursal;
+            row.sucursal = sucursal; // ✅ FIX: Asignación correcta
             data.push(row);
         }
     }
-    
     return data;
 }
 
+// ✅ FIX: Filtro que SÍ respeta la sucursal seleccionada
 function aplicarFiltros() {
     const propiedad = document.getElementById('filterPropiedad').value;
     const tipo = document.getElementById('filterTipo').value;
     
     filteredData = EQUIPMENT_DATA.filter(e => {
+        const matchSucursal = currentSucursal === 'TODAS' || e.sucursal === currentSucursal;
         const matchPropiedad = propiedad === 'TODAS' || e.Propiedad === propiedad;
         const matchTipo = tipo === 'TODOS' || e.Tipo_Equipo === tipo;
-        return matchPropiedad && matchTipo;
+        return matchSucursal && matchPropiedad && matchTipo;
     });
     
     updateDashboard();
@@ -466,21 +397,16 @@ function updateKPIs() {
     const disponibilidad = total > 0 ? Math.round(operativos/total*100) : 0;
     document.getElementById('kpiDisponibilidad').innerText = disponibilidad + '%';
     
-    // Calcular tiempo muerto
     let tiempoMuertoTotal = 0;
     filteredData.forEach(e => {
         if (e.Estado === 'PARADO' && e.Timestamp_Parada) {
-            const inicio = new Date(e.Timestamp_Parada);
-            const ahora = new Date();
-            const horas = (ahora - inicio) / 3600000;
-            tiempoMuertoTotal += horas;
+            tiempoMuertoTotal += (new Date() - new Date(e.Timestamp_Parada)) / 3600000;
         }
     });
     document.getElementById('kpiTiempoMuerto').innerText = tiempoMuertoTotal.toFixed(1) + 'h';
 }
 
 function updateCharts() {
-    // Gráfico de horas por sucursal
     const sucursales = ['Malagueño', 'Barker', 'La Pampita'];
     const horasData = sucursales.map(suc => {
         const equiposSuc = filteredData.filter(e => e.sucursal === suc.toUpperCase().replace(' ', '_'));
@@ -489,75 +415,39 @@ function updateCharts() {
     
     const ctxHoras = document.getElementById('horasChart').getContext('2d');
     if (horasChart) horasChart.destroy();
-    
     horasChart = new Chart(ctxHoras, {
         type: 'bar',
-        data: {
-            labels: sucursales,
-            datasets: [{
-                label: 'Horas Trabajadas',
-                data: horasData,
-                backgroundColor: ['#00ff88', '#ff8800', '#c084fc'],
-                borderRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } },
-                x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
-            }
-        }
+        data: { labels: sucursales, datasets: [{ label: 'Horas', data: horasData, backgroundColor: ['#00ff88', '#ff8800', '#c084fc'], borderRadius: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } }
     });
     
-    // Gráfico de estado
     const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
     const parados = filteredData.filter(e => e.Estado === 'PARADO').length;
     const service = filteredData.filter(e => e.Estado === 'EN_SERVICE').length;
     
     const ctxEstado = document.getElementById('estadoChart').getContext('2d');
     if (estadoChart) estadoChart.destroy();
-    
     estadoChart = new Chart(ctxEstado, {
         type: 'doughnut',
-        data: {
-            labels: ['Operativo', 'Parado', 'En Service'],
-            datasets: [{
-                data: [operativos, parados, service],
-                backgroundColor: ['#00ff88', '#ff8800', '#f87171'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '70%',
-            plugins: {
-                legend: { position: 'right', labels: { color: '#cbd5e1' } }
-            }
-        }
+        data: { labels: ['Operativo', 'Parado', 'En Service'], datasets: [{ data: [operativos, parados, service], backgroundColor: ['#00ff88', '#ff8800', '#f87171'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } } }
     });
 }
 
 function renderTable() {
     const tbody = document.getElementById('equipmentTableBody');
     tbody.innerHTML = '';
-    
     if (filteredData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">📭 No hay datos disponibles</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">📭 No hay datos disponibles para esta selección</td></tr>';
         return;
     }
-    
     filteredData.slice(0, 100).forEach(e => {
         const tr = document.createElement('tr');
         tr.className = 'border-b border-slate-700/50 hover:bg-emerald-950/20';
         tr.onclick = () => openEquipmentModal(e);
-        
         const tiempoParada = calcularTiempoParada(e);
         const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : (e.Estado === 'PARADO' ? 'status-parado' : 'status-service');
-        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : (e.Estado === 'PARADO' ? '⏸️ Parado' : '🔧 En Service');
+        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : (e.Estado === 'PARADO' ? '⏸️ Parado' : ' En Service');
         
         tr.innerHTML = `
             <td class="p-2 font-bold text-emerald-300">${e.ID_Equipo}</td>
@@ -571,23 +461,15 @@ function renderTable() {
             <td class="p-2">${e.Reportante || '-'}</td>
             <td class="p-2">${e.Fecha_Carga || '-'} ${e.Hora_Carga || ''}</td>
         `;
-        
         tbody.appendChild(tr);
     });
 }
 
 function calcularTiempoParada(equipo) {
     if (equipo.Estado !== 'PARADO' || !equipo.Timestamp_Parada) return '--:--:--';
-    
-    const inicio = new Date(equipo.Timestamp_Parada);
-    const ahora = new Date();
-    const diff = ahora - inicio;
-    
-    const horas = Math.floor(diff / 3600000);
-    const minutos = Math.floor((diff % 3600000) / 60000);
-    const segundos = Math.floor((diff % 60000) / 1000);
-    
-    return `${String(horas).padStart(2,'0')}:${String(minutos).padStart(2,'0')}:${String(segundos).padStart(2,'0')}`;
+    const diff = new Date() - new Date(equipo.Timestamp_Parada);
+    const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
 function startCronometros() {
@@ -598,9 +480,7 @@ function startCronometros() {
                 const row = cell.closest('tr');
                 const id = row.cells[0].innerText;
                 const equipo = EQUIPMENT_DATA.find(e => e.ID_Equipo === id);
-                if (equipo) {
-                    cell.innerText = calcularTiempoParada(equipo);
-                }
+                if (equipo) cell.innerText = calcularTiempoParada(equipo);
             }
         });
         checkAlertas();
@@ -611,10 +491,7 @@ function checkAlertas() {
     const alertasDiv = document.getElementById('realTimeAlerts');
     const alertas = EQUIPMENT_DATA.filter(e => {
         if (e.Estado !== 'PARADO' || !e.Timestamp_Parada) return false;
-        const inicio = new Date(e.Timestamp_Parada);
-        const ahora = new Date();
-        const horas = (ahora - inicio) / 3600000;
-        return horas > 4;
+        return ((new Date() - new Date(e.Timestamp_Parada)) / 3600000) > 4;
     });
     
     if (alertas.length > 0) {
@@ -623,16 +500,10 @@ function checkAlertas() {
         alertas.slice(-5).forEach(a => {
             const div = document.createElement('div');
             div.className = 'mb-2 p-2 bg-red-950/30 rounded-lg border-l-4 border-red-500';
-            const inicio = new Date(a.Timestamp_Parada);
-            const horas = ((new Date()) - inicio) / 3600000;
-            div.innerHTML = `
-                <div class="font-bold text-red-300 text-xs">⚠️ ${a.ID_Equipo} - ${a.Equipo}</div>
-                <div class="text-slate-400 text-[10px]">⏱️ ${horas.toFixed(1)}h parado</div>
-                <div class="text-slate-500 text-[9px] truncate">${a.Motivo_Parada || 'Sin motivo'}</div>
-            `;
+            const horas = ((new Date()) - new Date(a.Timestamp_Parada)) / 3600000;
+            div.innerHTML = `<div class="font-bold text-red-300 text-xs">⚠️ ${a.ID_Equipo} - ${a.Equipo}</div><div class="text-slate-400 text-[10px]">⏱️ ${horas.toFixed(1)}h parado</div><div class="text-slate-500 text-[9px] truncate">${a.Motivo_Parada || 'Sin motivo'}</div>`;
             alertasDiv.appendChild(div);
         });
-        
         if (alertas.length > alertasNovedades) {
             alertasNovedades = alertas.length;
             showToast('alert', '⚠️ Alertas de Parada', `${alertas.length} equipos con más de 4h parados`);
@@ -646,132 +517,66 @@ function checkAlertas() {
 function openEquipmentModal(equipo) {
     const modal = document.getElementById('equipmentModal');
     const content = document.getElementById('modalContent');
-    const modalDiv = modal.querySelector('.modal-bounce');
-    modalDiv.classList.remove('modal-bounce');
-    void modalDiv.offsetHeight;
-    modalDiv.classList.add('modal-bounce');
+    modal.querySelector('.modal-bounce').classList.remove('modal-bounce');
+    void modal.querySelector('.modal-bounce').offsetHeight;
+    modal.querySelector('.modal-bounce').classList.add('modal-bounce');
     
     const tiempoParada = calcularTiempoParada(equipo);
-    
     content.innerHTML = `
         <div class="grid md:grid-cols-2 gap-4 mb-4">
-            <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30">
-                <div class="text-xs text-slate-400 mb-1">🔢 ID Equipo</div>
-                <div class="text-xl font-bold text-emerald-300">${equipo.ID_Equipo}</div>
-            </div>
-            <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30">
-                <div class="text-xs text-slate-400 mb-1">🚜 Nombre</div>
-                <div class="text-lg font-bold text-white">${equipo.Equipo}</div>
-            </div>
+            <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30"><div class="text-xs text-slate-400 mb-1">🔢 ID Equipo</div><div class="text-xl font-bold text-emerald-300">${equipo.ID_Equipo}</div></div>
+            <div class="bg-slate-800/50 p-4 rounded-xl border border-emerald-500/30"><div class="text-xs text-slate-400 mb-1">🚜 Nombre</div><div class="text-lg font-bold text-white">${equipo.Equipo}</div></div>
         </div>
-        
         <div class="space-y-3">
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">📍 Sucursal</span>
-                <span class="font-bold text-emerald-300">${equipo.sucursal}</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">️ Tipo</span>
-                <span class="font-bold text-emerald-300">${equipo.Tipo_Equipo}</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">💰 Propiedad</span>
-                <span class="font-bold ${equipo.Propiedad === 'PROPIO' ? 'text-emerald-300' : 'text-purple-300'}">${equipo.Propiedad}</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">📊 Estado</span>
-                <span class="status-badge ${equipo.Estado === 'OPERATIVO' ? 'status-operativo' : (equipo.Estado === 'PARADO' ? 'status-parado' : 'status-service')}">${equipo.Estado}</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">⏱️ Horómetro/Kilómetro</span>
-                <span class="font-bold text-emerald-300">${equipo['Horó./Kilómetro']}</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">📈 Lectura Actual</span>
-                <span class="font-bold text-amber-300">${equipo.Lectura}</span>
-            </div>
-            ${equipo.Motivo_Parada ? `
-            <div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30">
-                <div class="text-xs text-amber-400 mb-1">⚠️ Motivo de Parada</div>
-                <div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div>
-            </div>
-            ` : ''}
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">⏰ Tiempo de Parada</span>
-                <span class="font-bold font-mono ${equipo.Estado === 'PARADO' ? 'text-amber-400' : 'text-slate-400'}">${tiempoParada}</span>
-            </div>
-            ${equipo.Reportante ? `
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">👷 Reportante</span>
-                <span class="font-bold text-emerald-300">${equipo.Reportante}</span>
-            </div>
-            ` : ''}
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <span class="text-slate-400">📅 Última Actualización</span>
-                <span class="font-bold text-emerald-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span>
-            </div>
-            ${equipo.Observaciones ? `
-            <div class="p-3 bg-slate-800/30 rounded-lg">
-                <div class="text-xs text-slate-400 mb-1">📝 Observaciones</div>
-                <div class="text-sm text-slate-300">${equipo.Observaciones}</div>
-            </div>
-            ` : ''}
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-emerald-300">${equipo.sucursal}</span></div>
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">🚜 Tipo</span><span class="font-bold text-emerald-300">${equipo.Tipo_Equipo}</span></div>
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">💰 Propiedad</span><span class="font-bold ${equipo.Propiedad === 'PROPIO' ? 'text-emerald-300' : 'text-purple-300'}">${equipo.Propiedad}</span></div>
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="status-badge ${equipo.Estado === 'OPERATIVO' ? 'status-operativo' : (equipo.Estado === 'PARADO' ? 'status-parado' : 'status-service')}">${equipo.Estado}</span></div>
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">️ Horómetro/Km</span><span class="font-bold text-emerald-300">${equipo['Horó./Kilómetro']}</span></div>
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📈 Lectura Actual</span><span class="font-bold text-amber-300">${equipo.Lectura}</span></div>
+            ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">️ Motivo de Parada</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">⏰ Tiempo de Parada</span><span class="font-bold font-mono ${equipo.Estado === 'PARADO' ? 'text-amber-400' : 'text-slate-400'}">${tiempoParada}</span></div>
+            ${equipo.Reportante ? `<div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">👷 Reportante</span><span class="font-bold text-emerald-300">${equipo.Reportante}</span></div>` : ''}
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg"><span class="text-slate-400">📅 Última Actualización</span><span class="font-bold text-emerald-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span></div>
+            ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/30 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
         </div>
     `;
-    
     document.getElementById('modalTitle').innerText = `📋 ${equipo.Equipo} (${equipo.ID_Equipo})`;
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
 }
 
 function closeEquipmentModal() {
-    const modal = document.getElementById('equipmentModal');
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
+    document.getElementById('equipmentModal').classList.add('hidden');
+    document.getElementById('equipmentModal').style.display = 'none';
 }
 
+// ✅ FIX: Lógica de sucursal corregida
 function cambiarSucursal(sucursal) {
     currentSucursal = sucursal;
-    
-    // Actualizar botones
     document.querySelectorAll('.sucursal-btn').forEach(btn => btn.classList.remove('active'));
-    if (sucursal === 'MALAGUENO') {
-        document.getElementById('btnMalagueno').classList.add('active');
-    } else if (sucursal === 'BARKER') {
-        document.getElementById('btnBarker').classList.add('active');
-    } else if (sucursal === 'LA_PAMPITA') {
-        document.getElementById('btnPampita').classList.add('active');
-    }
     
-    loadData();
+    const btnMap = { 'TODAS': 'btnTodas', 'MALAGUENO': 'btnMalagueno', 'BARKER': 'btnBarker', 'LA_PAMPITA': 'btnPampita' };
+    if(btnMap[sucursal]) document.getElementById(btnMap[sucursal]).classList.add('active');
+    
+    aplicarFiltros();
 }
 
-function forceRefreshData() {
-    loadData();
-}
+function forceRefreshData() { loadData(); }
 
 function showToast(tipo, titulo, mensaje) {
     const toast = document.createElement('div');
     toast.className = 'toast-notification';
     const color = tipo === 'alert' ? '#ef4444' : (tipo === 'success' ? '#00ff88' : '#c084fc');
     toast.style.borderLeftColor = color;
-    toast.innerHTML = `
-        <div class="flex items-center gap-2 mb-1">
-            <span class="text-sm">${tipo === 'alert' ? '⚠️' : (tipo === 'success' ? '✅' : 'ℹ️')}</span>
-            <strong class="text-xs" style="color: ${color}">${titulo}</strong>
-        </div>
-        <div class="text-[11px] text-slate-200">${mensaje}</div>
-    `;
+    toast.innerHTML = `<div class="flex items-center gap-2 mb-1"><span class="text-sm">${tipo === 'alert' ? '⚠️' : '✅'}</span><strong class="text-xs" style="color: ${color}">${titulo}</strong></div><div class="text-[11px] text-slate-200">${mensaje}</div>`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 5000);
 }
 
-// INICIALIZACIÓN
 window.onload = () => {
     loadData();
-    setInterval(() => {
-        loadData();
-    }, 60000); // Actualizar cada minuto
+    setInterval(loadData, 60000);
 };
 </script>
 </body>
