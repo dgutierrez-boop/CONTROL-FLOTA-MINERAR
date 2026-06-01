@@ -336,6 +336,7 @@ let horasChart = null, estadoChart = null;
 let cronometroInterval = null;
 let alertasNovedades = 0;
 
+// ✅ URLs CORREGIDAS CON GID CORRECTO
 const SHEETS_URLS = {
     'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
     'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=149809572&single=true&output=csv',
@@ -346,20 +347,37 @@ const SHEETS_URLS = {
 
 async function loadData() {
     try {
-        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando...</td></tr>';
+        console.log('🔄 Cargando datos para:', currentSucursal);
+        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400">🔄 Sincronizando con Google Sheets...</td></tr>';
         
         let allData = [];
         
         if (currentSucursal === 'MALAGUENO') {
             // Cargar todas las sucursales
             for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
+                console.log('📡 Cargando:', sucursal, url);
                 const data = await fetchSheet(url, sucursal);
+                console.log('✅', sucursal, ':', data.length, 'filas');
                 allData = allData.concat(data);
             }
         } else {
             // Cargar sucursal específica
             const url = SHEETS_URLS[currentSucursal];
+            console.log('📡 Cargando:', currentSucursal, url);
             allData = await fetchSheet(url, currentSucursal);
+            console.log('✅', currentSucursal, ':', allData.length, 'filas');
+        }
+        
+        console.log('📊 Total equipos cargados:', allData.length);
+        
+        if (allData.length === 0) {
+            console.warn('⚠️ No se cargaron datos - Verificá que las hojas estén publicadas');
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-amber-400">⚠️ No hay datos disponibles<br><small>Verificá que las hojas estén publicadas en Google Sheets</small></td></tr>';
+            EQUIPMENT_DATA = [];
+            filteredData = [];
+            updateKPIs();
+            updateCharts();
+            return;
         }
         
         EQUIPMENT_DATA = allData;
@@ -369,11 +387,11 @@ async function loadData() {
         startCronometros();
         checkAlertas();
         
-        showToast('success', 'Datos actualizados', `${allData.length} equipos cargados`);
+        console.log('✅ Dashboard actualizado');
         
     } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-red-400">❌ Error al cargar datos<br>' + error.message + '</td></tr>';
+        console.error('❌ Error crítico:', error);
+        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="10" class="p-4 text-center text-red-400">❌ Error al cargar datos<br><small>' + error.message + '</small><br><button onclick="loadData()" class="mt-2 px-3 py-1 bg-emerald-600 rounded text-white text-xs">🔄 Reintentar</button></td></tr>';
     }
 }
 
