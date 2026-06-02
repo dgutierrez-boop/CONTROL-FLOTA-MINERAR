@@ -38,6 +38,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
+            min-width: 0; /* 🔥 CLAVE: permite que el contenedor se encoja */
         }
         .glass-card:hover {
             border-color: rgba(6, 182, 212, 0.6);
@@ -58,6 +59,7 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
             border: 2px solid #06b6d4;
+            flex-shrink: 0;
         }
         .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
         .kpi-cyan { border-left: 4px solid #06b6d4; background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); }
@@ -77,6 +79,7 @@
             background: rgba(15, 23, 42, 0.8);
             border: 2px solid rgba(6, 182, 212, 0.4);
             color: #67e8f9;
+            white-space: nowrap;
         }
         .sucursal-btn:hover { background: rgba(6, 182, 212, 0.2); border-color: #06b6d4; }
         .sucursal-btn.active { background: rgba(6, 182, 212, 0.3); border-color: #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
@@ -90,11 +93,17 @@
         .crono-hora { color: #fbbf24; }
         .crono-min { color: #67e8f9; }
         
-        .chart-container { position: relative; height: 280px; width: 100%; margin-top: 12px; }
-        .table-scroll { max-height: 400px; overflow-x: auto; overflow-y: auto; border-radius: 12px; width: 100%; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 10px; font-size: 11px; text-align: left; }
-        table tbody td { padding: 8px 10px; font-size: 11px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); }
+        .chart-container { position: relative; height: 260px; width: 100%; margin-top: 12px; }
+        .table-scroll { 
+            max-height: 400px; 
+            overflow-x: auto; 
+            overflow-y: auto;
+            border-radius: 12px;
+            width: 100%;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 10px; font-size: 11px; text-align: left; white-space: nowrap; }
+        table tbody td { padding: 8px 10px; font-size: 11px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); white-space: nowrap; }
         tr { cursor: pointer; transition: background-color 0.2s ease; }
         tr:hover { background-color: rgba(6, 182, 212, 0.1); }
         
@@ -104,10 +113,6 @@
         .alert-item { background: rgba(15, 23, 42, 0.6); border-left: 3px solid #06b6d4; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; cursor: pointer; transition: background 0.2s; }
         .alert-item:hover { background: rgba(6, 182, 212, 0.15); }
         
-        .hist-item { padding: 10px; background: rgba(30, 41, 59, 0.5); border-radius: 8px; border-left: 3px solid #06b6d4; margin-bottom: 8px; font-size: 11px; }
-        .hist-item.parada { border-left-color: #f59e0b; }
-        .hist-item.operativo { border-left-color: #10b981; }
-        
         @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } }
         .pulse-alert { animation: pulse-red 2s infinite; }
         
@@ -116,20 +121,36 @@
         
         select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; padding-right: 30px !important; }
         
-        @media (max-width: 768px) { .header-container { padding: 12px 16px; } .chart-container { height: 220px; } body { padding: 8px; } }
+        /* 🔥 SCROLLBAR PERSONALIZADO */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(6, 182, 212, 0.6); }
+        
+        /*  RESPONSIVE MEJORADO */
+        @media (max-width: 1280px) {
+            .main-wrapper { padding: 0 12px; }
+        }
+        @media (max-width: 768px) {
+            .header-container { padding: 12px 16px; }
+            .chart-container { height: 200px; }
+            body { padding: 4px; }
+            .main-wrapper { padding: 0 8px; }
+        }
     </style>
 </head>
 <body>
-<div class="w-full mx-auto p-4 max-w-7xl">
+<!-- 🔥 WRAPPER PRINCIPAL SIN MAX-WIDTH FIJO -->
+<div class="main-wrapper w-full mx-auto p-4">
     <!-- HEADER CON KPIs GLOBALES -->
     <div class="header-container flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
             <div class="logo-shield">
                 <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img">
             </div>
-            <div>
-                <h1 class="text-xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">PANEL FLOTA MINERA 2026</h1>
-                <p class="text-xs text-cyan-300">👷 Control de Horómetros · Monitoreo en Vivo</p>
+            <div class="min-w-0">
+                <h1 class="text-xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent truncate">PANEL FLOTA MINERA 2026</h1>
+                <p class="text-xs text-cyan-300"> Control de Horómetros · Monitoreo en Vivo</p>
             </div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
@@ -142,7 +163,7 @@
                 <div id="totalParados" class="text-2xl font-black text-amber-300">0</div>
             </div>
             <div class="glass-card px-4 py-2 text-center kpi-red">
-                <div class="text-[9px] font-bold text-red-400">️ HS PERDIDAS</div>
+                <div class="text-[9px] font-bold text-red-400">⏱️ HS PERDIDAS</div>
                 <div id="totalHsPerdidas" class="text-2xl font-black text-red-300">0h</div>
             </div>
             <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all">🔄 Actualizar</button>
@@ -152,9 +173,9 @@
     <!-- SUCURSALES -->
     <div class="glass-card p-5 mb-5">
         <div class="text-center mb-4">
-            <h2 class="text-sm font-bold text-cyan-300 mb-3"> SELECCIONAR SUCURSAL</h2>
-            <div class="flex flex-wrap items-center justify-center gap-3">
-                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')">🏭 TODAS</button>
+            <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
+            <div class="flex flex-wrap items-center justify-center gap-2">
+                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')"> TODAS</button>
                 <button id="btnMalagueno" class="sucursal-btn" onclick="cambiarSucursal('MALAGUENO')">📍 MALAGUEÑO</button>
                 <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
                 <button id="btnPampita" class="sucursal-btn" onclick="cambiarSucursal('LA_PAMPITA')">🌸 LA PAMPITA</button>
@@ -164,7 +185,7 @@
         <!-- 5 TARJETAS KPI DINÁMICAS -->
         <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5"></div>
 
-        <div class="grid lg:grid-cols-[250px_1fr] gap-5">
+        <div class="grid lg:grid-cols-[240px_1fr] gap-4">
             <aside>
                 <div class="glass-card p-4">
                     <h3 class="font-bold mb-3 text-cyan-400 text-xs">📋 FILTROS</h3>
@@ -178,7 +199,7 @@
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 EQUIPO (N° Interno)</label>
                     <select id="filterEquipo" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
-                        <option value="TODOS"> Todos los equipos</option>
+                        <option value="TODOS">🔎 Todos los equipos</option>
                     </select>
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🔍 ESTADO</label>
@@ -189,7 +210,7 @@
                     </select>
                     
                     <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30">
-                        <div class="text-[10px] font-bold text-cyan-400 mb-2">🚨 ALERTAS HOY</div>
+                        <div class="text-[10px] font-bold text-cyan-400 mb-2"> ALERTAS HOY</div>
                         <div id="alertasHoy" class="max-h-40 overflow-y-auto text-[10px]">
                             <p class="text-cyan-200 text-center">Sin alertas</p>
                         </div>
@@ -197,34 +218,34 @@
                 </div>
             </aside>
             
-            <main>
+            <main class="min-w-0">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div class="glass-card p-4">
+                    <div class="glass-card p-4 min-w-0">
                         <h3 class="font-bold text-cyan-400 text-xs mb-2"> ESTADO DE FLOTA</h3>
                         <div class="chart-container"><canvas id="estadoChart"></canvas></div>
                     </div>
-                    <div class="glass-card p-4">
-                        <h3 class="font-bold text-red-400 text-xs mb-2">🚨 TOP 5 EQUIPOS MÁS PARADOS</h3>
+                    <div class="glass-card p-4 min-w-0">
+                        <h3 class="font-bold text-red-400 text-xs mb-2"> TOP 5 EQUIPOS MÁS PARADOS</h3>
                         <div class="chart-container"><canvas id="topParadosChart"></canvas></div>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div class="glass-card p-4">
-                        <h3 class="font-bold text-amber-400 text-xs mb-2">🔧 MOTIVOS DE PARADA</h3>
+                    <div class="glass-card p-4 min-w-0">
+                        <h3 class="font-bold text-amber-400 text-xs mb-2"> MOTIVOS DE PARADA</h3>
                         <div class="chart-container"><canvas id="motivosChart"></canvas></div>
                     </div>
-                    <div class="glass-card p-4">
+                    <div class="glass-card p-4 min-w-0">
                         <h3 class="font-bold text-purple-400 text-xs mb-2">📈 CARGAS POR SUCURSAL</h3>
                         <div class="chart-container"><canvas id="sucursalesChart"></canvas></div>
                     </div>
                 </div>
                 
-                <div class="glass-card p-4">
+                <div class="glass-card p-4 min-w-0">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-cyan-400 text-xs"> FLOTA EN TIEMPO REAL</h3>
+                        <h3 class="font-bold text-cyan-400 text-xs">📋 FLOTA EN TIEMPO REAL</h3>
                         <div class="flex gap-2 items-center">
                             <span id="contadorRegistros" class="text-[10px] text-cyan-300">0 registros</span>
-                            <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-bold">🔄</button>
+                            <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-bold"></button>
                         </div>
                     </div>
                     <div class="table-scroll">
@@ -432,7 +453,7 @@ function parseCSV(text, sucursal) {
 async function loadData() {
     try {
         if (isFirstLoad) {
-            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr>';
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4"> Cargando...</td></tr>';
         }
         
         let allData = [];
@@ -471,7 +492,6 @@ function actualizarFiltroEquipos() {
     const select = document.getElementById('filterEquipo');
     const valorActual = select.value;
     
-    // Solo equipos de la sucursal actual (o todos si es TODAS)
     const equiposFiltrados = currentSucursal === 'TODAS' 
         ? EQUIPMENT_DATA 
         : EQUIPMENT_DATA.filter(e => e.sucursal === currentSucursal);
@@ -490,7 +510,7 @@ function actualizarFiltroEquipos() {
         return a.ID_Equipo.localeCompare(b.ID_Equipo);
     });
     
-    select.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>';
+    select.innerHTML = '<option value="TODOS"> Todos los equipos</option>';
     lista.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.ID_Equipo;
@@ -499,7 +519,6 @@ function actualizarFiltroEquipos() {
         select.appendChild(opt);
     });
     
-    // Mantener selección solo si el equipo existe en la sucursal actual
     if (valorActual && valorActual !== 'TODOS' && lista.some(e => e.ID_Equipo === valorActual)) {
         select.value = valorActual;
     } else {
@@ -556,7 +575,6 @@ function detectarAlertasHoy(data) {
 function updateAlertasUI() {
     const container = document.getElementById('alertasHoy');
     
-    // Filtrar alertas por sucursal Y por equipo si hay filtro aplicado
     let alertasFiltradas = alertasHoy;
     if (currentSucursal !== 'TODAS') {
         alertasFiltradas = alertasFiltradas.filter(a => a.sucursal === currentSucursal);
@@ -586,27 +604,22 @@ function openEquipmentModalById(id, sucursal) {
     if (equipo) openEquipmentModal(equipo);
 }
 
-// ==================== CAMBIO DE SUCURSAL (RESETEA FILTROS) ====================
 function cambiarSucursal(sucursal) {
     currentSucursal = sucursal;
     
-    // Actualizar botones
     document.querySelectorAll('.sucursal-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(sucursal === 'TODAS' ? 'btnTodas' : sucursal === 'MALAGUENO' ? 'btnMalagueno' : sucursal === 'BARKER' ? 'btnBarker' : 'btnPampita').classList.add('active');
     
-    // 🔥 RESETEAR FILTROS al cambiar de sucursal
     document.getElementById('filterPropiedad').value = 'TODAS';
     document.getElementById('filterEquipo').value = 'TODOS';
     document.getElementById('filterEstado').value = 'TODOS';
     currentEquipoFiltro = 'TODOS';
     
-    // Re-cargar filtro de equipos (solo los de esa sucursal)
     actualizarFiltroEquipos();
     aplicarFiltros();
     updateAlertasUI();
 }
 
-// ==================== FILTROS ====================
 function aplicarFiltros() {
     const propiedad = document.getElementById('filterPropiedad').value;
     const equipo = document.getElementById('filterEquipo').value;
@@ -634,7 +647,6 @@ function updateDashboard() {
     renderTable();
 }
 
-// ==================== KPIs DEL HEADER (siempre muestran datos filtrados) ====================
 function updateKPIsHeader() {
     const total = filteredData.length;
     const parados = filteredData.filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO').length;
@@ -652,7 +664,6 @@ function updateKPIsHeader() {
     document.getElementById('totalHsPerdidas').innerText = Math.round(totalHsPerdidas) + 'h';
 }
 
-// ==================== KPIs DINÁMICOS ====================
 function updateKPIs() {
     const container = document.getElementById('kpiContainer');
     const esEquipoEspecifico = currentEquipoFiltro !== 'TODOS';
@@ -667,7 +678,7 @@ function updateKPIs() {
         
         container.innerHTML = `
             <div class="glass-card p-4 ${esParado ? 'kpi-red' : 'kpi-green'}">
-                <div class="text-xs font-bold ${esParado ? 'text-red-400' : 'text-green-400'} mb-1"> ESTADO ACTUAL</div>
+                <div class="text-xs font-bold ${esParado ? 'text-red-400' : 'text-green-400'} mb-1">📊 ESTADO ACTUAL</div>
                 <div class="text-2xl font-black ${esParado ? 'text-red-300' : 'text-green-300'}">${esParado ? '⏸️ PARADO' : '✅ OPERATIVO'}</div>
                 <div class="kpi-subtitulo text-${esParado ? 'red' : 'green'}-200">Último registro: ${equipoSeleccionado.Fecha_Carga || '-'}</div>
             </div>
@@ -679,7 +690,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-amber-200">${esParado ? 'Desde última carga' : 'En servicio'}</div>
             </div>
             <div class="glass-card p-4 kpi-cyan">
-                <div class="text-xs font-bold text-cyan-400 mb-1"> LECTURA ACTUAL</div>
+                <div class="text-xs font-bold text-cyan-400 mb-1">🔢 LECTURA ACTUAL</div>
                 <div class="kpi-valor text-2xl font-black text-cyan-300">${equipoSeleccionado.Lectura || '0'}</div>
                 <div class="kpi-subtitulo text-cyan-200">${equipoSeleccionado.Tipo_Equipo || 'Equipo'}</div>
             </div>
@@ -689,7 +700,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-purple-200">⏸️ ${paradasCount} paradas · ✅ ${operativosCount} oper.</div>
             </div>
             <div class="glass-card p-4 kpi-blue">
-                <div class="text-xs font-bold text-blue-400 mb-1">️ INFORMACIÓN</div>
+                <div class="text-xs font-bold text-blue-400 mb-1">🏷️ INFORMACIÓN</div>
                 <div class="text-sm font-bold text-blue-300 truncate">${equipoSeleccionado.Equipo || '-'}</div>
                 <div class="kpi-subtitulo text-blue-200">📍 ${equipoSeleccionado.sucursal} · 🏢 ${(equipoSeleccionado.Propiedad || 'N/A').toLowerCase()}</div>
             </div>
@@ -722,7 +733,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-green-200">${operativos} de ${total} equipos operativos</div>
             </div>
             <div class="glass-card p-4 kpi-cyan">
-                <div class="text-xs font-bold text-cyan-400 mb-1"> OPERATIVOS</div>
+                <div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div>
                 <div class="kpi-valor text-3xl font-black text-cyan-300">${operativos}</div>
                 <div class="kpi-subtitulo text-cyan-200">De ${total} totales · ${parados} parados</div>
             </div>
@@ -732,12 +743,12 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div>
             </div>
             <div class="glass-card p-4 kpi-red">
-                <div class="text-xs font-bold text-red-400 mb-1"> EQUIPO CRÍTICO</div>
+                <div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div>
                 <div class="kpi-valor text-xl font-black text-red-300 truncate">${equipoCritico ? equipoCritico.ID_Equipo : '-'}</div>
                 <div class="kpi-subtitulo text-red-200">${equipoCritico ? `${Math.floor(maxHs/24)}d ${Math.floor(maxHs%24)}h parado` : 'Sin paradas'}</div>
             </div>
             <div class="glass-card p-4 kpi-purple">
-                <div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div>
+                <div class="text-xs font-bold text-purple-400 mb-1"> PROM. PARADA</div>
                 <div class="kpi-valor text-3xl font-black text-purple-300">${promParada}h</div>
                 <div class="kpi-subtitulo text-purple-200">Por equipo parado</div>
             </div>
@@ -745,7 +756,6 @@ function updateKPIs() {
     }
 }
 
-// ==================== CRONÓMETRO ====================
 function calcularTiempoParado(fechaStr, horaStr) {
     const fechaParada = parseFechaHora(fechaStr, horaStr);
     if (!fechaParada) return null;
@@ -773,7 +783,6 @@ function actualizarCronometros() {
 }
 setInterval(actualizarCronometros, 10000);
 
-// ==================== CHARTS ====================
 function updateCharts() {
     const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
     const parados = filteredData.filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO').length;
@@ -784,24 +793,14 @@ function updateCharts() {
     if (operativos === 0 && parados === 0) {
         estadoChart = new Chart(ctxEstado, {
             type: 'doughnut',
-            data: {
-                labels: ['Sin datos'],
-                datasets: [{ data: [1], backgroundColor: ['#334155'], borderWidth: 0 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '70%',
-                plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } } }
-            }
+            data: { labels: ['Sin datos'], datasets: [{ data: [1], backgroundColor: ['#334155'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } } } }
         });
     } else {
         estadoChart = new Chart(ctxEstado, {
             type: 'doughnut',
-            data: {
-                labels: ['Operativo', 'Parado'],
-                datasets: [{ data: [operativos, parados], backgroundColor: ['#06b6d4', '#f59e0b'], borderWidth: 0 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '70%',
-                plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } } }
-            }
+            data: { labels: ['Operativo', 'Parado'], datasets: [{ data: [operativos, parados], backgroundColor: ['#06b6d4', '#f59e0b'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } } } }
         });
     }
     
@@ -837,7 +836,7 @@ function updateCharts() {
                                 const h = historial.slice(-10)[idx];
                                 return `${h.Fecha_Carga} ${h.Hora_Carga || ''}`;
                             },
-                            label: (ctx) => ctx.raw === 1 ? '✅ Operativo' : '️ Parado'
+                            label: (ctx) => ctx.raw === 1 ? '✅ Operativo' : '⏸️ Parado'
                         }
                     }
                 },
@@ -891,7 +890,7 @@ function updateCharts() {
                         }
                     },
                     scales: {
-                        x: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } },
+                        x: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', maxTicksLimit: 6 } },
                         y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { weight: 'bold' } } }
                     }
                 }
@@ -943,13 +942,12 @@ function updateCharts() {
             plugins: { legend: { display: false } },
             scales: {
                 y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 1 } },
-                x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
+                x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 10 } } }
             }
         }
     });
 }
 
-// ==================== TABLA ====================
 function renderTable() {
     const tbody = document.getElementById('equipmentTableBody');
     tbody.innerHTML = '';
@@ -991,7 +989,6 @@ function renderTable() {
     actualizarCronometros();
 }
 
-// ==================== MODAL ====================
 function openEquipmentModal(equipo) {
     const modal = document.getElementById('equipmentModal');
     const content = document.getElementById('modalContent');
@@ -1004,7 +1001,7 @@ function openEquipmentModal(equipo) {
         if (t) {
             cronometroHTML = `
                 <div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center">
-                    <div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div>
+                    <div class="text-xs text-red-400 mb-2">️ TIEMPO PARADO EN VIVO</div>
                     <div class="text-3xl font-black cronometro">
                         ${t.dias > 0 ? `<span class="crono-dia">${t.dias}d</span> ` : ''}
                         <span class="crono-hora">${t.horas}h</span>
@@ -1072,7 +1069,7 @@ function openEquipmentModal(equipo) {
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${equipo.Lectura || 'N/A'}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📅 Último registro</span><span class="font-bold text-cyan-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span></div>
             ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">⚠️ Motivo</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
-            ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
+            ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 mb-1"> Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
         </div>
         ${sliderHTML}
     `;
@@ -1085,7 +1082,7 @@ function openEquipmentModal(equipo) {
 function renderizarSlideHistorial(reg, indice) {
     const esOp = reg.Estado === 'OPERATIVO';
     const estadoColor = esOp ? 'text-green-400' : 'text-amber-400';
-    const estadoIcon = esOp ? '✅' : '⏸️';
+    const estadoIcon = esOp ? '✅' : '️';
     const estadoTexto = esOp ? 'OPERATIVO' : 'PARADO';
     const badgeBorder = esOp ? 'border-green-500/50' : 'border-amber-500/50';
     const badgeBg = esOp ? 'bg-green-950/20' : 'bg-amber-950/20';
@@ -1108,7 +1105,7 @@ function renderizarSlideHistorial(reg, indice) {
             const diffMs = tActual - tAnterior;
             const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
             const hs = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            if (dias > 0 || hs > 0) diffTiempo = `<div class="text-[10px] text-purple-400">⏱️ ${dias > 0 ? dias + 'd ' : ''}${hs}h desde anterior</div>`;
+            if (dias > 0 || hs > 0) diffTiempo = `<div class="text-[10px] text-purple-400">️ ${dias > 0 ? dias + 'd ' : ''}${hs}h desde anterior</div>`;
         }
     }
     
