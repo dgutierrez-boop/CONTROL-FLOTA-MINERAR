@@ -386,7 +386,49 @@ function parseFechaHora(fechaStr, horaStr) {
         if (!fechaStr) return 0;
         let fecha = String(fechaStr).trim();
         let hora = String(horaStr || '00:00').trim();
+        
+        // 🔥 Manejar números seriales de Excel/Google Sheets (ej: 45042 = fecha)
+        if (/^\d{4,5}(\.\d+)?$/.test(fecha)) {
+            const serial = parseFloat(fecha);
+            // Excel serial: día 0 = 1900-01-01, pero con bug del año bisiesto
+            const excelEpoch = new Date(1899, 11, 30);
+            const d = new Date(excelEpoch.getTime() + serial * 86400000);
+            // Extraer hora del decimal si existe
+            if (fecha.includes('.')) {
+                const decimal = parseFloat('0.' + fecha.split('.')[1]);
+                const totalSegundos = Math.round(decimal * 86400);
+                d.setHours(Math.floor(totalSegundos / 3600));
+                d.setMinutes(Math.floor((totalSegundos % 3600) / 60));
+            }
+            return d.getTime();
+        }
+        
+        //  Si viene con 'T' en el medio (ISO format): 2026-04-29T14:30:00
+        if (fecha.includes('T')) {
+            const isoDate = new Date(fecha);
+            if (!isNaN(isoDate.getTime())) {
+                // Si hay horaStr, usarla en su lugar
+                if (hora.includes(':')) {
+                    const hp = hora.split(':');
+                    isoDate.setHours(parseInt(hp[0]) || 0);
+                    isoDate.setMinutes(parseInt(hp[1]) || 0);
+                    isoDate.setSeconds(0);
+                }
+                return isoDate.getTime();
+            }
+        }
+        
         let year, month, day, h = 0, m = 0;
+        
+        // Separar fecha de hora si vienen juntas en el mismo string
+        // Ej: "29/04/2026 14:30:00" o "2026-04-29 14:30"
+        if (fecha.includes(' ')) {
+            const partes = fecha.split(' ');
+            fecha = partes[0];
+            if (partes[1] && partes[1].includes(':')) {
+                hora = partes[1]; // usar la hora que viene en la fecha
+            }
+        }
         
         if (fecha.includes('-')) {
             const p = fecha.split(/[-\/]/);
@@ -394,52 +436,53 @@ function parseFechaHora(fechaStr, horaStr) {
         } else if (fecha.includes('/')) {
             const p = fecha.split('/');
             let a = parseInt(p[0]), b = parseInt(p[1]), c = parseInt(p[2]);
+            // Detectar formato ambiguo
+            if (isNaN(a) || isNaN(b) || isNaN(c)) return 0;
             if (a > 12) { day = a; month = b - 1; year = c; }
             else if (b > 12) { month = a - 1; day = b; year = c; }
             else {
+                // Ambos <= 12, ambiguo: usar formato dd/mm/yyyy (argentino)
                 if (c > 31) { day = a; month = b - 1; year = c; }
+                else if (a === b && a === c) return 0; // datos inválidos (ej: 1/1/1)
                 else { day = a; month = b - 1; year = c; }
             }
-        } else { return new Date(fecha).getTime(); }
+        } else {
+            // Intentar parseo nativo como último recurso
+            const d = new Date(fecha);
+            if (!isNaN(d.getTime())) {
+                if (hora.includes(':')) {
+                    const hp = hora.split(':');
+                    d.setHours(parseInt(hp[0]) || 0);
+                    d.setMinutes(parseInt(hp[1]) || 0);
+                }
+                return d.getTime();
+            }
+            return 0;
+        }
         
-        if (hora.includes(':')) {
+        // Validar valores
+        if (isNaN(year) || isNaN(month) || isNaN(day)) return 0;
+        if (year < 2000 || year > 2030) return 0;
+        if (month < 0 || month > 11) return 0;
+        if (day < 1 || day > 31) return 0;
+        
+        if (hora && hora.includes(':')) {
             const hp = hora.split(':');
             h = parseInt(hp[0]); m = parseInt(hp[1]);
+            if (isNaN(h)) h = 0;
+            if (isNaN(m)) m = 0;
         }
+        
         const d = new Date(year, month, day, h, m, 0);
+        
+        // Validación de rango
         const ahora = new Date();
         const diffAnios = (d.getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24 * 365);
         if (diffAnios < -5 || diffAnios > 1) return 0;
+        
         return d.getTime();
     } catch (e) { return 0; }
 }
-
-// 🔥 Función para obtener año-mes de una fecha (formato '2026-04')
-function obtenerAnioMes(fechaStr) {
-    const t = parseFechaHora(fechaStr, '00:00');
-    if (!t) return null;
-    const d = new Date(t);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-}
-
-// ==================== PARSEO CSV ====================
-function parseCSVLine(line) {
-    const values = [];
-    let current = '';
-    let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const nextChar = line[i + 1];
-        if (char === '"') {
-            if (inQuotes && nextChar === '"') { current += '"'; i++; }
-            else { inQuotes = !inQuotes; }
-        } else if (char === ',' && !inQuotes) { values.push(current.trim()); current = ''; }
-        else { current += char; }
-    }
-    values.push(current.trim());
-    return values;
-}
-
 function parseCSV(text, sucursal) {
     const lines = text.trim().split('\n').filter(l => l.trim());
     if (lines.length < 2) return [];
@@ -835,14 +878,21 @@ function updateKPIs() {
 }
 
 function calcularTiempoParado(fechaStr, horaStr) {
-    const fechaParada = parseFechaHora(fechaStr, horaStr);
-    if (!fechaParada) return null;
-    const diffMs = new Date().getTime() - fechaParada;
-    if (diffMs < 0) return null;
-    const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const horas = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    return { dias, horas, minutos, totalHs: diffMs / (1000 * 60 * 60) };
+    try {
+        const fechaParada = parseFechaHora(fechaStr, horaStr);
+        if (!fechaParada || fechaParada === 0) return null;
+        
+        const diffMs = new Date().getTime() - fechaParada;
+        if (diffMs < 0) return null;
+        
+        // Validar que no sea una fecha demasiado antigua (más de 2 años = error de parseo)
+        if (diffMs > 2 * 365 * 24 * 60 * 60 * 1000) return null;
+        
+        const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        return { dias, horas, minutos, totalHs: diffMs / (1000 * 60 * 60) };
+    } catch (e) { return null; }
 }
 
 function actualizarCronometros() {
@@ -1010,25 +1060,44 @@ function renderTable() {
     document.getElementById('contadorRegistros').innerText = filteredData.length + ' registros';
     
     if (filteredData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4">' + (currentMesFiltro !== 'ACTUAL' ? `Sin registros en ${NOMBRES_MESES[currentMesFiltro]}` : 'Sin datos') + '</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4">' + 
+            (currentMesFiltro !== 'ACTUAL' ? `Sin registros en ${NOMBRES_MESES[currentMesFiltro]}` : 'Sin datos') + 
+            '</td></tr>';
         return;
     }
     
     filteredData.forEach(e => {
         const tr = document.createElement('tr');
         tr.onclick = () => openEquipmentModal(e);
+        
         const esParado = e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO';
         const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : 'status-parado';
         const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : '⏸️ Parado';
         
+        // 🔥 BLOQUE MEJORADO: Cronómetro con fallback inteligente
         let celdaTiempo = '<span class="text-slate-500 text-xs">-</span>';
-        // Solo mostrar cronómetro en modo tiempo real
-        if (esParado && e.Fecha_Carga && currentMesFiltro === 'ACTUAL') {
-            celdaTiempo = `<span class="cronometro text-xs" data-fecha-parada="${e.Fecha_Carga}" data-hora-parada="${e.Hora_Carga || '00:00'}">⏱️ ...</span>`;
-        } else if (esParado) {
-            celdaTiempo = `<span class="text-xs text-amber-300">📅 ${e.Fecha_Carga || ''}</span>`;
+        
+        if (esParado && e.Fecha_Carga) {
+            if (currentMesFiltro === 'ACTUAL') {
+                const t = calcularTiempoParado(e.Fecha_Carga, e.Hora_Carga);
+                if (t) {
+                    // ✅ Cronómetro funcional: muestra días, horas, minutos
+                    let html = '⏱️ ';
+                    if (t.dias > 0) html += `<span class="crono-dia">${t.dias}d</span> `;
+                    html += `<span class="crono-hora">${t.horas}h</span> `;
+                    html += `<span class="crono-min">${t.minutos}m</span>`;
+                    celdaTiempo = `<span class="cronometro text-xs" data-fecha-parada="${e.Fecha_Carga}" data-hora-parada="${e.Hora_Carga || '00:00'}">${html}</span>`;
+                } else {
+                    // ⚠️ Fallback: la fecha existe pero no se pudo parsear
+                    celdaTiempo = `<span class="text-xs text-amber-300" title="Fecha: ${e.Fecha_Carga} ${e.Hora_Carga || ''}">📅 ${e.Fecha_Carga || ''}</span>`;
+                }
+            } else {
+                // 📅 Modo histórico: solo mostrar la fecha del registro
+                celdaTiempo = `<span class="text-xs text-amber-300">📅 ${e.Fecha_Carga || ''}</span>`;
+            }
         }
         
+        // Pulso rojo solo en modo tiempo real
         if (esParado && currentMesFiltro === 'ACTUAL') tr.classList.add('pulse-alert');
         
         tr.innerHTML = `
@@ -1044,6 +1113,7 @@ function renderTable() {
         `;
         tbody.appendChild(tr);
     });
+    
     actualizarCronometros();
 }
 
