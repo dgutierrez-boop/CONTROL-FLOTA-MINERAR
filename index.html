@@ -30,21 +30,22 @@
             pointer-events: none;
             z-index: 0;
         }
+        
+        /* TARJETAS: Solo efectos sutiles de color/sombra, SIN transform para evitar rebotes */
         .glass-card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
             border-radius: 16px;
             border: 1px solid rgba(6, 182, 212, 0.3);
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
-            cursor: pointer;
         }
         .glass-card:hover {
-            transform: translateY(-2px);
             border-color: rgba(6, 182, 212, 0.6);
-            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.2);
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.15);
         }
+        
         .header-container {
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(16px);
@@ -128,9 +129,10 @@
             font-size: 11px;
             border-bottom: 1px solid rgba(6, 182, 212, 0.2);
         }
-        tr { cursor: pointer; transition: background 0.2s; }
+        tr { cursor: pointer; transition: background-color 0.2s ease; }
         tr:hover { background-color: rgba(6, 182, 212, 0.1); }
         
+        /* ANIMACIÓN BOUNCE EXCLUSIVA PARA MODALES */
         .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
         @keyframes bounceIn { 
             0% { opacity: 0; transform: scale(0.3); } 
@@ -145,11 +147,12 @@
             border-radius: 8px;
             padding: 8px 12px;
             margin-bottom: 6px;
-            transition: all 0.2s;
+            transition: background-color 0.2s ease, border-left-color 0.2s ease;
+            cursor: pointer;
         }
         .alert-item:hover {
             background: rgba(6, 182, 212, 0.15);
-            transform: translateX(3px);
+            border-left-color: #22d3ee;
         }
         
         @media (max-width: 768px) {
@@ -235,14 +238,14 @@
                     <h3 class="font-bold mb-3 text-cyan-400 text-xs">📋 FILTROS</h3>
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🏢 PROPIEDAD</label>
-                    <select id="filterPropiedad" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
+                    <select id="filterPropiedad" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100 focus:outline-none focus:ring-1 focus:ring-cyan-400" onchange="aplicarFiltros()">
                         <option value="TODAS">Todas</option>
                         <option value="PROPIO">Propio</option>
                         <option value="ALQUILADO">Alquilado</option>
                     </select>
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 TIPO EQUIPO</label>
-                    <select id="filterTipo" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
+                    <select id="filterTipo" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100 focus:outline-none focus:ring-1 focus:ring-cyan-400" onchange="aplicarFiltros()">
                         <option value="TODOS">Todos</option>
                         <option value="Camión">Camión</option>
                         <option value="Cargadora">Cargadora</option>
@@ -253,7 +256,7 @@
                     <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30">
                         <div class="text-[10px] font-bold text-cyan-400 mb-2">🚨 ALERTAS HOY</div>
                         <div id="alertasHoy" class="max-h-40 overflow-y-auto text-[10px]">
-                            <p class="text-cyan-200 text-center">Sin alertas</p>
+                            <p class="text-cyan-200 text-center py-2">Sin alertas</p>
                         </div>
                     </div>
                 </div>
@@ -280,7 +283,7 @@
                             <button onclick="filtrarTrazabilidad('TODOS')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-cyan-600 text-white traz-filter active" id="tfTodos">Todos</button>
                             <button onclick="filtrarTrazabilidad('OPERATIVO')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-700 text-cyan-200 traz-filter" id="tfOperativo">✅ Operativo</button>
                             <button onclick="filtrarTrazabilidad('PARADO')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-700 text-amber-200 traz-filter" id="tfParado">⏸️ Parado</button>
-                            <button onclick="filtrarTrazabilidad('SERVICE')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-700 text-red-200 traz-filter" id="tfService">🔧 Service</button>
+                            <button onclick="filtrarTrazabilidad('EN_SERVICE')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-700 text-red-200 traz-filter" id="tfService">🔧 Service</button>
                         </div>
                     </div>
                     <div class="chart-container" style="height: 300px;">
@@ -323,11 +326,11 @@
     <div class="bg-slate-900 rounded-2xl p-6 shadow-2xl border-2 border-cyan-500/50 w-full max-w-2xl modal-bounce max-h-[85vh] overflow-y-auto m-4">
         <div class="flex justify-between items-center mb-4">
             <h2 id="modalTitle" class="text-2xl font-black text-cyan-400">📋 Detalle</h2>
-            <button onclick="closeEquipmentModal()" class="text-2xl text-cyan-300 hover:text-white">&times;</button>
+            <button onclick="closeEquipmentModal()" class="text-2xl text-cyan-300 hover:text-white transition-colors">&times;</button>
         </div>
         <div id="modalContent" class="space-y-3"></div>
         <div class="flex justify-end mt-6">
-            <button onclick="closeEquipmentModal()" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
+            <button onclick="closeEquipmentModal()" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold transition-colors">Cerrar</button>
         </div>
     </div>
 </div>
@@ -340,6 +343,8 @@ let filteredData = [];
 let horasChart = null, estadoChart = null, trazabilidadChart = null;
 let currentTrazabilidadFilter = 'TODOS';
 let alertasHoy = [];
+let knownAlertIds = new Set();
+let isFirstLoad = true;
 
 const SHEETS_URLS = {
     'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
@@ -347,10 +352,48 @@ const SHEETS_URLS = {
     'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv'
 };
 
+// ==================== AUDIO EN VIVO ====================
+function playNotificationSound() {
+    try {
+        if (!window.audioCtx) {
+            window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (window.audioCtx.state === 'suspended') {
+            window.audioCtx.resume();
+        }
+        const oscillator = window.audioCtx.createOscillator();
+        const gainNode = window.audioCtx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(window.audioCtx.destination);
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, window.audioCtx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(440, window.audioCtx.currentTime + 0.3);
+        
+        gainNode.gain.setValueAtTime(0.1, window.audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.3);
+        
+        oscillator.start();
+        oscillator.stop(window.audioCtx.currentTime + 0.3);
+    } catch (e) {
+        console.log("Audio play failed (interacción requerida)", e);
+    }
+}
+
+// Desbloquear audio en el primer clic del usuario
+window.addEventListener('click', () => {
+    if (window.audioCtx && window.audioCtx.state === 'suspended') {
+        window.audioCtx.resume();
+    }
+}, { once: true });
+
 // ==================== CARGA RÁPIDA ====================
 async function loadData() {
     try {
-        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="7" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr>';
+        if (isFirstLoad) {
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="7" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr>';
+        }
         
         let allData = [];
         for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
@@ -366,7 +409,9 @@ async function loadData() {
         
     } catch (error) {
         console.error('Error:', error);
-        document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="7" class="text-center text-red-400 p-4">❌ Error al cargar</td></tr>';
+        if (isFirstLoad) {
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="7" class="text-center text-red-400 p-4">❌ Error al cargar</td></tr>';
+        }
     }
 }
 
@@ -394,7 +439,6 @@ function parseCSV(text, sucursal) {
         const row = {};
         headers.forEach((header, index) => { row[header] = values[index] || ''; });
         
-        // Normalizar estado
         if (row.Estado && row.Estado.toUpperCase().includes('FUERA DE SERVICIO')) {
             row.Estado = 'PARADO';
         }
@@ -410,9 +454,9 @@ function parseCSV(text, sucursal) {
 function detectarAlertasHoy(data) {
     const hoy = new Date();
     const diaHoy = hoy.getDate().toString().padStart(2, '0');
-    const mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
-    
-    return data.filter(e => {
+    let hayNuevas = false;
+
+    const alertasDetectadas = data.filter(e => {
         if (!e.Fecha_Carga) return false;
         const fechaParts = e.Fecha_Carga.split('/');
         return fechaParts[0] === diaHoy;
@@ -422,18 +466,42 @@ function detectarAlertasHoy(data) {
         sucursal: e.sucursal,
         reportante: e.Reportante || 'Sin reportante',
         estado: e.Estado,
-        hora: e.Hora_Carga || '00:00'
+        hora: e.Hora_Carga || '00:00',
+        uniqueKey: `${e.ID_Equipo}-${e.Fecha_Carga}-${e.Hora_Carga}`
     }));
+
+    alertasDetectadas.forEach(alerta => {
+        if (!knownAlertIds.has(alerta.uniqueKey)) {
+            knownAlertIds.add(alerta.uniqueKey);
+            if (!isFirstLoad) {
+                hayNuevas = true;
+            }
+        }
+    });
+
+    if (hayNuevas) {
+        playNotificationSound();
+    }
+    
+    isFirstLoad = false;
+    return alertasDetectadas;
 }
 
 function updateAlertasUI() {
     const container = document.getElementById('alertasHoy');
-    if (alertasHoy.length === 0) {
-        container.innerHTML = '<p class="text-cyan-200 text-center">Sin alertas hoy</p>';
+    
+    // Filtrar alertas según la sucursal seleccionada
+    const alertasFiltradas = currentSucursal === 'TODAS' 
+        ? alertasHoy 
+        : alertasHoy.filter(a => a.sucursal === currentSucursal);
+
+    if (alertasFiltradas.length === 0) {
+        container.innerHTML = '<p class="text-cyan-200 text-center py-2">Sin alertas</p>';
+        document.getElementById('kpiAlertas').innerText = '0';
         return;
     }
     
-    container.innerHTML = alertasHoy.map(a => `
+    container.innerHTML = alertasFiltradas.map(a => `
         <div class="alert-item" onclick="openEquipmentModalById('${a.id}')" title="Click para ver detalle">
             <div class="flex justify-between items-start mb-1">
                 <span class="font-bold text-cyan-300">${a.id} - ${a.equipo}</span>
@@ -444,7 +512,7 @@ function updateAlertasUI() {
         </div>
     `).join('');
     
-    document.getElementById('kpiAlertas').innerText = alertasHoy.length;
+    document.getElementById('kpiAlertas').innerText = alertasFiltradas.length;
 }
 
 function openEquipmentModalById(id) {
@@ -465,18 +533,25 @@ function aplicarFiltros() {
     });
     
     updateDashboard();
+    updateAlertasUI(); // Actualizar alertas al cambiar filtros/sucursal
 }
 
 function filtrarTrazabilidad(estado) {
     currentTrazabilidadFilter = estado;
     
-    // Actualizar botones
     document.querySelectorAll('.traz-filter').forEach(btn => {
         btn.classList.remove('active', 'bg-cyan-600', 'text-white');
         btn.classList.add('bg-slate-700');
     });
-    document.getElementById('tf' + (estado === 'TODOS' ? 'Todos' : estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase())).classList.add('active', 'bg-cyan-600', 'text-white');
-    document.getElementById('tf' + (estado === 'TODOS' ? 'Todos' : estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase())).classList.remove('bg-slate-700');
+    
+    let btnId = 'tfTodos';
+    if (estado === 'OPERATIVO') btnId = 'tfOperativo';
+    else if (estado === 'PARADO') btnId = 'tfParado';
+    else if (estado === 'EN_SERVICE') btnId = 'tfService';
+    
+    const activeBtn = document.getElementById(btnId);
+    activeBtn.classList.add('active', 'bg-cyan-600', 'text-white');
+    activeBtn.classList.remove('bg-slate-700');
     
     updateTrazabilidadChart();
 }
@@ -510,7 +585,6 @@ function updateCharts() {
         return equiposSuc.reduce((sum, e) => sum + (parseFloat(e.Lectura) || 0), 0);
     });
     
-    // Gráfico de barras
     const ctxHoras = document.getElementById('horasChart').getContext('2d');
     if (horasChart) horasChart.destroy();
     horasChart = new Chart(ctxHoras, {
@@ -535,7 +609,6 @@ function updateCharts() {
         }
     });
     
-    // Gráfico doughnut
     const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
     const parados = filteredData.filter(e => e.Estado === 'PARADO').length;
     const service = filteredData.filter(e => e.Estado === 'EN_SERVICE').length;
@@ -569,7 +642,6 @@ function updateTrazabilidadChart() {
     
     if (trazabilidadChart) trazabilidadChart.destroy();
     
-    // Filtrar datos según el estado seleccionado
     let datosFiltrados = EQUIPMENT_DATA;
     if (currentTrazabilidadFilter !== 'TODOS') {
         datosFiltrados = EQUIPMENT_DATA.filter(e => e.Estado === currentTrazabilidadFilter);
@@ -579,8 +651,16 @@ function updateTrazabilidadChart() {
         const colores = ['#06b6d4', '#f59e0b', '#a855f7'];
         const sucursalCode = suc.toUpperCase().replace(' ', '_');
         
-        const dataPorMes = meses.map(mes => {
-            return datosFiltrados.filter(e => e.sucursal === sucursalCode && e.mes === mes).length;
+        const dataPorMes = meses.map((mes, index) => {
+            const mesNum = (index + 1).toString().padStart(2, '0');
+            return datosFiltrados.filter(e => {
+                if (!e.Fecha_Carga) return false;
+                const parts = e.Fecha_Carga.split('/');
+                if (parts.length >= 2) {
+                    return parts[1] === mesNum;
+                }
+                return e.mes === mes;
+            }).length;
         });
         
         return {
@@ -589,7 +669,7 @@ function updateTrazabilidadChart() {
             borderColor: colores[idx],
             backgroundColor: colores[idx] + '20',
             borderWidth: 2,
-            fill: false,
+            fill: true,
             tension: 0.3,
             pointRadius: 4,
             pointBackgroundColor: colores[idx]
@@ -679,7 +759,7 @@ function openEquipmentModal(equipo) {
             </div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg">
                 <span class="text-slate-400">📈 Lectura</span>
-                <span class="font-bold text-amber-300">${equipo.Lectura}</span>
+                <span class="font-bold text-amber-300">${equipo.Lectura || 'N/A'}</span>
             </div>
             ${equipo.Motivo_Parada ? `
             <div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30">
@@ -707,7 +787,10 @@ function cambiarSucursal(sucursal) {
     aplicarFiltros();
 }
 
-function forceRefreshData() { loadData(); }
+function forceRefreshData() { 
+    knownAlertIds.clear(); // Opcional: limpiar para permitir sonidos de nuevo en recarga manual
+    loadData(); 
+}
 
 window.onload = () => {
     loadData();
