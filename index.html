@@ -121,7 +121,7 @@
 </head>
 <body>
 <div class="w-full mx-auto p-4 max-w-7xl">
-    <!-- HEADER -->
+    <!-- HEADER CON KPIs GLOBALES -->
     <div class="header-container flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3">
             <div class="logo-shield">
@@ -142,7 +142,7 @@
                 <div id="totalParados" class="text-2xl font-black text-amber-300">0</div>
             </div>
             <div class="glass-card px-4 py-2 text-center kpi-red">
-                <div class="text-[9px] font-bold text-red-400">⏱️ HS PERDIDAS</div>
+                <div class="text-[9px] font-bold text-red-400">️ HS PERDIDAS</div>
                 <div id="totalHsPerdidas" class="text-2xl font-black text-red-300">0h</div>
             </div>
             <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all">🔄 Actualizar</button>
@@ -152,9 +152,9 @@
     <!-- SUCURSALES -->
     <div class="glass-card p-5 mb-5">
         <div class="text-center mb-4">
-            <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
+            <h2 class="text-sm font-bold text-cyan-300 mb-3"> SELECCIONAR SUCURSAL</h2>
             <div class="flex flex-wrap items-center justify-center gap-3">
-                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')"> TODAS</button>
+                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')">🏭 TODAS</button>
                 <button id="btnMalagueno" class="sucursal-btn" onclick="cambiarSucursal('MALAGUENO')">📍 MALAGUEÑO</button>
                 <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
                 <button id="btnPampita" class="sucursal-btn" onclick="cambiarSucursal('LA_PAMPITA')">🌸 LA PAMPITA</button>
@@ -167,21 +167,21 @@
         <div class="grid lg:grid-cols-[250px_1fr] gap-5">
             <aside>
                 <div class="glass-card p-4">
-                    <h3 class="font-bold mb-3 text-cyan-400 text-xs"> FILTROS</h3>
+                    <h3 class="font-bold mb-3 text-cyan-400 text-xs">📋 FILTROS</h3>
                     
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block"> PROPIEDAD</label>
+                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🏢 PROPIEDAD</label>
                     <select id="filterPropiedad" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
                         <option value="TODAS">Todas</option>
                         <option value="PROPIO">Propio</option>
                         <option value="ALQUILADO">Alquilado</option>
                     </select>
                     
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block"> EQUIPO (N° Interno)</label>
+                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 EQUIPO (N° Interno)</label>
                     <select id="filterEquipo" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
-                        <option value="TODOS">🔎 Todos los equipos</option>
+                        <option value="TODOS"> Todos los equipos</option>
                     </select>
                     
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block"> ESTADO</label>
+                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🔍 ESTADO</label>
                     <select id="filterEstado" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
                         <option value="TODOS">Todos</option>
                         <option value="OPERATIVO">✅ Operativo</option>
@@ -200,7 +200,7 @@
             <main>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div class="glass-card p-4">
-                        <h3 class="font-bold text-cyan-400 text-xs mb-2">📊 ESTADO DE FLOTA</h3>
+                        <h3 class="font-bold text-cyan-400 text-xs mb-2"> ESTADO DE FLOTA</h3>
                         <div class="chart-container"><canvas id="estadoChart"></canvas></div>
                     </div>
                     <div class="glass-card p-4">
@@ -221,7 +221,7 @@
                 
                 <div class="glass-card p-4">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-cyan-400 text-xs">📋 FLOTA EN TIEMPO REAL</h3>
+                        <h3 class="font-bold text-cyan-400 text-xs"> FLOTA EN TIEMPO REAL</h3>
                         <div class="flex gap-2 items-center">
                             <span id="contadorRegistros" class="text-[10px] text-cyan-300">0 registros</span>
                             <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-bold">🔄</button>
@@ -271,6 +271,8 @@ let estadoChart = null, topParadosChart = null, motivosChart = null, sucursalesC
 let alertasHoy = [];
 let knownAlertIds = new Set();
 let isFirstLoad = true;
+let historialActual = [];
+let indiceHistorial = 0;
 
 const SHEETS_URLS = {
     'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=0&single=true&output=csv',
@@ -296,17 +298,14 @@ function playNotificationSound() {
 }
 window.addEventListener('click', () => { if (window.audioCtx && window.audioCtx.state === 'suspended') window.audioCtx.resume(); }, { once: true });
 
-// ==================== VALIDACIÓN DE ID DE EQUIPO ====================
-// Solo acepta IDs con formato: M + números (ej: M101, M443, M205)
-// Opcionalmente puede tener letras al final (ej: M206A)
+// ==================== VALIDACIÓN DE ID ====================
 function esIdEquipoValido(id) {
     if (!id) return false;
     const idLimpio = String(id).trim().toUpperCase();
-    // Patrón: empieza con M (o letra), seguido de al menos 2 números
     return /^[A-Z]\d{2,}[A-Z]?$/.test(idLimpio);
 }
 
-// ==================== PARSEO DE FECHA ROBUSTO ====================
+// ==================== PARSEO DE FECHA ====================
 function parseFechaHora(fechaStr, horaStr) {
     try {
         if (!fechaStr) return 0;
@@ -345,76 +344,7 @@ function parseFechaHora(fechaStr, horaStr) {
     } catch (e) { return 0; }
 }
 
-// ==================== PARSEO CSV ROBUSTO CON DETECCIÓN DE COMAS INTERNAS ====================
-function parseCSV(text, sucursal) {
-    const lines = text.trim().split('\n').filter(l => l.trim());
-    if (lines.length < 2) return [];
-    
-    // Parsear headers
-    const headers = parseCSVLine(lines[0]).map(h => h.trim().replace(/"/g, ''));
-    const numColumnasEsperadas = headers.length;
-    const data = [];
-    
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        
-        // Parsear la línea respetando comillas
-        const values = parseCSVLine(lines[i]);
-        
-        // Si tiene menos columnas que los headers, intentar reparar
-        if (values.length < numColumnasEsperadas) {
-            // Agregar campos vacíos al final
-            while (values.length < numColumnasEsperadas) values.push('');
-        }
-        // Si tiene MÁS columnas que los headers, probablemente hay comas en campos de texto
-        // Estrategia: usar las primeras N-1 columnas fijas, y el resto concatenarlo en la última columna
-        if (values.length > numColumnasEsperadas) {
-            const extra = values.splice(numColumnasEsperadas - 1);
-            values.push(extra.join(','));
-        }
-        
-        const row = {};
-        headers.forEach((h, idx) => row[h] = (values[idx] || '').replace(/^"|"$/g, '').trim());
-        
-        // Mapeo flexible de campos
-        const mapped = {
-            ID_Equipo: (row['ID_Equipo'] || row['🆔 ID Equipo'] || row['ID'] || row['id'] || '').trim(),
-            Equipo: (row['Equipo'] || row['🚜 Equipo'] || row['equipo'] || row['Nombre'] || '').trim(),
-            Tipo_Equipo: (row['Tipo_Equipo'] || row['🏷️ Tipo'] || row['Tipo'] || row['tipo'] || '').trim(),
-            Propiedad: (row['Propiedad'] || row['🏢 Propiedad'] || row['propiedad'] || '').trim().toUpperCase(),
-            Estado: (row['Estado'] || row[' Estado'] || row['estado'] || '').trim(),
-            Lectura: (row['Lectura'] || row['🔢 Lectura'] || row['Horó./Kilómetro'] || row['lectura'] || '').trim(),
-            Motivo_Parada: (row['Motivo_Parada'] || row['⚠️ Motivo'] || row['Motivo'] || row['motivo'] || '').trim(),
-            Reportante: (row['Reportante'] || row['👤 Reportante'] || row['reportante'] || '').trim(),
-            Fecha_Carga: (row['Fecha_Carga'] || row['📅 Fecha'] || row['Fecha_Hora'] || row['fecha'] || '').trim(),
-            Hora_Carga: (row['Hora_Carga'] || row['🕒 Hora'] || row['hora'] || '').trim(),
-            Observaciones: (row['Observaciones'] || row[' Observaciones'] || row['observaciones'] || '').trim(),
-            sucursal: sucursal
-        };
-        
-        // 🎯 VALIDACIÓN CRÍTICA: Solo aceptar si el ID tiene formato válido
-        if (!esIdEquipoValido(mapped.ID_Equipo)) {
-            continue; // Descartar filas que no son equipos reales
-        }
-        
-        // Normalizar estado
-        if (mapped.Estado && mapped.Estado.toUpperCase().includes('FUERA DE SERVICIO')) {
-            mapped.Estado = 'FUERA_DE_SERVICIO';
-        } else if (mapped.Estado) {
-            mapped.Estado = mapped.Estado.toUpperCase();
-        }
-        
-        // Validar que tenga al menos un estado reconocido
-        if (mapped.Estado !== 'OPERATIVO' && mapped.Estado !== 'FUERA_DE_SERVICIO' && mapped.Estado !== 'PARADO') {
-            mapped.Estado = 'OPERATIVO'; // Default
-        }
-        
-        data.push(mapped);
-    }
-    return data;
-}
-
-// Función auxiliar para parsear una línea CSV respetando comillas
+// ==================== PARSEO CSV ====================
 function parseCSVLine(line) {
     const values = [];
     let current = '';
@@ -427,7 +357,7 @@ function parseCSVLine(line) {
         if (char === '"') {
             if (inQuotes && nextChar === '"') {
                 current += '"';
-                i++; // Saltar la siguiente comilla
+                i++;
             } else {
                 inQuotes = !inQuotes;
             }
@@ -440,6 +370,62 @@ function parseCSVLine(line) {
     }
     values.push(current.trim());
     return values;
+}
+
+function parseCSV(text, sucursal) {
+    const lines = text.trim().split('\n').filter(l => l.trim());
+    if (lines.length < 2) return [];
+    
+    const headers = parseCSVLine(lines[0]).map(h => h.trim().replace(/"/g, ''));
+    const numColumnasEsperadas = headers.length;
+    const data = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        const values = parseCSVLine(lines[i]);
+        
+        if (values.length < numColumnasEsperadas) {
+            while (values.length < numColumnasEsperadas) values.push('');
+        }
+        if (values.length > numColumnasEsperadas) {
+            const extra = values.splice(numColumnasEsperadas - 1);
+            values.push(extra.join(','));
+        }
+        
+        const row = {};
+        headers.forEach((h, idx) => row[h] = (values[idx] || '').replace(/^"|"$/g, '').trim());
+        
+        const mapped = {
+            ID_Equipo: (row['ID_Equipo'] || row['ID'] || row['id'] || '').trim(),
+            Equipo: (row['Equipo'] || row['equipo'] || row['Nombre'] || '').trim(),
+            Tipo_Equipo: (row['Tipo_Equipo'] || row['Tipo'] || row['tipo'] || '').trim(),
+            Propiedad: (row['Propiedad'] || row['propiedad'] || '').trim().toUpperCase(),
+            Estado: (row['Estado'] || row['estado'] || '').trim(),
+            Lectura: (row['Lectura'] || row['Horó./Kilómetro'] || row['lectura'] || '').trim(),
+            Motivo_Parada: (row['Motivo_Parada'] || row['Motivo'] || row['motivo'] || '').trim(),
+            Reportante: (row['Reportante'] || row['reportante'] || '').trim(),
+            Fecha_Carga: (row['Fecha_Carga'] || row['Fecha_Hora'] || row['fecha'] || '').trim(),
+            Hora_Carga: (row['Hora_Carga'] || row['hora'] || '').trim(),
+            Observaciones: (row['Observaciones'] || row['observaciones'] || '').trim(),
+            sucursal: sucursal
+        };
+        
+        if (!esIdEquipoValido(mapped.ID_Equipo)) continue;
+        
+        if (mapped.Estado && mapped.Estado.toUpperCase().includes('FUERA DE SERVICIO')) {
+            mapped.Estado = 'FUERA_DE_SERVICIO';
+        } else if (mapped.Estado) {
+            mapped.Estado = mapped.Estado.toUpperCase();
+        }
+        
+        if (mapped.Estado !== 'OPERATIVO' && mapped.Estado !== 'FUERA_DE_SERVICIO' && mapped.Estado !== 'PARADO') {
+            mapped.Estado = 'OPERATIVO';
+        }
+        
+        data.push(mapped);
+    }
+    return data;
 }
 
 // ==================== CARGA DE DATOS ====================
@@ -457,7 +443,6 @@ async function loadData() {
         
         ALL_RAW_DATA = allData;
         
-        // Consolidar: último registro de cada equipo
         const consolidado = {};
         allData.forEach(e => {
             const key = e.ID_Equipo + '_' + e.sucursal;
@@ -486,34 +471,39 @@ function actualizarFiltroEquipos() {
     const select = document.getElementById('filterEquipo');
     const valorActual = select.value;
     
-    // Obtener lista única de equipos ordenados por ID
+    // Solo equipos de la sucursal actual (o todos si es TODAS)
+    const equiposFiltrados = currentSucursal === 'TODAS' 
+        ? EQUIPMENT_DATA 
+        : EQUIPMENT_DATA.filter(e => e.sucursal === currentSucursal);
+    
     const equiposUnicos = {};
-    EQUIPMENT_DATA.forEach(e => {
+    equiposFiltrados.forEach(e => {
         if (!equiposUnicos[e.ID_Equipo]) {
             equiposUnicos[e.ID_Equipo] = e;
         }
     });
     
     const lista = Object.values(equiposUnicos).sort((a,b) => {
-        // Ordenar numéricamente por el número del ID
         const numA = parseInt(a.ID_Equipo.replace(/\D/g, '')) || 0;
         const numB = parseInt(b.ID_Equipo.replace(/\D/g, '')) || 0;
         if (numA !== numB) return numA - numB;
         return a.ID_Equipo.localeCompare(b.ID_Equipo);
     });
     
-    select.innerHTML = '<option value="TODOS"> Todos los equipos</option>';
+    select.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>';
     lista.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.ID_Equipo;
-        // Mostrar solo: ID - Nombre corto
         const nombreCorto = e.Equipo ? e.Equipo.substring(0, 25) : '';
         opt.textContent = `${e.ID_Equipo} - ${nombreCorto}`;
         select.appendChild(opt);
     });
     
+    // Mantener selección solo si el equipo existe en la sucursal actual
     if (valorActual && valorActual !== 'TODOS' && lista.some(e => e.ID_Equipo === valorActual)) {
         select.value = valorActual;
+    } else {
+        select.value = 'TODOS';
     }
 }
 
@@ -565,7 +555,15 @@ function detectarAlertasHoy(data) {
 
 function updateAlertasUI() {
     const container = document.getElementById('alertasHoy');
-    const alertasFiltradas = currentSucursal === 'TODAS' ? alertasHoy : alertasHoy.filter(a => a.sucursal === currentSucursal);
+    
+    // Filtrar alertas por sucursal Y por equipo si hay filtro aplicado
+    let alertasFiltradas = alertasHoy;
+    if (currentSucursal !== 'TODAS') {
+        alertasFiltradas = alertasFiltradas.filter(a => a.sucursal === currentSucursal);
+    }
+    if (currentEquipoFiltro !== 'TODOS') {
+        alertasFiltradas = alertasFiltradas.filter(a => a.id === currentEquipoFiltro);
+    }
     
     if (alertasFiltradas.length === 0) {
         container.innerHTML = '<p class="text-cyan-200 text-center py-2">Sin alertas</p>';
@@ -586,6 +584,26 @@ function updateAlertasUI() {
 function openEquipmentModalById(id, sucursal) {
     const equipo = EQUIPMENT_DATA.find(e => e.ID_Equipo === id && e.sucursal === sucursal);
     if (equipo) openEquipmentModal(equipo);
+}
+
+// ==================== CAMBIO DE SUCURSAL (RESETEA FILTROS) ====================
+function cambiarSucursal(sucursal) {
+    currentSucursal = sucursal;
+    
+    // Actualizar botones
+    document.querySelectorAll('.sucursal-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(sucursal === 'TODAS' ? 'btnTodas' : sucursal === 'MALAGUENO' ? 'btnMalagueno' : sucursal === 'BARKER' ? 'btnBarker' : 'btnPampita').classList.add('active');
+    
+    // 🔥 RESETEAR FILTROS al cambiar de sucursal
+    document.getElementById('filterPropiedad').value = 'TODAS';
+    document.getElementById('filterEquipo').value = 'TODOS';
+    document.getElementById('filterEstado').value = 'TODOS';
+    currentEquipoFiltro = 'TODOS';
+    
+    // Re-cargar filtro de equipos (solo los de esa sucursal)
+    actualizarFiltroEquipos();
+    aplicarFiltros();
+    updateAlertasUI();
 }
 
 // ==================== FILTROS ====================
@@ -610,9 +628,28 @@ function aplicarFiltros() {
 }
 
 function updateDashboard() {
+    updateKPIsHeader();
     updateKPIs();
     updateCharts();
     renderTable();
+}
+
+// ==================== KPIs DEL HEADER (siempre muestran datos filtrados) ====================
+function updateKPIsHeader() {
+    const total = filteredData.length;
+    const parados = filteredData.filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO').length;
+    
+    let totalHsPerdidas = 0;
+    filteredData.forEach(e => {
+        if (e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO') {
+            const t = calcularTiempoParado(e.Fecha_Carga, e.Hora_Carga);
+            if (t && t.totalHs > 0) totalHsPerdidas += t.totalHs;
+        }
+    });
+    
+    document.getElementById('totalEquipos').innerText = total;
+    document.getElementById('totalParados').innerText = parados;
+    document.getElementById('totalHsPerdidas').innerText = Math.round(totalHsPerdidas) + 'h';
 }
 
 // ==================== KPIs DINÁMICOS ====================
@@ -627,11 +664,10 @@ function updateKPIs() {
         const historial = ALL_RAW_DATA.filter(e => e.ID_Equipo === equipoSeleccionado.ID_Equipo);
         const paradasCount = historial.filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO').length;
         const operativosCount = historial.filter(e => e.Estado === 'OPERATIVO').length;
-        const reportantes = [...new Set(historial.map(e => e.Reportante).filter(r => r))];
         
         container.innerHTML = `
             <div class="glass-card p-4 ${esParado ? 'kpi-red' : 'kpi-green'}">
-                <div class="text-xs font-bold ${esParado ? 'text-red-400' : 'text-green-400'} mb-1">📊 ESTADO ACTUAL</div>
+                <div class="text-xs font-bold ${esParado ? 'text-red-400' : 'text-green-400'} mb-1"> ESTADO ACTUAL</div>
                 <div class="text-2xl font-black ${esParado ? 'text-red-300' : 'text-green-300'}">${esParado ? '⏸️ PARADO' : '✅ OPERATIVO'}</div>
                 <div class="kpi-subtitulo text-${esParado ? 'red' : 'green'}-200">Último registro: ${equipoSeleccionado.Fecha_Carga || '-'}</div>
             </div>
@@ -656,7 +692,6 @@ function updateKPIs() {
                 <div class="text-xs font-bold text-blue-400 mb-1">️ INFORMACIÓN</div>
                 <div class="text-sm font-bold text-blue-300 truncate">${equipoSeleccionado.Equipo || '-'}</div>
                 <div class="kpi-subtitulo text-blue-200">📍 ${equipoSeleccionado.sucursal} · 🏢 ${(equipoSeleccionado.Propiedad || 'N/A').toLowerCase()}</div>
-                ${reportantes.length > 0 ? `<div class="kpi-subtitulo text-slate-400 mt-1">👷 ${reportantes.slice(0,2).join(', ')}</div>` : ''}
             </div>
         `;
     } else {
@@ -666,21 +701,19 @@ function updateKPIs() {
         
         let totalHsPerdidas = 0;
         let equipoCritico = null, maxHs = 0;
-        let totalHsParados = 0;
         
         filteredData.forEach(e => {
             if (e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO') {
                 const t = calcularTiempoParado(e.Fecha_Carga, e.Hora_Carga);
                 if (t && t.totalHs > 0) {
                     totalHsPerdidas += t.totalHs;
-                    totalHsParados += t.totalHs;
                     if (t.totalHs > maxHs) { maxHs = t.totalHs; equipoCritico = e; }
                 }
             }
         });
         
         const disponibilidad = total > 0 ? Math.round(operativos/total*100) : 0;
-        const promParada = parados > 0 ? Math.round(totalHsParados / parados) : 0;
+        const promParada = parados > 0 ? Math.round(totalHsPerdidas / parados) : 0;
         
         container.innerHTML = `
             <div class="glass-card p-4 kpi-green">
@@ -689,7 +722,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-green-200">${operativos} de ${total} equipos operativos</div>
             </div>
             <div class="glass-card p-4 kpi-cyan">
-                <div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div>
+                <div class="text-xs font-bold text-cyan-400 mb-1"> OPERATIVOS</div>
                 <div class="kpi-valor text-3xl font-black text-cyan-300">${operativos}</div>
                 <div class="kpi-subtitulo text-cyan-200">De ${total} totales · ${parados} parados</div>
             </div>
@@ -699,7 +732,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div>
             </div>
             <div class="glass-card p-4 kpi-red">
-                <div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div>
+                <div class="text-xs font-bold text-red-400 mb-1"> EQUIPO CRÍTICO</div>
                 <div class="kpi-valor text-xl font-black text-red-300 truncate">${equipoCritico ? equipoCritico.ID_Equipo : '-'}</div>
                 <div class="kpi-subtitulo text-red-200">${equipoCritico ? `${Math.floor(maxHs/24)}d ${Math.floor(maxHs%24)}h parado` : 'Sin paradas'}</div>
             </div>
@@ -747,16 +780,30 @@ function updateCharts() {
     
     const ctxEstado = document.getElementById('estadoChart').getContext('2d');
     if (estadoChart) estadoChart.destroy();
-    estadoChart = new Chart(ctxEstado, {
-        type: 'doughnut',
-        data: {
-            labels: ['Operativo', 'Parado'],
-            datasets: [{ data: [operativos, parados], backgroundColor: ['#06b6d4', '#f59e0b'], borderWidth: 0 }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '70%',
-            plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } } }
-        }
-    });
+    
+    if (operativos === 0 && parados === 0) {
+        estadoChart = new Chart(ctxEstado, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sin datos'],
+                datasets: [{ data: [1], backgroundColor: ['#334155'], borderWidth: 0 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '70%',
+                plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } } }
+            }
+        });
+    } else {
+        estadoChart = new Chart(ctxEstado, {
+            type: 'doughnut',
+            data: {
+                labels: ['Operativo', 'Parado'],
+                datasets: [{ data: [operativos, parados], backgroundColor: ['#06b6d4', '#f59e0b'], borderWidth: 0 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '70%',
+                plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } } }
+            }
+        });
+    }
     
     const ctxTop = document.getElementById('topParadosChart').getContext('2d');
     if (topParadosChart) topParadosChart.destroy();
@@ -790,7 +837,7 @@ function updateCharts() {
                                 const h = historial.slice(-10)[idx];
                                 return `${h.Fecha_Carga} ${h.Hora_Carga || ''}`;
                             },
-                            label: (ctx) => ctx.raw === 1 ? '✅ Operativo' : '⏸️ Parado'
+                            label: (ctx) => ctx.raw === 1 ? '✅ Operativo' : '️ Parado'
                         }
                     }
                 },
@@ -810,38 +857,46 @@ function updateCharts() {
             .sort((a, b) => b.hsParado - a.hsParado)
             .slice(0, 5);
         
-        topParadosChart = new Chart(ctxTop, {
-            type: 'bar',
-            data: {
-                labels: equiposParados.map(e => e.ID_Equipo),
-                datasets: [{
-                    label: 'Horas parado',
-                    data: equiposParados.map(e => Math.round(e.hsParado)),
-                    backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16'],
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-                plugins: { 
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: (ctx) => {
-                                const eq = equiposParados[ctx.dataIndex];
-                                const dias = Math.floor(eq.hsParado / 24);
-                                const hs = Math.floor(eq.hsParado % 24);
-                                return `${dias}d ${hs}h - ${eq.Equipo}`;
+        if (equiposParados.length === 0) {
+            topParadosChart = new Chart(ctxTop, {
+                type: 'bar',
+                data: { labels: ['Sin parados'], datasets: [{ data: [0], backgroundColor: ['#334155'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        } else {
+            topParadosChart = new Chart(ctxTop, {
+                type: 'bar',
+                data: {
+                    labels: equiposParados.map(e => e.ID_Equipo),
+                    datasets: [{
+                        label: 'Horas parado',
+                        data: equiposParados.map(e => Math.round(e.hsParado)),
+                        backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const eq = equiposParados[ctx.dataIndex];
+                                    const dias = Math.floor(eq.hsParado / 24);
+                                    const hs = Math.floor(eq.hsParado % 24);
+                                    return `${dias}d ${hs}h - ${eq.Equipo}`;
+                                }
                             }
                         }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } },
+                        y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { weight: 'bold' } } }
                     }
-                },
-                scales: {
-                    x: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } },
-                    y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { weight: 'bold' } } }
                 }
-            }
-        });
+            });
+        }
     }
     
     const motivos = {};
@@ -942,6 +997,7 @@ function openEquipmentModal(equipo) {
     const content = document.getElementById('modalContent');
     
     const esParado = equipo.Estado === 'FUERA_DE_SERVICIO' || equipo.Estado === 'PARADO';
+    
     let cronometroHTML = '';
     if (esParado && equipo.Fecha_Carga) {
         const t = calcularTiempoParado(equipo.Fecha_Carga, equipo.Hora_Carga);
@@ -960,29 +1016,32 @@ function openEquipmentModal(equipo) {
         }
     }
     
-    const historial = ALL_RAW_DATA
+    historialActual = ALL_RAW_DATA
         .filter(e => e.ID_Equipo === equipo.ID_Equipo)
-        .sort((a,b) => parseFechaHora(b.Fecha_Carga, b.Hora_Carga) - parseFechaHora(a.Fecha_Carga, a.Hora_Carga))
-        .slice(0, 8);
+        .sort((a,b) => parseFechaHora(b.Fecha_Carga, b.Hora_Carga) - parseFechaHora(a.Fecha_Carga, a.Hora_Carga));
+    indiceHistorial = 0;
     
-    let historialHTML = '';
-    if (historial.length > 0) {
-        historialHTML = `
-            <div class="mt-4">
-                <h3 class="font-bold text-cyan-400 text-xs mb-2">📜 HISTORIAL COMPLETO (${historial.length} registros)</h3>
-                ${historial.map(h => {
-                    const esOp = h.Estado === 'OPERATIVO';
-                    return `
-                        <div class="hist-item ${esOp ? 'operativo' : 'parada'}">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold ${esOp ? 'text-green-400' : 'text-amber-400'}">${esOp ? '✅ OPERATIVO' : '⏸️ PARADO'}</span>
-                                <span class="text-[10px] text-slate-400">${h.Fecha_Carga} ${h.Hora_Carga || ''}</span>
-                            </div>
-                            <div class="text-[10px] text-slate-300">👤 ${h.Reportante || '-'}</div>
-                            ${h.Motivo_Parada ? `<div class="text-[10px] text-slate-400 mt-1">📝 ${h.Motivo_Parada}</div>` : ''}
-                        </div>
-                    `;
-                }).join('')}
+    const totalRegistros = historialActual.length;
+    const regActual = totalRegistros > 0 ? historialActual[0] : null;
+    
+    let sliderHTML = '';
+    if (totalRegistros > 0) {
+        sliderHTML = `
+            <div class="mt-4 bg-slate-800/50 rounded-xl p-4 border border-cyan-500/30">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-cyan-400 text-xs">📜 HISTORIAL DE REGISTROS</h3>
+                    <span id="historialContador" class="text-[10px] font-bold text-cyan-300 bg-cyan-900/30 px-2 py-1 rounded-full">1 de ${totalRegistros}</span>
+                </div>
+                <div id="historialSlide">${renderizarSlideHistorial(regActual, 0)}</div>
+                <div class="flex items-center justify-between mt-4 gap-2">
+                    <button onclick="cambiarRegistroHistorial(-1)" id="btnAnterior"
+                        class="flex-1 bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all ${totalRegistros <= 1 ? 'opacity-30 cursor-not-allowed' : ''}"
+                        ${totalRegistros <= 1 ? 'disabled' : ''}>← Anterior</button>
+                    <div class="flex gap-1 items-center" id="historialDots">${generarDotsHistorial(totalRegistros, 0)}</div>
+                    <button onclick="cambiarRegistroHistorial(1)" id="btnSiguiente"
+                        class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all ${totalRegistros <= 1 ? 'opacity-30 cursor-not-allowed' : ''}"
+                        ${totalRegistros <= 1 ? 'disabled' : ''}>Siguiente →</button>
+                </div>
             </div>
         `;
     }
@@ -1009,12 +1068,13 @@ function openEquipmentModal(equipo) {
         ${cronometroHTML}
         <div class="space-y-2 mt-4">
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-cyan-300">${equipo.sucursal}</span></div>
-            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400"> Estado</span><span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span></div>
+            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${equipo.Lectura || 'N/A'}</span></div>
+            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📅 Último registro</span><span class="font-bold text-cyan-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span></div>
             ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">⚠️ Motivo</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
             ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
         </div>
-        ${historialHTML}
+        ${sliderHTML}
     `;
     
     document.getElementById('modalTitle').innerText = `📋 ${equipo.ID_Equipo} - ${equipo.Equipo}`;
@@ -1022,19 +1082,114 @@ function openEquipmentModal(equipo) {
     modal.style.display = 'flex';
 }
 
+function renderizarSlideHistorial(reg, indice) {
+    const esOp = reg.Estado === 'OPERATIVO';
+    const estadoColor = esOp ? 'text-green-400' : 'text-amber-400';
+    const estadoIcon = esOp ? '✅' : '⏸️';
+    const estadoTexto = esOp ? 'OPERATIVO' : 'PARADO';
+    const badgeBorder = esOp ? 'border-green-500/50' : 'border-amber-500/50';
+    const badgeBg = esOp ? 'bg-green-950/20' : 'bg-amber-950/20';
+    
+    let diffHs = '';
+    if (indice < historialActual.length - 1) {
+        const regAnterior = historialActual[indice + 1];
+        const lectActual = parseFloat(reg.Lectura) || 0;
+        const lectAnterior = parseFloat(regAnterior.Lectura) || 0;
+        const diff = lectActual - lectAnterior;
+        if (diff > 0) diffHs = `<div class="text-[10px] text-cyan-400 mt-1">↗️ +${diff.toFixed(1)} desde anterior</div>`;
+    }
+    
+    let diffTiempo = '';
+    if (indice < historialActual.length - 1) {
+        const regAnterior = historialActual[indice + 1];
+        const tActual = parseFechaHora(reg.Fecha_Carga, reg.Hora_Carga);
+        const tAnterior = parseFechaHora(regAnterior.Fecha_Carga, regAnterior.Hora_Carga);
+        if (tActual > 0 && tAnterior > 0) {
+            const diffMs = tActual - tAnterior;
+            const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const hs = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            if (dias > 0 || hs > 0) diffTiempo = `<div class="text-[10px] text-purple-400">⏱️ ${dias > 0 ? dias + 'd ' : ''}${hs}h desde anterior</div>`;
+        }
+    }
+    
+    return `
+        <div class="${badgeBg} border ${badgeBorder} rounded-lg p-3">
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-bold ${estadoColor} text-sm">${estadoIcon} ${estadoTexto}</span>
+                <span class="text-[11px] text-slate-400 font-mono bg-slate-900/50 px-2 py-1 rounded">📅 ${reg.Fecha_Carga || 'Sin fecha'} ${reg.Hora_Carga ? ' ' + reg.Hora_Carga : ''}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <div class="bg-slate-900/50 rounded-lg p-2">
+                    <div class="text-[9px] text-slate-500">🔢 HORÓMETRO</div>
+                    <div class="text-lg font-black text-amber-300">${reg.Lectura || 'N/A'}</div>
+                    ${diffHs}
+                </div>
+                <div class="bg-slate-900/50 rounded-lg p-2">
+                    <div class="text-[9px] text-slate-500">👤 REPORTANTE</div>
+                    <div class="text-sm font-bold text-cyan-300">${reg.Reportante || 'N/A'}</div>
+                    ${diffTiempo}
+                </div>
+            </div>
+            ${reg.Motivo_Parada ? `<div class="bg-slate-900/50 rounded-lg p-2 mt-2"><div class="text-[9px] text-amber-400 mb-1">⚠️ MOTIVO</div><div class="text-xs text-slate-300 leading-relaxed">${reg.Motivo_Parada}</div></div>` : ''}
+        </div>
+    `;
+}
+
+function generarDotsHistorial(total, actual) {
+    if (total <= 10) {
+        let html = '';
+        for (let i = 0; i < total; i++) {
+            html += `<div class="w-2 h-2 rounded-full transition-all ${i === actual ? 'bg-cyan-400 w-4' : 'bg-slate-600'}"></div>`;
+        }
+        return html;
+    } else {
+        const porcentaje = ((actual + 1) / total) * 100;
+        return `<div class="flex-1 mx-2 h-1.5 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-cyan-400 transition-all" style="width: ${porcentaje}%"></div></div>`;
+    }
+}
+
+function cambiarRegistroHistorial(direccion) {
+    const nuevoIndice = indiceHistorial + direccion;
+    if (nuevoIndice < 0 || nuevoIndice >= historialActual.length) return;
+    
+    indiceHistorial = nuevoIndice;
+    const reg = historialActual[indiceHistorial];
+    
+    const slide = document.getElementById('historialSlide');
+    slide.style.opacity = '0';
+    slide.style.transform = direccion > 0 ? 'translateX(20px)' : 'translateX(-20px)';
+    
+    setTimeout(() => {
+        slide.innerHTML = renderizarSlideHistorial(reg, indiceHistorial);
+        slide.style.transform = direccion > 0 ? 'translateX(-20px)' : 'translateX(20px)';
+        setTimeout(() => {
+            slide.style.opacity = '1';
+            slide.style.transform = 'translateX(0)';
+        }, 50);
+    }, 150);
+    
+    document.getElementById('historialContador').innerText = `${indiceHistorial + 1} de ${historialActual.length}`;
+    document.getElementById('historialDots').innerHTML = generarDotsHistorial(historialActual.length, indiceHistorial);
+    
+    const btnAnt = document.getElementById('btnAnterior');
+    const btnSig = document.getElementById('btnSiguiente');
+    btnAnt.disabled = indiceHistorial === 0;
+    btnAnt.classList.toggle('opacity-30', indiceHistorial === 0);
+    btnAnt.classList.toggle('cursor-not-allowed', indiceHistorial === 0);
+    btnSig.disabled = indiceHistorial === historialActual.length - 1;
+    btnSig.classList.toggle('opacity-30', indiceHistorial === historialActual.length - 1);
+    btnSig.classList.toggle('cursor-not-allowed', indiceHistorial === historialActual.length - 1);
+}
+
 function closeEquipmentModal() {
     document.getElementById('equipmentModal').classList.add('hidden');
     document.getElementById('equipmentModal').style.display = 'none';
 }
 
-function cambiarSucursal(sucursal) {
-    currentSucursal = sucursal;
-    document.querySelectorAll('.sucursal-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(sucursal === 'TODAS' ? 'btnTodas' : sucursal === 'MALAGUENO' ? 'btnMalagueno' : sucursal === 'BARKER' ? 'btnBarker' : 'btnPampita').classList.add('active');
-    aplicarFiltros();
+function forceRefreshData() { 
+    knownAlertIds.clear(); 
+    loadData(); 
 }
-
-function forceRefreshData() { loadData(); }
 
 window.onload = () => { loadData(); setInterval(loadData, 60000); actualizarCronometros(); };
 </script>
