@@ -295,14 +295,31 @@
     </div>
 </div>
 
+<!-- MODAL DETALLE CON NAVEGACIÓN ENTRE EQUIPOS -->
 <div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-slate-900 rounded-2xl p-6 shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-            <h2 id="modalTitle" class="text-2xl font-black text-cyan-400">📋 Detalle</h2>
-            <button onclick="closeEquipmentModal()" class="text-2xl text-cyan-300 hover:text-white">&times;</button>
+    <div class="bg-slate-900 rounded-2xl shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[92vh] overflow-y-auto">
+        <!-- HEADER DEL MODAL CON NAVEGACIÓN DE EQUIPOS -->
+        <div class="sticky top-0 bg-slate-900/95 backdrop-blur border-b border-cyan-500/30 px-6 py-3 flex items-center justify-between z-10">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+                <button onclick="navegarEquipo(-1)" id="btnPrevEquipo" class="bg-slate-700 hover:bg-cyan-600 text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold transition-all flex-shrink-0" title="Equipo anterior">
+                    ◀
+                </button>
+                <div class="min-w-0 flex-1 text-center">
+                    <h2 id="modalTitle" class="text-lg font-black text-cyan-400 truncate">📋 Detalle</h2>
+                    <div id="modalEquipoCounter" class="text-[10px] text-slate-400">-</div>
+                </div>
+                <button onclick="navegarEquipo(1)" id="btnNextEquipo" class="bg-cyan-600 hover:bg-cyan-500 text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold transition-all flex-shrink-0" title="Siguiente equipo">
+                    ▶
+                </button>
+            </div>
+            <button onclick="closeEquipmentModal()" class="text-2xl text-cyan-300 hover:text-white ml-3 flex-shrink-0">&times;</button>
         </div>
-        <div id="modalContent" class="space-y-3"></div>
-        <div class="flex justify-end mt-6">
+        
+        <!-- CONTENIDO DEL MODAL -->
+        <div id="modalContent" class="p-6"></div>
+        
+        <!-- FOOTER -->
+        <div class="sticky bottom-0 bg-slate-900/95 backdrop-blur border-t border-cyan-500/30 px-6 py-3 flex justify-end">
             <button onclick="closeEquipmentModal()" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
         </div>
     </div>
@@ -321,6 +338,9 @@ let knownAlertIds = new Set();
 let isFirstLoad = true;
 let historialActual = [];
 let indiceHistorial = 0;
+
+//  NUEVO: Navegación entre equipos
+let indiceEquipoModal = 0; // Índice del equipo actual en filteredData
 
 const NOMBRES_MESES = {
     '2026-01': 'Enero 2026', '2026-02': 'Febrero 2026', '2026-03': 'Marzo 2026',
@@ -357,7 +377,6 @@ function esIdEquipoValido(id) {
     return /^[A-Z]\d{2,}[A-Z]?$/.test(String(id).trim().toUpperCase());
 }
 
-// 🔥 PARSEO DE FECHA SUPER ROBUSTO
 function parseFechaHora(fechaStr, horaStr) {
     try {
         if (!fechaStr || fechaStr === '-' || fechaStr.trim() === '') return 0;
@@ -365,7 +384,6 @@ function parseFechaHora(fechaStr, horaStr) {
         let fecha = String(fechaStr).trim();
         let hora = String(horaStr || '00:00').trim();
         
-        // Separar fecha y hora si vienen juntas
         if (fecha.includes(' ')) {
             const partes = fecha.split(' ');
             fecha = partes[0];
@@ -374,7 +392,6 @@ function parseFechaHora(fechaStr, horaStr) {
             }
         }
         
-        // Números seriales de Excel
         if (/^\d{4,5}(\.\d+)?$/.test(fecha)) {
             const serial = parseFloat(fecha);
             const excelEpoch = new Date(1899, 11, 30);
@@ -390,7 +407,6 @@ function parseFechaHora(fechaStr, horaStr) {
         
         let day, month, year, h = 0, m = 0;
         
-        // Formato dd/mm/yyyy o dd/mm/yyyy hh:mm:ss
         if (fecha.includes('/')) {
             const partes = fecha.split('/');
             if (partes.length === 3) {
@@ -398,9 +414,7 @@ function parseFechaHora(fechaStr, horaStr) {
                 month = parseInt(partes[1]) - 1;
                 year = parseInt(partes[2]);
             }
-        }
-        // Formato dd-mm-yyyy o yyyy-mm-dd
-        else if (fecha.includes('-')) {
+        } else if (fecha.includes('-')) {
             const partes = fecha.split('-');
             if (partes.length === 3) {
                 if (partes[0].length === 4) {
@@ -413,19 +427,16 @@ function parseFechaHora(fechaStr, horaStr) {
                     year = parseInt(partes[2]);
                 }
             }
-        }
-        else {
+        } else {
             const d = new Date(fecha);
             if (!isNaN(d.getTime())) return d.getTime();
             return 0;
         }
         
-        // Validar
         if (isNaN(day) || isNaN(month) || isNaN(year)) return 0;
         if (day < 1 || day > 31) return 0;
         if (month < 0 || month > 11) return 0;
         
-        // Parsear hora
         if (hora && hora.includes(':')) {
             const hp = hora.split(':');
             h = parseInt(hp[0]) || 0;
@@ -433,16 +444,13 @@ function parseFechaHora(fechaStr, horaStr) {
         }
         
         const d = new Date(year, month, day, h, m, 0);
-        
-        // 🔥 AMPLIAR RANGO: aceptar desde 2020 hasta 2030
         const ahora = new Date();
         const diffMs = Math.abs(d.getTime() - ahora.getTime());
         const diffAnios = diffMs / (1000 * 60 * 60 * 24 * 365);
-        if (diffAnios > 6) return 0; // máximo 6 años de diferencia
+        if (diffAnios > 6) return 0;
         
         return d.getTime();
     } catch (e) {
-        console.warn('⚠️ Error parseando fecha:', fechaStr, horaStr, e.message);
         return 0;
     }
 }
@@ -569,7 +577,7 @@ async function loadData() {
     } catch (error) {
         console.error('Error:', error);
         if (isFirstLoad) {
-            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-red-400 p-4">❌ Error al cargar</td></tr>';
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-red-400 p-4"> Error al cargar</td></tr>';
         }
     }
     isFirstLoad = false;
@@ -590,7 +598,7 @@ function actualizarFiltroEquipos() {
         return a.ID_Equipo.localeCompare(b.ID_Equipo);
     });
     
-    select.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>';
+    select.innerHTML = '<option value="TODOS"> Todos los equipos</option>';
     lista.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.ID_Equipo;
@@ -796,7 +804,7 @@ function updateKPIs() {
         container.innerHTML = `
             <div class="glass-card p-4 ${esParado ? 'kpi-red' : 'kpi-green'}">
                 <div class="text-xs font-bold ${esParado ? 'text-red-400' : 'text-green-400'} mb-1">📊 ESTADO ACTUAL</div>
-                <div class="text-2xl font-black ${esParado ? 'text-red-300' : 'text-green-300'}">${esParado ? '⏸️ PARADO' : '✅ OPERATIVO'}</div>
+                <div class="text-2xl font-black ${esParado ? 'text-red-300' : 'text-green-300'}">${esParado ? '️ PARADO' : '✅ OPERATIVO'}</div>
                 <div class="kpi-subtitulo text-${esParado ? 'red' : 'green'}-200">Último registro: ${equipoSeleccionado.Fecha_Carga || '-'}</div>
             </div>
             <div class="glass-card p-4 kpi-amber">
@@ -812,7 +820,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-cyan-200">${equipoSeleccionado.Tipo_Equipo || 'Equipo'}</div>
             </div>
             <div class="glass-card p-4 kpi-purple">
-                <div class="text-xs font-bold text-purple-400 mb-1">📜 HISTORIAL</div>
+                <div class="text-xs font-bold text-purple-400 mb-1"> HISTORIAL</div>
                 <div class="kpi-valor text-2xl font-black text-purple-300">${historial.length}</div>
                 <div class="kpi-subtitulo text-purple-200">⏸️ ${paradasCount} paradas · ✅ ${operativosCount} oper.</div>
             </div>
@@ -860,7 +868,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-cyan-200">De ${total} totales · ${parados} parados</div>
             </div>
             <div class="glass-card p-4 kpi-amber">
-                <div class="text-xs font-bold text-amber-400 mb-1">️ ${currentMesFiltro !== 'ACTUAL' ? 'REG. PARADOS' : 'TIEMPO MUERTO'}</div>
+                <div class="text-xs font-bold text-amber-400 mb-1">⏱️ ${currentMesFiltro !== 'ACTUAL' ? 'REG. PARADOS' : 'TIEMPO MUERTO'}</div>
                 <div class="kpi-valor text-3xl font-black text-amber-300">${currentMesFiltro !== 'ACTUAL' ? totalHsPerdidas : Math.round(totalHsPerdidas) + 'h'}</div>
                 <div class="kpi-subtitulo text-amber-200">${currentMesFiltro !== 'ACTUAL' ? NOMBRES_MESES[currentMesFiltro] : 'Acumulado actualmente'}</div>
             </div>
@@ -881,14 +889,10 @@ function updateKPIs() {
 function calcularTiempoParado(fechaStr, horaStr) {
     try {
         const fechaParada = parseFechaHora(fechaStr, horaStr);
-        
-        if (!fechaParada || fechaParada === 0) {
-            return null;
-        }
+        if (!fechaParada || fechaParada === 0) return null;
         
         const ahora = new Date().getTime();
         const diffMs = ahora - fechaParada;
-        
         if (diffMs < 0) return null;
         
         const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -965,16 +969,10 @@ function updateCharts() {
                 responsive: true, maintainAspectRatio: false,
                 plugins: { 
                     legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            title: (items) => {
-                                const idx = items[0].dataIndex;
-                                const h = historial.slice(-10)[idx];
-                                return `${h.Fecha_Carga} ${h.Hora_Carga || ''}`;
-                            },
-                            label: (ctx) => ctx.raw === 1 ? '✅ Operativo' : '️ Parado'
-                        }
-                    }
+                    tooltip: { callbacks: {
+                        title: (items) => { const h = historial.slice(-10)[items[0].dataIndex]; return `${h.Fecha_Carga} ${h.Hora_Carga || ''}`; },
+                        label: (ctx) => ctx.raw === 1 ? '✅ Operativo' : '️ Parado'
+                    }}
                 },
                 scales: {
                     x: { grid: { display: false }, ticks: { color: '#cbd5e1' } },
@@ -1018,19 +1016,17 @@ function updateCharts() {
                     indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                     plugins: { 
                         legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: (ctx) => {
-                                    const eq = equiposParados[ctx.dataIndex];
-                                    if (currentMesFiltro === 'ACTUAL') {
-                                        const dias = Math.floor(eq.hsParado / 24);
-                                        const hs = Math.floor(eq.hsParado % 24);
-                                        return `${dias}d ${hs}h - ${eq.Equipo}`;
-                                    }
-                                    return `${eq.Equipo}`;
+                        tooltip: { callbacks: {
+                            label: (ctx) => {
+                                const eq = equiposParados[ctx.dataIndex];
+                                if (currentMesFiltro === 'ACTUAL') {
+                                    const dias = Math.floor(eq.hsParado / 24);
+                                    const hs = Math.floor(eq.hsParado % 24);
+                                    return `${dias}d ${hs}h - ${eq.Equipo}`;
                                 }
+                                return `${eq.Equipo}`;
                             }
-                        }
+                        }}
                     },
                     scales: {
                         x: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', maxTicksLimit: 6 } },
@@ -1056,16 +1052,9 @@ function updateCharts() {
         type: 'doughnut',
         data: {
             labels: motivosArr.length ? motivosArr.map(m => m[0]) : ['Sin paradas'],
-            datasets: [{
-                data: motivosArr.length ? motivosArr.map(m => m[1]) : [1],
-                backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7', '#ef4444', '#10b981', '#ec4899'],
-                borderWidth: 0
-            }]
+            datasets: [{ data: motivosArr.length ? motivosArr.map(m => m[1]) : [1], backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7', '#ef4444', '#10b981', '#ec4899'], borderWidth: 0 }]
         },
-        options: {
-            responsive: true, maintainAspectRatio: false, cutout: '60%',
-            plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 10 } } } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 10 } } } } }
     });
     
     const sucursales = ['MALAGUENO', 'BARKER', 'LA_PAMPITA'];
@@ -1076,18 +1065,8 @@ function updateCharts() {
     if (sucursalesChart) sucursalesChart.destroy();
     sucursalesChart = new Chart(ctxSuc, {
         type: 'bar',
-        data: {
-            labels: nombresSuc,
-            datasets: [{ label: 'Equipos', data: dataSuc, backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7'], borderRadius: 8 }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 1 } },
-                x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 10 } } }
-            }
-        }
+        data: { labels: nombresSuc, datasets: [{ label: 'Equipos', data: dataSuc, backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7'], borderRadius: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 10 } } } } }
     });
 }
 
@@ -1103,9 +1082,9 @@ function renderTable() {
         return;
     }
     
-    filteredData.forEach(e => {
+    filteredData.forEach((e, idx) => {
         const tr = document.createElement('tr');
-        tr.onclick = () => openEquipmentModal(e);
+        tr.onclick = () => openEquipmentModal(e, idx);
         
         const esParado = e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO';
         const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : 'status-parado';
@@ -1117,19 +1096,16 @@ function renderTable() {
             if (currentMesFiltro === 'ACTUAL') {
                 const t = calcularTiempoParado(e.Fecha_Carga, e.Hora_Carga);
                 if (t && t.totalHs > 0) {
-                    let html = '️ ';
+                    let html = '⏱️ ';
                     if (t.dias > 0) html += `<span class="crono-dia">${t.dias}d</span> `;
                     html += `<span class="crono-hora">${t.horas}h</span> `;
                     html += `<span class="crono-min">${t.minutos}m</span>`;
                     celdaTiempo = `<span class="cronometro text-xs" data-fecha-parada="${e.Fecha_Carga}" data-hora-parada="${e.Hora_Carga || '00:00'}">${html}</span>`;
                 } else {
-                    // DEBUG: mostrar fecha con tooltip
-                    celdaTiempo = `<span class="text-xs text-amber-300 cursor-help" title="DEBUG - Fecha: ${e.Fecha_Carga} | Hora: ${e.Hora_Carga || '(vacía)'}"> ${e.Fecha_Carga || 'sin fecha'}</span>`;
-                    // Log para debug
-                    console.log(`️ Equipo ${e.ID_Equipo}: Fecha='${e.Fecha_Carga}', Hora='${e.Hora_Carga}', parseResult=${parseFechaHora(e.Fecha_Carga, e.Hora_Carga)}`);
+                    celdaTiempo = `<span class="text-xs text-amber-300 cursor-help" title="Fecha: ${e.Fecha_Carga} ${e.Hora_Carga || ''}">📅 ${e.Fecha_Carga || ''}</span>`;
                 }
             } else {
-                celdaTiempo = `<span class="text-xs text-amber-300">📅 ${e.Fecha_Carga || ''}</span>`;
+                celdaTiempo = `<span class="text-xs text-amber-300"> ${e.Fecha_Carga || ''}</span>`;
             }
         }
         
@@ -1152,10 +1128,43 @@ function renderTable() {
     actualizarCronometros();
 }
 
-function openEquipmentModal(equipo) {
+// ==================== MODAL CON NAVEGACIÓN ENTRE EQUIPOS ====================
+
+function openEquipmentModal(equipo, indiceOpcional) {
+    // Encontrar el índice del equipo en filteredData
+    if (indiceOpcional !== undefined && filteredData[indiceOpcional] === equipo) {
+        indiceEquipoModal = indiceOpcional;
+    } else {
+        const idx = filteredData.findIndex(e => e.ID_Equipo === equipo.ID_Equipo && e.sucursal === equipo.sucursal);
+        if (idx >= 0) indiceEquipoModal = idx;
+    }
+    
+    renderizarContenidoModal();
+    
+    const modal = document.getElementById('equipmentModal');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+}
+
+function renderizarContenidoModal() {
+    const equipo = filteredData[indiceEquipoModal];
+    if (!equipo) return;
+    
     const modal = document.getElementById('equipmentModal');
     const content = document.getElementById('modalContent');
     const esParado = equipo.Estado === 'FUERA_DE_SERVICIO' || equipo.Estado === 'PARADO';
+    
+    // Actualizar título y contador
+    document.getElementById('modalTitle').innerText = `📋 ${equipo.ID_Equipo} - ${equipo.Equipo}`;
+    document.getElementById('modalEquipoCounter').innerText = `Equipo ${indiceEquipoModal + 1} de ${filteredData.length}`;
+    
+    // Estado de botones de navegación
+    const btnPrev = document.getElementById('btnPrevEquipo');
+    const btnNext = document.getElementById('btnNextEquipo');
+    btnPrev.style.opacity = indiceEquipoModal === 0 ? '0.3' : '1';
+    btnPrev.disabled = indiceEquipoModal === 0;
+    btnNext.style.opacity = indiceEquipoModal === filteredData.length - 1 ? '0.3' : '1';
+    btnNext.disabled = indiceEquipoModal === filteredData.length - 1;
     
     let cronometroHTML = '';
     if (esParado && equipo.Fecha_Carga && currentMesFiltro === 'ACTUAL') {
@@ -1178,7 +1187,7 @@ function openEquipmentModal(equipo) {
     let bannerModal = '';
     if (currentMesFiltro !== 'ACTUAL') {
         bannerModal = `<div class="bg-amber-950/30 border border-amber-500/50 rounded-lg p-3 mb-3 text-center">
-            <div class="text-xs text-amber-300">📅 Estado del equipo al final de <strong>${NOMBRES_MESES[currentMesFiltro]}</strong></div>
+            <div class="text-xs text-amber-300"> Estado del equipo al final de <strong>${NOMBRES_MESES[currentMesFiltro]}</strong></div>
         </div>`;
     }
     
@@ -1202,11 +1211,11 @@ function openEquipmentModal(equipo) {
                 <div class="flex items-center justify-between mt-4 gap-2">
                     <button onclick="cambiarRegistroHistorial(-1)" id="btnAnterior"
                         class="flex-1 bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all ${totalRegistros <= 1 ? 'opacity-30 cursor-not-allowed' : ''}"
-                        ${totalRegistros <= 1 ? 'disabled' : ''}>← Anterior</button>
+                        ${totalRegistros <= 1 ? 'disabled' : ''}>← Anterior registro</button>
                     <div class="flex gap-1 items-center" id="historialDots">${generarDotsHistorial(totalRegistros, 0)}</div>
                     <button onclick="cambiarRegistroHistorial(1)" id="btnSiguiente"
                         class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all ${totalRegistros <= 1 ? 'opacity-30 cursor-not-allowed' : ''}"
-                        ${totalRegistros <= 1 ? 'disabled' : ''}>Siguiente →</button>
+                        ${totalRegistros <= 1 ? 'disabled' : ''}>Siguiente registro →</button>
                 </div>
             </div>
         `;
@@ -1216,7 +1225,7 @@ function openEquipmentModal(equipo) {
         ${bannerModal}
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">🔢 ID</div><div class="text-xl font-bold text-cyan-300">${equipo.ID_Equipo}</div></div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1"> Equipo</div><div class="text-base font-bold text-white">${equipo.Equipo}</div></div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">🚜 Equipo</div><div class="text-base font-bold text-white">${equipo.Equipo}</div></div>
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">️ Tipo</div><div class="text-sm font-bold text-white">${equipo.Tipo_Equipo || '-'}</div></div>
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">🏢 Propiedad</div><div class="text-sm font-bold text-white">${equipo.Propiedad || '-'}</div></div>
         </div>
@@ -1226,15 +1235,37 @@ function openEquipmentModal(equipo) {
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${equipo.Lectura || 'N/A'}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📅 Último registro</span><span class="font-bold text-cyan-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span></div>
-            ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">️ Motivo</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
-            ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 mb-1"> Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
+            ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">⚠️ Motivo</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
+            ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
         </div>
         ${sliderHTML}
     `;
+}
+
+// 🔥 NUEVO: Navegación entre equipos
+function navegarEquipo(direccion) {
+    const nuevoIndice = indiceEquipoModal + direccion;
+    if (nuevoIndice < 0 || nuevoIndice >= filteredData.length) return;
     
-    document.getElementById('modalTitle').innerText = `📋 ${equipo.ID_Equipo} - ${equipo.Equipo}`;
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
+    indiceEquipoModal = nuevoIndice;
+    
+    // Animación de transición
+    const content = document.getElementById('modalContent');
+    content.style.opacity = '0';
+    content.style.transform = direccion > 0 ? 'translateX(30px)' : 'translateX(-30px)';
+    
+    setTimeout(() => {
+        renderizarContenidoModal();
+        content.style.transform = direccion > 0 ? 'translateX(-30px)' : 'translateX(30px)';
+        setTimeout(() => {
+            content.style.opacity = '1';
+            content.style.transform = 'translateX(0)';
+        }, 50);
+    }, 150);
+    
+    // Scroll al inicio del modal
+    const modal = document.getElementById('equipmentModal');
+    modal.scrollTop = 0;
 }
 
 function renderizarSlideHistorial(reg, indice) {
@@ -1271,11 +1302,11 @@ function renderizarSlideHistorial(reg, indice) {
         <div class="${badgeBg} border ${badgeBorder} rounded-lg p-3">
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold ${estadoColor} text-sm">${estadoIcon} ${estadoTexto}</span>
-                <span class="text-[11px] text-slate-400 font-mono bg-slate-900/50 px-2 py-1 rounded">📅 ${reg.Fecha_Carga || 'Sin fecha'} ${reg.Hora_Carga ? ' ' + reg.Hora_Carga : ''}</span>
+                <span class="text-[11px] text-slate-400 font-mono bg-slate-900/50 px-2 py-1 rounded"> ${reg.Fecha_Carga || 'Sin fecha'} ${reg.Hora_Carga ? ' ' + reg.Hora_Carga : ''}</span>
             </div>
             <div class="grid grid-cols-2 gap-2 mb-2">
-                <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500">🔢 HORÓMETRO</div><div class="text-lg font-black text-amber-300">${reg.Lectura || 'N/A'}</div>${diffHs}</div>
-                <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500"> REPORTANTE</div><div class="text-sm font-bold text-cyan-300">${reg.Reportante || 'N/A'}</div>${diffTiempo}</div>
+                <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500"> HORÓMETRO</div><div class="text-lg font-black text-amber-300">${reg.Lectura || 'N/A'}</div>${diffHs}</div>
+                <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500">👤 REPORTANTE</div><div class="text-sm font-bold text-cyan-300">${reg.Reportante || 'N/A'}</div>${diffTiempo}</div>
             </div>
             ${reg.Motivo_Parada ? `<div class="bg-slate-900/50 rounded-lg p-2 mt-2"><div class="text-[9px] text-amber-400 mb-1">⚠️ MOTIVO</div><div class="text-xs text-slate-300 leading-relaxed">${reg.Motivo_Parada}</div></div>` : ''}
         </div>
@@ -1298,26 +1329,18 @@ function generarDotsHistorial(total, actual) {
 function cambiarRegistroHistorial(direccion) {
     const nuevoIndice = indiceHistorial + direccion;
     if (nuevoIndice < 0 || nuevoIndice >= historialActual.length) return;
-    
     indiceHistorial = nuevoIndice;
     const reg = historialActual[indiceHistorial];
-    
     const slide = document.getElementById('historialSlide');
     slide.style.opacity = '0';
     slide.style.transform = direccion > 0 ? 'translateX(20px)' : 'translateX(-20px)';
-    
     setTimeout(() => {
         slide.innerHTML = renderizarSlideHistorial(reg, indiceHistorial);
         slide.style.transform = direccion > 0 ? 'translateX(-20px)' : 'translateX(20px)';
-        setTimeout(() => {
-            slide.style.opacity = '1';
-            slide.style.transform = 'translateX(0)';
-        }, 50);
+        setTimeout(() => { slide.style.opacity = '1'; slide.style.transform = 'translateX(0)'; }, 50);
     }, 150);
-    
     document.getElementById('historialContador').innerText = `${indiceHistorial + 1} de ${historialActual.length}`;
     document.getElementById('historialDots').innerHTML = generarDotsHistorial(historialActual.length, indiceHistorial);
-    
     const btnAnt = document.getElementById('btnAnterior');
     const btnSig = document.getElementById('btnSiguiente');
     btnAnt.disabled = indiceHistorial === 0;
@@ -1337,6 +1360,22 @@ function forceRefreshData() {
     knownAlertIds.clear(); 
     loadData(); 
 }
+
+// Navegación con teclado
+document.addEventListener('keydown', (e) => {
+    const modal = document.getElementById('equipmentModal');
+    if (modal.classList.contains('hidden')) return;
+    
+    if (e.key === 'Escape') closeEquipmentModal();
+    if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        navegarEquipo(-1);
+    }
+    if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        navegarEquipo(1);
+    }
+});
 
 window.onload = () => { loadData(); setInterval(loadData, 60000); actualizarCronometros(); };
 </script>
