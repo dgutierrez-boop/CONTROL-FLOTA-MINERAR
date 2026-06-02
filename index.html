@@ -152,9 +152,9 @@
     <!-- SUCURSALES -->
     <div class="glass-card p-5 mb-5">
         <div class="text-center mb-4">
-            <h2 class="text-sm font-bold text-cyan-300 mb-3"> SELECCIONAR SUCURSAL</h2>
+            <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
             <div class="flex flex-wrap items-center justify-center gap-3">
-                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')">🏭 TODAS</button>
+                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')"> TODAS</button>
                 <button id="btnMalagueno" class="sucursal-btn" onclick="cambiarSucursal('MALAGUENO')">📍 MALAGUEÑO</button>
                 <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
                 <button id="btnPampita" class="sucursal-btn" onclick="cambiarSucursal('LA_PAMPITA')">🌸 LA PAMPITA</button>
@@ -162,36 +162,34 @@
         </div>
         
         <!-- 5 TARJETAS KPI DINÁMICAS -->
-        <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5">
-            <!-- Se llenan dinámicamente -->
-        </div>
+        <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5"></div>
 
         <div class="grid lg:grid-cols-[250px_1fr] gap-5">
             <aside>
                 <div class="glass-card p-4">
-                    <h3 class="font-bold mb-3 text-cyan-400 text-xs">📋 FILTROS</h3>
+                    <h3 class="font-bold mb-3 text-cyan-400 text-xs"> FILTROS</h3>
                     
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🏢 PROPIEDAD</label>
+                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block"> PROPIEDAD</label>
                     <select id="filterPropiedad" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
                         <option value="TODAS">Todas</option>
                         <option value="PROPIO">Propio</option>
                         <option value="ALQUILADO">Alquilado</option>
                     </select>
                     
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 EQUIPO (ID + Nombre + Tipo)</label>
+                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block"> EQUIPO (N° Interno)</label>
                     <select id="filterEquipo" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
-                        <option value="TODOS"> Todos los equipos</option>
+                        <option value="TODOS">🔎 Todos los equipos</option>
                     </select>
                     
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🔍 ESTADO</label>
+                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block"> ESTADO</label>
                     <select id="filterEstado" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
                         <option value="TODOS">Todos</option>
                         <option value="OPERATIVO">✅ Operativo</option>
-                        <option value="PARADO">️ Parado</option>
+                        <option value="PARADO">⏸️ Parado</option>
                     </select>
                     
                     <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30">
-                        <div class="text-[10px] font-bold text-cyan-400 mb-2"> ALERTAS HOY</div>
+                        <div class="text-[10px] font-bold text-cyan-400 mb-2">🚨 ALERTAS HOY</div>
                         <div id="alertasHoy" class="max-h-40 overflow-y-auto text-[10px]">
                             <p class="text-cyan-200 text-center">Sin alertas</p>
                         </div>
@@ -200,7 +198,6 @@
             </aside>
             
             <main>
-                <!-- Gráficos -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div class="glass-card p-4">
                         <h3 class="font-bold text-cyan-400 text-xs mb-2">📊 ESTADO DE FLOTA</h3>
@@ -217,12 +214,11 @@
                         <div class="chart-container"><canvas id="motivosChart"></canvas></div>
                     </div>
                     <div class="glass-card p-4">
-                        <h3 class="font-bold text-purple-400 text-xs mb-2"> CARGAS POR SUCURSAL</h3>
+                        <h3 class="font-bold text-purple-400 text-xs mb-2">📈 CARGAS POR SUCURSAL</h3>
                         <div class="chart-container"><canvas id="sucursalesChart"></canvas></div>
                     </div>
                 </div>
                 
-                <!-- Tabla -->
                 <div class="glass-card p-4">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-cyan-400 text-xs">📋 FLOTA EN TIEMPO REAL</h3>
@@ -268,8 +264,8 @@
 // ==================== CONSTANTES ====================
 let currentSucursal = 'TODAS';
 let currentEquipoFiltro = 'TODOS';
-let ALL_RAW_DATA = []; // Todos los registros históricos
-let EQUIPMENT_DATA = []; // Solo el último de cada equipo (estado actual)
+let ALL_RAW_DATA = [];
+let EQUIPMENT_DATA = [];
 let filteredData = [];
 let estadoChart = null, topParadosChart = null, motivosChart = null, sucursalesChart = null;
 let alertasHoy = [];
@@ -300,6 +296,16 @@ function playNotificationSound() {
 }
 window.addEventListener('click', () => { if (window.audioCtx && window.audioCtx.state === 'suspended') window.audioCtx.resume(); }, { once: true });
 
+// ==================== VALIDACIÓN DE ID DE EQUIPO ====================
+// Solo acepta IDs con formato: M + números (ej: M101, M443, M205)
+// Opcionalmente puede tener letras al final (ej: M206A)
+function esIdEquipoValido(id) {
+    if (!id) return false;
+    const idLimpio = String(id).trim().toUpperCase();
+    // Patrón: empieza con M (o letra), seguido de al menos 2 números
+    return /^[A-Z]\d{2,}[A-Z]?$/.test(idLimpio);
+}
+
 // ==================== PARSEO DE FECHA ROBUSTO ====================
 function parseFechaHora(fechaStr, horaStr) {
     try {
@@ -307,22 +313,17 @@ function parseFechaHora(fechaStr, horaStr) {
         let fecha = String(fechaStr).trim();
         let hora = String(horaStr || '00:00').trim();
         
-        // Detectar formato
         let year, month, day, h = 0, m = 0;
         
         if (fecha.includes('-')) {
-            // Formato yyyy-mm-dd o yyyy/mm/dd
             const p = fecha.split(/[-\/]/);
             year = parseInt(p[0]); month = parseInt(p[1]) - 1; day = parseInt(p[2]);
         } else if (fecha.includes('/')) {
             const p = fecha.split('/');
-            // Intentar detectar si es dd/mm/yyyy o mm/dd/yyyy
-            // Si el primer número > 12, es día; si el segundo > 12, es mes
             let a = parseInt(p[0]), b = parseInt(p[1]), c = parseInt(p[2]);
             if (a > 12) { day = a; month = b - 1; year = c; }
             else if (b > 12) { month = a - 1; day = b; year = c; }
             else {
-                // Ambiguo: preferir dd/mm/yyyy (formato argentino)
                 if (c > 31) { day = a; month = b - 1; year = c; }
                 else { day = a; month = b - 1; year = c; }
             }
@@ -336,8 +337,6 @@ function parseFechaHora(fechaStr, horaStr) {
         }
         
         const d = new Date(year, month, day, h, m, 0);
-        
-        // Validar: si la fecha es muy antigua (más de 5 años) o muy futura (más de 1 año), probablemente es inválida
         const ahora = new Date();
         const diffAnios = (d.getTime() - ahora.getTime()) / (1000 * 60 * 60 * 24 * 365);
         if (diffAnios < -5 || diffAnios > 1) return 0;
@@ -346,50 +345,101 @@ function parseFechaHora(fechaStr, horaStr) {
     } catch (e) { return 0; }
 }
 
-// ==================== PARSEO CSV INTELIGENTE ====================
+// ==================== PARSEO CSV ROBUSTO CON DETECCIÓN DE COMAS INTERNAS ====================
 function parseCSV(text, sucursal) {
     const lines = text.trim().split('\n').filter(l => l.trim());
     if (lines.length < 2) return [];
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    
+    // Parsear headers
+    const headers = parseCSVLine(lines[0]).map(h => h.trim().replace(/"/g, ''));
+    const numColumnasEsperadas = headers.length;
     const data = [];
     
     for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
-        const values = [];
-        let current = '', inQuotes = false;
-        for (let char of lines[i]) {
-            if (char === '"') inQuotes = !inQuotes;
-            else if (char === ',' && !inQuotes) { values.push(current.trim()); current = ''; }
-            else current += char;
-        }
-        values.push(current.trim());
-        const row = {};
-        headers.forEach((h, idx) => row[h] = (values[idx] || '').replace(/^"|"$/g, ''));
         
+        // Parsear la línea respetando comillas
+        const values = parseCSVLine(lines[i]);
+        
+        // Si tiene menos columnas que los headers, intentar reparar
+        if (values.length < numColumnasEsperadas) {
+            // Agregar campos vacíos al final
+            while (values.length < numColumnasEsperadas) values.push('');
+        }
+        // Si tiene MÁS columnas que los headers, probablemente hay comas en campos de texto
+        // Estrategia: usar las primeras N-1 columnas fijas, y el resto concatenarlo en la última columna
+        if (values.length > numColumnasEsperadas) {
+            const extra = values.splice(numColumnasEsperadas - 1);
+            values.push(extra.join(','));
+        }
+        
+        const row = {};
+        headers.forEach((h, idx) => row[h] = (values[idx] || '').replace(/^"|"$/g, '').trim());
+        
+        // Mapeo flexible de campos
         const mapped = {
-            ID_Equipo: row['ID_Equipo'] || row['🆔 ID Equipo'] || row['ID'] || '',
-            Equipo: row['Equipo'] || row['🚜 Equipo'] || '',
-            Tipo_Equipo: row['Tipo_Equipo'] || row['🏷️ Tipo'] || row['Tipo'] || '',
-            Propiedad: row['Propiedad'] || row['🏢 Propiedad'] || '',
-            Estado: row['Estado'] || row['📊 Estado'] || '',
-            Lectura: row['Lectura'] || row['🔢 Lectura'] || '',
-            Motivo_Parada: row['Motivo_Parada'] || row['⚠️ Motivo'] || row['Motivo'] || '',
-            Reportante: row['Reportante'] || row['👤 Reportante'] || '',
-            Fecha_Carga: row['Fecha_Carga'] || row['📅 Fecha'] || row['Fecha_Hora'] || '',
-            Hora_Carga: row['Hora_Carga'] || row['🕒 Hora'] || '',
-            Observaciones: row['Observaciones'] || row['📝 Observaciones'] || '',
+            ID_Equipo: (row['ID_Equipo'] || row['🆔 ID Equipo'] || row['ID'] || row['id'] || '').trim(),
+            Equipo: (row['Equipo'] || row['🚜 Equipo'] || row['equipo'] || row['Nombre'] || '').trim(),
+            Tipo_Equipo: (row['Tipo_Equipo'] || row['🏷️ Tipo'] || row['Tipo'] || row['tipo'] || '').trim(),
+            Propiedad: (row['Propiedad'] || row['🏢 Propiedad'] || row['propiedad'] || '').trim().toUpperCase(),
+            Estado: (row['Estado'] || row[' Estado'] || row['estado'] || '').trim(),
+            Lectura: (row['Lectura'] || row['🔢 Lectura'] || row['Horó./Kilómetro'] || row['lectura'] || '').trim(),
+            Motivo_Parada: (row['Motivo_Parada'] || row['⚠️ Motivo'] || row['Motivo'] || row['motivo'] || '').trim(),
+            Reportante: (row['Reportante'] || row['👤 Reportante'] || row['reportante'] || '').trim(),
+            Fecha_Carga: (row['Fecha_Carga'] || row['📅 Fecha'] || row['Fecha_Hora'] || row['fecha'] || '').trim(),
+            Hora_Carga: (row['Hora_Carga'] || row['🕒 Hora'] || row['hora'] || '').trim(),
+            Observaciones: (row['Observaciones'] || row[' Observaciones'] || row['observaciones'] || '').trim(),
             sucursal: sucursal
         };
         
+        // 🎯 VALIDACIÓN CRÍTICA: Solo aceptar si el ID tiene formato válido
+        if (!esIdEquipoValido(mapped.ID_Equipo)) {
+            continue; // Descartar filas que no son equipos reales
+        }
+        
+        // Normalizar estado
         if (mapped.Estado && mapped.Estado.toUpperCase().includes('FUERA DE SERVICIO')) {
             mapped.Estado = 'FUERA_DE_SERVICIO';
         } else if (mapped.Estado) {
             mapped.Estado = mapped.Estado.toUpperCase();
         }
         
-        if (mapped.ID_Equipo && mapped.ID_Equipo.trim()) data.push(mapped);
+        // Validar que tenga al menos un estado reconocido
+        if (mapped.Estado !== 'OPERATIVO' && mapped.Estado !== 'FUERA_DE_SERVICIO' && mapped.Estado !== 'PARADO') {
+            mapped.Estado = 'OPERATIVO'; // Default
+        }
+        
+        data.push(mapped);
     }
     return data;
+}
+
+// Función auxiliar para parsear una línea CSV respetando comillas
+function parseCSVLine(line) {
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const nextChar = line[i + 1];
+        
+        if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+                current += '"';
+                i++; // Saltar la siguiente comilla
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            values.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    values.push(current.trim());
+    return values;
 }
 
 // ==================== CARGA DE DATOS ====================
@@ -419,7 +469,6 @@ async function loadData() {
         EQUIPMENT_DATA = Object.values(consolidado);
         alertasHoy = detectarAlertasHoy(allData);
         
-        // Actualizar el filtro de equipos dinámicamente
         actualizarFiltroEquipos();
         aplicarFiltros();
         updateAlertasUI();
@@ -437,7 +486,7 @@ function actualizarFiltroEquipos() {
     const select = document.getElementById('filterEquipo');
     const valorActual = select.value;
     
-    // Obtener lista única de equipos (agrupando por ID, mostrando el último nombre/tipo)
+    // Obtener lista única de equipos ordenados por ID
     const equiposUnicos = {};
     EQUIPMENT_DATA.forEach(e => {
         if (!equiposUnicos[e.ID_Equipo]) {
@@ -446,20 +495,23 @@ function actualizarFiltroEquipos() {
     });
     
     const lista = Object.values(equiposUnicos).sort((a,b) => {
-        // Ordenar: primero sucursal, luego ID
-        if (a.sucursal !== b.sucursal) return a.sucursal.localeCompare(b.sucursal);
+        // Ordenar numéricamente por el número del ID
+        const numA = parseInt(a.ID_Equipo.replace(/\D/g, '')) || 0;
+        const numB = parseInt(b.ID_Equipo.replace(/\D/g, '')) || 0;
+        if (numA !== numB) return numA - numB;
         return a.ID_Equipo.localeCompare(b.ID_Equipo);
     });
     
-    select.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>';
+    select.innerHTML = '<option value="TODOS"> Todos los equipos</option>';
     lista.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.ID_Equipo;
-        opt.textContent = `📍 ${e.ID_Equipo} | ${e.Equipo} | ${e.Tipo_Equipo || 'Sin tipo'} | ${e.sucursal}`;
+        // Mostrar solo: ID - Nombre corto
+        const nombreCorto = e.Equipo ? e.Equipo.substring(0, 25) : '';
+        opt.textContent = `${e.ID_Equipo} - ${nombreCorto}`;
         select.appendChild(opt);
     });
     
-    // Mantener selección previa si existe
     if (valorActual && valorActual !== 'TODOS' && lista.some(e => e.ID_Equipo === valorActual)) {
         select.value = valorActual;
     }
@@ -478,9 +530,6 @@ async function fetchSheet(url, sucursal) {
 
 function detectarAlertasHoy(data) {
     const hoy = new Date();
-    const diaHoy = hoy.getDate().toString().padStart(2, '0');
-    const mesHoy = (hoy.getMonth() + 1).toString().padStart(2, '0');
-    const anioHoy = hoy.getFullYear();
     let hayNuevas = false;
     
     const consolidado = {};
@@ -573,7 +622,6 @@ function updateKPIs() {
     const equipoSeleccionado = esEquipoEspecifico ? EQUIPMENT_DATA.find(e => e.ID_Equipo === currentEquipoFiltro) : null;
     
     if (esEquipoEspecifico && equipoSeleccionado) {
-        // ========== VISTA DE EQUIPO ESPECÍFICO ==========
         const esParado = equipoSeleccionado.Estado === 'FUERA_DE_SERVICIO' || equipoSeleccionado.Estado === 'PARADO';
         const t = calcularTiempoParado(equipoSeleccionado.Fecha_Carga, equipoSeleccionado.Hora_Carga);
         const historial = ALL_RAW_DATA.filter(e => e.ID_Equipo === equipoSeleccionado.ID_Equipo);
@@ -581,19 +629,12 @@ function updateKPIs() {
         const operativosCount = historial.filter(e => e.Estado === 'OPERATIVO').length;
         const reportantes = [...new Set(historial.map(e => e.Reportante).filter(r => r))];
         
-        // Tiempo total parado histórico (aproximado)
-        let totalHsParado = 0;
-        if (t && esParado) totalHsParado = t.totalHs;
-        
         container.innerHTML = `
-            <!-- KPI 1: ESTADO ACTUAL -->
             <div class="glass-card p-4 ${esParado ? 'kpi-red' : 'kpi-green'}">
                 <div class="text-xs font-bold ${esParado ? 'text-red-400' : 'text-green-400'} mb-1">📊 ESTADO ACTUAL</div>
                 <div class="text-2xl font-black ${esParado ? 'text-red-300' : 'text-green-300'}">${esParado ? '⏸️ PARADO' : '✅ OPERATIVO'}</div>
                 <div class="kpi-subtitulo text-${esParado ? 'red' : 'green'}-200">Último registro: ${equipoSeleccionado.Fecha_Carga || '-'}</div>
             </div>
-            
-            <!-- KPI 2: TIEMPO PARADO -->
             <div class="glass-card p-4 kpi-amber">
                 <div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO PARADO</div>
                 <div class="kpi-valor text-2xl font-black text-amber-300">
@@ -601,31 +642,24 @@ function updateKPIs() {
                 </div>
                 <div class="kpi-subtitulo text-amber-200">${esParado ? 'Desde última carga' : 'En servicio'}</div>
             </div>
-            
-            <!-- KPI 3: LECTURA ACTUAL -->
             <div class="glass-card p-4 kpi-cyan">
-                <div class="text-xs font-bold text-cyan-400 mb-1">🔢 LECTURA ACTUAL</div>
+                <div class="text-xs font-bold text-cyan-400 mb-1"> LECTURA ACTUAL</div>
                 <div class="kpi-valor text-2xl font-black text-cyan-300">${equipoSeleccionado.Lectura || '0'}</div>
                 <div class="kpi-subtitulo text-cyan-200">${equipoSeleccionado.Tipo_Equipo || 'Equipo'}</div>
             </div>
-            
-            <!-- KPI 4: HISTORIAL -->
             <div class="glass-card p-4 kpi-purple">
                 <div class="text-xs font-bold text-purple-400 mb-1">📜 HISTORIAL</div>
                 <div class="kpi-valor text-2xl font-black text-purple-300">${historial.length}</div>
                 <div class="kpi-subtitulo text-purple-200">⏸️ ${paradasCount} paradas · ✅ ${operativosCount} oper.</div>
             </div>
-            
-            <!-- KPI 5: INFO EXTRA -->
             <div class="glass-card p-4 kpi-blue">
-                <div class="text-xs font-bold text-blue-400 mb-1">🏷️ INFORMACIÓN</div>
+                <div class="text-xs font-bold text-blue-400 mb-1">️ INFORMACIÓN</div>
                 <div class="text-sm font-bold text-blue-300 truncate">${equipoSeleccionado.Equipo || '-'}</div>
-                <div class="kpi-subtitulo text-blue-200"> ${equipoSeleccionado.sucursal} · 🏢 ${(equipoSeleccionado.Propiedad || 'N/A').toLowerCase()}</div>
-                ${reportantes.length > 0 ? `<div class="kpi-subtitulo text-slate-400 mt-1"> ${reportantes.slice(0,2).join(', ')}</div>` : ''}
+                <div class="kpi-subtitulo text-blue-200">📍 ${equipoSeleccionado.sucursal} · 🏢 ${(equipoSeleccionado.Propiedad || 'N/A').toLowerCase()}</div>
+                ${reportantes.length > 0 ? `<div class="kpi-subtitulo text-slate-400 mt-1">👷 ${reportantes.slice(0,2).join(', ')}</div>` : ''}
             </div>
         `;
     } else {
-        // ========== VISTA GENERAL ==========
         const total = filteredData.length;
         const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
         const parados = filteredData.filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO').length;
@@ -660,7 +694,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-cyan-200">De ${total} totales · ${parados} parados</div>
             </div>
             <div class="glass-card p-4 kpi-amber">
-                <div class="text-xs font-bold text-amber-400 mb-1">️ TIEMPO MUERTO</div>
+                <div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div>
                 <div class="kpi-valor text-3xl font-black text-amber-300">${Math.round(totalHsPerdidas)}h</div>
                 <div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div>
             </div>
@@ -708,9 +742,6 @@ setInterval(actualizarCronometros, 10000);
 
 // ==================== CHARTS ====================
 function updateCharts() {
-    const esEquipoEspecifico = currentEquipoFiltro !== 'TODOS';
-    
-    // Doughnut: Estado de flota
     const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
     const parados = filteredData.filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO').length;
     
@@ -727,12 +758,12 @@ function updateCharts() {
         }
     });
     
-    // Top 5 equipos más parados (solo si no es equipo específico)
     const ctxTop = document.getElementById('topParadosChart').getContext('2d');
     if (topParadosChart) topParadosChart.destroy();
     
+    const esEquipoEspecifico = currentEquipoFiltro !== 'TODOS';
+    
     if (esEquipoEspecifico) {
-        // Mostrar estado del equipo a lo largo del tiempo (mini timeline)
         const historial = ALL_RAW_DATA
             .filter(e => e.ID_Equipo === currentEquipoFiltro)
             .sort((a,b) => parseFechaHora(a.Fecha_Carga, a.Hora_Carga) - parseFechaHora(b.Fecha_Carga, b.Hora_Carga));
@@ -770,7 +801,6 @@ function updateCharts() {
             }
         });
     } else {
-        const ahora = new Date();
         const equiposParados = filteredData
             .filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO')
             .map(e => {
@@ -814,7 +844,6 @@ function updateCharts() {
         });
     }
     
-    // Motivos de parada
     const motivos = {};
     filteredData.forEach(e => {
         if ((e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO') && e.Motivo_Parada) {
@@ -842,7 +871,6 @@ function updateCharts() {
         }
     });
     
-    // Barras: cargas por sucursal
     const sucursales = ['MALAGUENO', 'BARKER', 'LA_PAMPITA'];
     const nombresSuc = ['Malagueño', 'Barker', 'La Pampita'];
     const dataSuc = sucursales.map(s => filteredData.filter(e => e.sucursal === s).length);
@@ -920,7 +948,7 @@ function openEquipmentModal(equipo) {
         if (t) {
             cronometroHTML = `
                 <div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center">
-                    <div class="text-xs text-red-400 mb-2">️ TIEMPO PARADO EN VIVO</div>
+                    <div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div>
                     <div class="text-3xl font-black cronometro">
                         ${t.dias > 0 ? `<span class="crono-dia">${t.dias}d</span> ` : ''}
                         <span class="crono-hora">${t.horas}h</span>
@@ -951,7 +979,7 @@ function openEquipmentModal(equipo) {
                                 <span class="text-[10px] text-slate-400">${h.Fecha_Carga} ${h.Hora_Carga || ''}</span>
                             </div>
                             <div class="text-[10px] text-slate-300">👤 ${h.Reportante || '-'}</div>
-                            ${h.Motivo_Parada ? `<div class="text-[10px] text-slate-400 mt-1"> ${h.Motivo_Parada}</div>` : ''}
+                            ${h.Motivo_Parada ? `<div class="text-[10px] text-slate-400 mt-1">📝 ${h.Motivo_Parada}</div>` : ''}
                         </div>
                     `;
                 }).join('')}
@@ -981,7 +1009,7 @@ function openEquipmentModal(equipo) {
         ${cronometroHTML}
         <div class="space-y-2 mt-4">
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-cyan-300">${equipo.sucursal}</span></div>
-            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span></div>
+            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400"> Estado</span><span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${equipo.Lectura || 'N/A'}</span></div>
             ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">⚠️ Motivo</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
             ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
