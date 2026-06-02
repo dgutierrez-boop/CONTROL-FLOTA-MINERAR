@@ -483,6 +483,40 @@ function parseFechaHora(fechaStr, horaStr) {
         return d.getTime();
     } catch (e) { return 0; }
 }
+// ==================== FUNCIÓN QUE FALTABA ====================
+function parseCSVLine(line) {
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const nextChar = line[i + 1];
+        
+        if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+                // Comilla escapada dentro de comillas
+                current += '"';
+                i++; // Saltar la siguiente comilla
+            } else {
+                // Toggle: entrar o salir de modo comillas
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            // Coma fuera de comillas = separador de columna
+            values.push(current.trim());
+            current = '';
+        } else {
+            // Caracter normal
+            current += char;
+        }
+    }
+    
+    // Agregar el último valor
+    values.push(current.trim());
+    return values;
+}
+// ============================================================
 function parseCSV(text, sucursal) {
     const lines = text.trim().split('\n').filter(l => l.trim());
     if (lines.length < 2) return [];
