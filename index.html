@@ -30,8 +30,6 @@
             pointer-events: none;
             z-index: 0;
         }
-        
-        /* TARJETAS: Solo efectos sutiles de color/sombra, SIN transform para evitar rebotes */
         .glass-card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
@@ -45,7 +43,6 @@
             border-color: rgba(6, 182, 212, 0.6);
             box-shadow: 0 8px 30px rgba(6, 182, 212, 0.15);
         }
-        
         .header-container {
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(16px);
@@ -66,6 +63,8 @@
         .kpi-cyan { border-left: 4px solid #06b6d4; background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); }
         .kpi-amber { border-left: 4px solid #f59e0b; background: linear-gradient(115deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); }
         .kpi-purple { border-left: 4px solid #a855f7; background: linear-gradient(115deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05)); }
+        .kpi-red { border-left: 4px solid #ef4444; background: linear-gradient(115deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05)); }
+        .kpi-green { border-left: 4px solid #10b981; background: linear-gradient(115deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05)); }
         
         .sucursal-btn {
             padding: 8px 20px;
@@ -100,6 +99,15 @@
         .status-parado { background: rgba(245,158,11,0.2); color: #fbbf24; border-color: #f59e0b; }
         .status-service { background: rgba(239,68,68,0.2); color: #f87171; border-color: #ef4444; }
         
+        .cronometro {
+            font-family: 'Courier New', monospace;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+        .crono-dia { color: #f87171; }
+        .crono-hora { color: #fbbf24; }
+        .crono-min { color: #67e8f9; }
+        
         .chart-container { 
             position: relative; 
             height: 280px; 
@@ -107,13 +115,13 @@
             margin-top: 12px;
         }
         .table-scroll { 
-            max-height: 350px; 
+            max-height: 400px; 
             overflow-x: auto; 
             overflow-y: auto;
             border-radius: 12px;
             width: 100%;
         }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         table thead th { 
             position: sticky; 
             top: 0; 
@@ -123,6 +131,7 @@
             font-weight: 700;
             padding: 10px;
             font-size: 11px;
+            text-align: left;
         }
         table tbody td {
             padding: 8px 10px;
@@ -132,7 +141,6 @@
         tr { cursor: pointer; transition: background-color 0.2s ease; }
         tr:hover { background-color: rgba(6, 182, 212, 0.1); }
         
-        /* ANIMACIÓN BOUNCE EXCLUSIVA PARA MODALES */
         .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
         @keyframes bounceIn { 
             0% { opacity: 0; transform: scale(0.3); } 
@@ -147,13 +155,29 @@
             border-radius: 8px;
             padding: 8px 12px;
             margin-bottom: 6px;
-            transition: background-color 0.2s ease, border-left-color 0.2s ease;
+            transition: background-color 0.2s ease;
             cursor: pointer;
         }
         .alert-item:hover {
             background: rgba(6, 182, 212, 0.15);
-            border-left-color: #22d3ee;
         }
+        
+        .hist-item {
+            padding: 10px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            border-left: 3px solid #06b6d4;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+        .hist-item.parada { border-left-color: #f59e0b; }
+        .hist-item.operativo { border-left-color: #10b981; }
+        
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+        .pulse-alert { animation: pulse-red 2s infinite; }
         
         @media (max-width: 768px) {
             .header-container { padding: 12px 16px; }
@@ -186,9 +210,9 @@
                 <div class="text-[9px] font-bold text-amber-400">PARADOS</div>
                 <div id="totalParados" class="text-2xl font-black text-amber-300">0</div>
             </div>
-            <div class="glass-card px-4 py-2 text-center kpi-purple">
-                <div class="text-[9px] font-bold text-purple-400">SERVICE</div>
-                <div id="totalService" class="text-2xl font-black text-purple-300">0</div>
+            <div class="glass-card px-4 py-2 text-center kpi-red">
+                <div class="text-[9px] font-bold text-red-400">⏱️ HS PERDIDAS</div>
+                <div id="totalHsPerdidas" class="text-2xl font-black text-red-300">0h</div>
             </div>
             <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all">
                 🔄 Actualizar
@@ -208,12 +232,12 @@
             </div>
         </div>
         
-        <!-- KPIs -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-            <div class="glass-card p-4 kpi-cyan">
-                <div class="text-xs font-bold text-cyan-400 mb-1">✅ DISPONIBILIDAD</div>
-                <div id="kpiDisponibilidad" class="text-3xl font-black text-cyan-300">0%</div>
-                <div class="text-[10px] text-cyan-200 mt-1">Equipos operativos</div>
+        <!-- KPIs PRINCIPALES -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5">
+            <div class="glass-card p-4 kpi-green">
+                <div class="text-xs font-bold text-green-400 mb-1">✅ DISPONIBILIDAD</div>
+                <div id="kpiDisponibilidad" class="text-3xl font-black text-green-300">0%</div>
+                <div class="text-[10px] text-green-200 mt-1">Equipos operativos</div>
             </div>
             <div class="glass-card p-4 kpi-cyan">
                 <div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div>
@@ -223,12 +247,17 @@
             <div class="glass-card p-4 kpi-amber">
                 <div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div>
                 <div id="kpiTiempoMuerto" class="text-3xl font-black text-amber-300">0h</div>
-                <div class="text-[10px] text-amber-200 mt-1">Este mes</div>
+                <div class="text-[10px] text-amber-200 mt-1">Acumulado hoy</div>
+            </div>
+            <div class="glass-card p-4 kpi-red">
+                <div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div>
+                <div id="kpiEquipoCritico" class="text-sm font-black text-red-300 truncate">-</div>
+                <div class="text-[10px] text-red-200 mt-1" id="kpiEquipoCriticoInfo">Sin paradas</div>
             </div>
             <div class="glass-card p-4 kpi-purple">
-                <div class="text-xs font-bold text-purple-400 mb-1">⚠️ ALERTAS</div>
-                <div id="kpiAlertas" class="text-3xl font-black text-purple-300">0</div>
-                <div class="text-[10px] text-purple-200 mt-1">Paradas > 4h</div>
+                <div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div>
+                <div id="kpiPromedioParada" class="text-3xl font-black text-purple-300">0h</div>
+                <div class="text-[10px] text-purple-200 mt-1">Por equipo parado</div>
             </div>
         </div>
 
@@ -238,56 +267,64 @@
                     <h3 class="font-bold mb-3 text-cyan-400 text-xs">📋 FILTROS</h3>
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🏢 PROPIEDAD</label>
-                    <select id="filterPropiedad" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100 focus:outline-none focus:ring-1 focus:ring-cyan-400" onchange="aplicarFiltros()">
+                    <select id="filterPropiedad" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
                         <option value="TODAS">Todas</option>
                         <option value="PROPIO">Propio</option>
                         <option value="ALQUILADO">Alquilado</option>
                     </select>
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 TIPO EQUIPO</label>
-                    <select id="filterTipo" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100 focus:outline-none focus:ring-1 focus:ring-cyan-400" onchange="aplicarFiltros()">
+                    <select id="filterTipo" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
                         <option value="TODOS">Todos</option>
                         <option value="Camión">Camión</option>
                         <option value="Cargadora">Cargadora</option>
+                        <option value="Cargador">Cargador</option>
                         <option value="Topador">Topador</option>
                         <option value="Excavadora">Excavadora</option>
+                        <option value="Retroexcavadora">Retroexcavadora</option>
+                        <option value="Motoniveladora">Motoniveladora</option>
+                        <option value="Perforadora">Perforadora</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                    
+                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🔍 ESTADO</label>
+                    <select id="filterEstado" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
+                        <option value="TODOS">Todos</option>
+                        <option value="OPERATIVO">✅ Operativo</option>
+                        <option value="PARADO">⏸️ Parado</option>
                     </select>
                     
                     <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30">
                         <div class="text-[10px] font-bold text-cyan-400 mb-2">🚨 ALERTAS HOY</div>
                         <div id="alertasHoy" class="max-h-40 overflow-y-auto text-[10px]">
-                            <p class="text-cyan-200 text-center py-2">Sin alertas</p>
+                            <p class="text-cyan-200 text-center">Sin alertas</p>
                         </div>
                     </div>
                 </div>
             </aside>
             
             <main>
-                <!-- Gráficos -->
+                <!-- Gráficos fila 1 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div class="glass-card p-4">
-                        <h3 class="font-bold text-cyan-400 text-xs mb-2">📊 HORAS POR SUCURSAL</h3>
-                        <div class="chart-container"><canvas id="horasChart"></canvas></div>
+                        <h3 class="font-bold text-cyan-400 text-xs mb-2">📊 ESTADO DE FLOTA</h3>
+                        <div class="chart-container"><canvas id="estadoChart"></canvas></div>
                     </div>
                     <div class="glass-card p-4">
-                        <h3 class="font-bold text-purple-400 text-xs mb-2">🍩 ESTADO EQUIPOS</h3>
-                        <div class="chart-container"><canvas id="estadoChart"></canvas></div>
+                        <h3 class="font-bold text-red-400 text-xs mb-2">🚨 TOP 5 EQUIPOS MÁS PARADOS</h3>
+                        <div class="chart-container"><canvas id="topParadosChart"></canvas></div>
                     </div>
                 </div>
                 
-                <!-- TRAZABILIDAD CON FILTROS -->
-                <div class="glass-card p-4 mb-4">
-                    <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
-                        <h3 class="font-bold text-cyan-400 text-xs">📈 TRAZABILIDAD MENSUAL</h3>
-                        <div class="flex gap-2 flex-wrap">
-                            <button onclick="filtrarTrazabilidad('TODOS')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-cyan-600 text-white traz-filter active" id="tfTodos">Todos</button>
-                            <button onclick="filtrarTrazabilidad('OPERATIVO')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-700 text-cyan-200 traz-filter" id="tfOperativo">✅ Operativo</button>
-                            <button onclick="filtrarTrazabilidad('PARADO')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-700 text-amber-200 traz-filter" id="tfParado">⏸️ Parado</button>
-                            <button onclick="filtrarTrazabilidad('EN_SERVICE')" class="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-700 text-red-200 traz-filter" id="tfService">🔧 Service</button>
-                        </div>
+                <!-- Gráficos fila 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="glass-card p-4">
+                        <h3 class="font-bold text-amber-400 text-xs mb-2">🔧 MOTIVOS DE PARADA</h3>
+                        <div class="chart-container"><canvas id="motivosChart"></canvas></div>
                     </div>
-                    <div class="chart-container" style="height: 300px;">
-                        <canvas id="trazabilidadChart"></canvas>
+                    <div class="glass-card p-4">
+                        <h3 class="font-bold text-purple-400 text-xs mb-2">📈 CARGAS POR SUCURSAL</h3>
+                        <div class="chart-container"><canvas id="sucursalesChart"></canvas></div>
                     </div>
                 </div>
                 
@@ -295,7 +332,10 @@
                 <div class="glass-card p-4">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-cyan-400 text-xs">📋 FLOTA EN TIEMPO REAL</h3>
-                        <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-bold">🔄</button>
+                        <div class="flex gap-2 items-center">
+                            <span id="contadorRegistros" class="text-[10px] text-cyan-300">0 registros</span>
+                            <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-bold">🔄</button>
+                        </div>
                     </div>
                     <div class="table-scroll">
                         <table>
@@ -303,15 +343,17 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>EQUIPO</th>
+                                    <th>TIPO</th>
                                     <th>SUCURSAL</th>
                                     <th>ESTADO</th>
+                                    <th>⏱️ TIEMPO</th>
                                     <th>LECTURA</th>
                                     <th>MOTIVO</th>
                                     <th>REPORTANTE</th>
                                 </tr>
                             </thead>
                             <tbody id="equipmentTableBody">
-                                <tr><td colspan="7" class="text-center text-cyan-300 p-4">🔄 Cargando datos...</td></tr>
+                                <tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando datos...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -321,16 +363,16 @@
     </div>
 </div>
 
-<!-- MODAL -->
-<div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="bg-slate-900 rounded-2xl p-6 shadow-2xl border-2 border-cyan-500/50 w-full max-w-2xl modal-bounce max-h-[85vh] overflow-y-auto m-4">
+<!-- MODAL DETALLE -->
+<div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 rounded-2xl p-6 shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
             <h2 id="modalTitle" class="text-2xl font-black text-cyan-400">📋 Detalle</h2>
-            <button onclick="closeEquipmentModal()" class="text-2xl text-cyan-300 hover:text-white transition-colors">&times;</button>
+            <button onclick="closeEquipmentModal()" class="text-2xl text-cyan-300 hover:text-white">&times;</button>
         </div>
         <div id="modalContent" class="space-y-3"></div>
         <div class="flex justify-end mt-6">
-            <button onclick="closeEquipmentModal()" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold transition-colors">Cerrar</button>
+            <button onclick="closeEquipmentModal()" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
         </div>
     </div>
 </div>
@@ -340,8 +382,7 @@
 let currentSucursal = 'TODAS';
 let EQUIPMENT_DATA = [];
 let filteredData = [];
-let horasChart = null, estadoChart = null, trazabilidadChart = null;
-let currentTrazabilidadFilter = 'TODOS';
+let estadoChart = null, topParadosChart = null, motivosChart = null, sucursalesChart = null;
 let alertasHoy = [];
 let knownAlertIds = new Set();
 let isFirstLoad = true;
@@ -352,47 +393,81 @@ const SHEETS_URLS = {
     'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=2135255296&single=true&output=csv'
 };
 
-// ==================== AUDIO EN VIVO ====================
+// ==================== AUDIO ====================
 function playNotificationSound() {
     try {
-        if (!window.audioCtx) {
-            window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (window.audioCtx.state === 'suspended') {
-            window.audioCtx.resume();
-        }
-        const oscillator = window.audioCtx.createOscillator();
-        const gainNode = window.audioCtx.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(window.audioCtx.destination);
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(880, window.audioCtx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(440, window.audioCtx.currentTime + 0.3);
-        
-        gainNode.gain.setValueAtTime(0.1, window.audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.3);
-        
-        oscillator.start();
-        oscillator.stop(window.audioCtx.currentTime + 0.3);
-    } catch (e) {
-        console.log("Audio play failed (interacción requerida)", e);
-    }
+        if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+        const osc = window.audioCtx.createOscillator();
+        const gain = window.audioCtx.createGain();
+        osc.connect(gain); gain.connect(window.audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, window.audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, window.audioCtx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.1, window.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.3);
+        osc.start(); osc.stop(window.audioCtx.currentTime + 0.3);
+    } catch (e) {}
 }
-
-// Desbloquear audio en el primer clic del usuario
 window.addEventListener('click', () => {
-    if (window.audioCtx && window.audioCtx.state === 'suspended') {
-        window.audioCtx.resume();
-    }
+    if (window.audioCtx && window.audioCtx.state === 'suspended') window.audioCtx.resume();
 }, { once: true });
 
-// ==================== CARGA RÁPIDA ====================
+// ==================== PARSEO CSV INTELIGENTE ====================
+function parseCSV(text, sucursal) {
+    const lines = text.trim().split('\n').filter(l => l.trim());
+    if (lines.length < 2) return [];
+    
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const data = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const values = [];
+        let current = '', inQuotes = false;
+        for (let char of lines[i]) {
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { values.push(current.trim()); current = ''; }
+            else current += char;
+        }
+        values.push(current.trim());
+        
+        const row = {};
+        headers.forEach((h, idx) => row[h] = (values[idx] || '').replace(/^"|"$/g, ''));
+        
+        // Mapeo flexible (soporta headers con y sin emojis)
+        const mapped = {
+            ID_Equipo: row['ID_Equipo'] || row['🆔 ID Equipo'] || row['ID'] || '',
+            Equipo: row['Equipo'] || row['🚜 Equipo'] || '',
+            Tipo_Equipo: row['Tipo_Equipo'] || row['🏷️ Tipo'] || row['Tipo'] || '',
+            Propiedad: row['Propiedad'] || row['🏢 Propiedad'] || '',
+            Estado: row['Estado'] || row['📊 Estado'] || '',
+            Lectura: row['Lectura'] || row['🔢 Lectura'] || row['Horó./Kilómetro'] || '',
+            Motivo_Parada: row['Motivo_Parada'] || row['⚠️ Motivo'] || row['Motivo'] || '',
+            Reportante: row['Reportante'] || row['👤 Reportante'] || '',
+            Fecha_Carga: row['Fecha_Carga'] || row['📅 Fecha'] || row['Fecha_Hora'] || '',
+            Hora_Carga: row['Hora_Carga'] || row['🕒 Hora'] || '',
+            Observaciones: row['Observaciones'] || row['📝 Observaciones'] || '',
+            sucursal: sucursal
+        };
+        
+        // Normalizar estado
+        if (mapped.Estado && mapped.Estado.toUpperCase().includes('FUERA DE SERVICIO')) {
+            mapped.Estado = 'FUERA_DE_SERVICIO';
+        } else if (mapped.Estado) {
+            mapped.Estado = mapped.Estado.toUpperCase();
+        }
+        
+        if (mapped.ID_Equipo && mapped.ID_Equipo.trim()) data.push(mapped);
+    }
+    return data;
+}
+
+// ==================== CARGA DE DATOS ====================
 async function loadData() {
     try {
         if (isFirstLoad) {
-            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="7" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr>';
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr>';
         }
         
         let allData = [];
@@ -401,7 +476,18 @@ async function loadData() {
             allData = allData.concat(data);
         }
         
-        EQUIPMENT_DATA = allData;
+        // Consolidar: mantener solo el ÚLTIMO registro de cada equipo
+        const consolidado = {};
+        allData.forEach(e => {
+            const key = e.ID_Equipo + '_' + e.sucursal;
+            const fechaActual = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
+            const fechaExistente = consolidado[key] ? parseFechaHora(consolidado[key].Fecha_Carga, consolidado[key].Hora_Carga) : 0;
+            if (!consolidado[key] || fechaActual >= fechaExistente) {
+                consolidado[key] = e;
+            }
+        });
+        
+        EQUIPMENT_DATA = Object.values(consolidado);
         alertasHoy = detectarAlertasHoy(allData);
         
         aplicarFiltros();
@@ -410,9 +496,26 @@ async function loadData() {
     } catch (error) {
         console.error('Error:', error);
         if (isFirstLoad) {
-            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="7" class="text-center text-red-400 p-4">❌ Error al cargar</td></tr>';
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-red-400 p-4">❌ Error al cargar</td></tr>';
         }
     }
+    isFirstLoad = false;
+}
+
+function parseFechaHora(fecha, hora) {
+    try {
+        if (!fecha) return 0;
+        // Formatos: dd/mm/yyyy, yyyy-mm-dd, etc.
+        let d;
+        if (fecha.includes('/')) {
+            const p = fecha.split(/[\s\/]/);
+            const h = (hora || '00:00').split(':');
+            d = new Date(parseInt(p[2]), parseInt(p[1])-1, parseInt(p[0]), parseInt(h[0]||0), parseInt(h[1]||0));
+        } else {
+            d = new Date(fecha + 'T' + (hora || '00:00'));
+        }
+        return d.getTime();
+    } catch (e) { return 0; }
 }
 
 async function fetchSheet(url, sucursal) {
@@ -426,40 +529,26 @@ async function fetchSheet(url, sucursal) {
     }
 }
 
-function parseCSV(text, sucursal) {
-    const lines = text.trim().split('\n').filter(l => l.trim());
-    if (lines.length < 2) return [];
-    
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-    const data = [];
-    
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-        const row = {};
-        headers.forEach((header, index) => { row[header] = values[index] || ''; });
-        
-        if (row.Estado && row.Estado.toUpperCase().includes('FUERA DE SERVICIO')) {
-            row.Estado = 'PARADO';
-        }
-        
-        if (row['ID_Equipo'] && row['ID_Equipo'].trim()) {
-            row.sucursal = sucursal;
-            data.push(row);
-        }
-    }
-    return data;
-}
-
 function detectarAlertasHoy(data) {
     const hoy = new Date();
     const diaHoy = hoy.getDate().toString().padStart(2, '0');
+    const mesHoy = (hoy.getMonth() + 1).toString().padStart(2, '0');
+    const anioHoy = hoy.getFullYear();
     let hayNuevas = false;
-
-    const alertasDetectadas = data.filter(e => {
+    
+    // Solo los últimos registros de cada equipo
+    const consolidado = {};
+    data.forEach(e => {
+        const key = e.ID_Equipo + '_' + e.sucursal;
+        const fechaActual = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
+        const fechaExistente = consolidado[key] ? parseFechaHora(consolidado[key].Fecha_Carga, consolidado[key].Hora_Carga) : 0;
+        if (!consolidado[key] || fechaActual >= fechaExistente) consolidado[key] = e;
+    });
+    
+    const alertasDetectadas = Object.values(consolidado).filter(e => {
         if (!e.Fecha_Carga) return false;
-        const fechaParts = e.Fecha_Carga.split('/');
-        return fechaParts[0] === diaHoy;
+        const fechaParts = e.Fecha_Carga.split(/[\s\/]/);
+        return fechaParts[0] === diaHoy || (fechaParts[2] == anioHoy && fechaParts[1] === mesHoy && fechaParts[0] === diaHoy);
     }).map(e => ({
         id: e.ID_Equipo,
         equipo: e.Equipo,
@@ -467,56 +556,43 @@ function detectarAlertasHoy(data) {
         reportante: e.Reportante || 'Sin reportante',
         estado: e.Estado,
         hora: e.Hora_Carga || '00:00',
-        uniqueKey: `${e.ID_Equipo}-${e.Fecha_Carga}-${e.Hora_Carga}`
+        uniqueKey: `${e.ID_Equipo}-${e.sucursal}-${e.Fecha_Carga}-${e.Hora_Carga}`
     }));
-
-    alertasDetectadas.forEach(alerta => {
-        if (!knownAlertIds.has(alerta.uniqueKey)) {
-            knownAlertIds.add(alerta.uniqueKey);
-            if (!isFirstLoad) {
-                hayNuevas = true;
-            }
+    
+    alertasDetectadas.forEach(a => {
+        if (!knownAlertIds.has(a.uniqueKey)) {
+            knownAlertIds.add(a.uniqueKey);
+            if (!isFirstLoad) hayNuevas = true;
         }
     });
-
-    if (hayNuevas) {
-        playNotificationSound();
-    }
     
-    isFirstLoad = false;
+    if (hayNuevas) playNotificationSound();
     return alertasDetectadas;
 }
 
 function updateAlertasUI() {
     const container = document.getElementById('alertasHoy');
+    const alertasFiltradas = currentSucursal === 'TODAS' ? alertasHoy : alertasHoy.filter(a => a.sucursal === currentSucursal);
     
-    // Filtrar alertas según la sucursal seleccionada
-    const alertasFiltradas = currentSucursal === 'TODAS' 
-        ? alertasHoy 
-        : alertasHoy.filter(a => a.sucursal === currentSucursal);
-
     if (alertasFiltradas.length === 0) {
         container.innerHTML = '<p class="text-cyan-200 text-center py-2">Sin alertas</p>';
-        document.getElementById('kpiAlertas').innerText = '0';
         return;
     }
     
     container.innerHTML = alertasFiltradas.map(a => `
-        <div class="alert-item" onclick="openEquipmentModalById('${a.id}')" title="Click para ver detalle">
+        <div class="alert-item" onclick="openEquipmentModalById('${a.id}','${a.sucursal}')">
             <div class="flex justify-between items-start mb-1">
-                <span class="font-bold text-cyan-300">${a.id} - ${a.equipo}</span>
+                <span class="font-bold text-cyan-300">${a.id}</span>
                 <span class="text-[9px] text-slate-400">${a.hora}</span>
             </div>
-            <div class="text-[10px] text-cyan-200">👤 ${a.reportante}</div>
-            <div class="text-[10px] text-slate-400">📍 ${a.sucursal}</div>
+            <div class="text-[10px] text-cyan-200 truncate">${a.equipo}</div>
+            <div class="text-[10px] text-slate-400">👤 ${a.reportante}</div>
         </div>
     `).join('');
-    
-    document.getElementById('kpiAlertas').innerText = alertasFiltradas.length;
 }
 
-function openEquipmentModalById(id) {
-    const equipo = EQUIPMENT_DATA.find(e => e.ID_Equipo === id);
+function openEquipmentModalById(id, sucursal) {
+    const equipo = EQUIPMENT_DATA.find(e => e.ID_Equipo === id && e.sucursal === sucursal);
     if (equipo) openEquipmentModal(equipo);
 }
 
@@ -524,36 +600,20 @@ function openEquipmentModalById(id) {
 function aplicarFiltros() {
     const propiedad = document.getElementById('filterPropiedad').value;
     const tipo = document.getElementById('filterTipo').value;
+    const estado = document.getElementById('filterEstado').value;
     
     filteredData = EQUIPMENT_DATA.filter(e => {
         const matchSucursal = currentSucursal === 'TODAS' || e.sucursal === currentSucursal;
-        const matchPropiedad = propiedad === 'TODAS' || e.Propiedad === propiedad;
+        const matchPropiedad = propiedad === 'TODAS' || (e.Propiedad || '').toUpperCase() === propiedad;
         const matchTipo = tipo === 'TODOS' || e.Tipo_Equipo === tipo;
-        return matchSucursal && matchPropiedad && matchTipo;
+        let matchEstado = true;
+        if (estado === 'OPERATIVO') matchEstado = e.Estado === 'OPERATIVO';
+        else if (estado === 'PARADO') matchEstado = e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO';
+        return matchSucursal && matchPropiedad && matchTipo && matchEstado;
     });
     
     updateDashboard();
-    updateAlertasUI(); // Actualizar alertas al cambiar filtros/sucursal
-}
-
-function filtrarTrazabilidad(estado) {
-    currentTrazabilidadFilter = estado;
-    
-    document.querySelectorAll('.traz-filter').forEach(btn => {
-        btn.classList.remove('active', 'bg-cyan-600', 'text-white');
-        btn.classList.add('bg-slate-700');
-    });
-    
-    let btnId = 'tfTodos';
-    if (estado === 'OPERATIVO') btnId = 'tfOperativo';
-    else if (estado === 'PARADO') btnId = 'tfParado';
-    else if (estado === 'EN_SERVICE') btnId = 'tfService';
-    
-    const activeBtn = document.getElementById(btnId);
-    activeBtn.classList.add('active', 'bg-cyan-600', 'text-white');
-    activeBtn.classList.remove('bg-slate-700');
-    
-    updateTrazabilidadChart();
+    updateAlertasUI();
 }
 
 function updateDashboard() {
@@ -565,201 +625,352 @@ function updateDashboard() {
 function updateKPIs() {
     const total = filteredData.length;
     const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
-    const parados = filteredData.filter(e => e.Estado === 'PARADO').length;
-    const service = filteredData.filter(e => e.Estado === 'EN_SERVICE').length;
+    const parados = filteredData.filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO').length;
     
     document.getElementById('totalEquipos').innerText = total;
     document.getElementById('kpiTotal').innerText = total;
     document.getElementById('kpiOperativos').innerText = operativos;
     document.getElementById('totalParados').innerText = parados;
-    document.getElementById('totalService').innerText = service;
     
     const disponibilidad = total > 0 ? Math.round(operativos/total*100) : 0;
     document.getElementById('kpiDisponibilidad').innerText = disponibilidad + '%';
-}
-
-function updateCharts() {
-    const sucursales = ['Malagueño', 'Barker', 'La Pampita'];
-    const horasData = sucursales.map(suc => {
-        const equiposSuc = filteredData.filter(e => e.sucursal === suc.toUpperCase().replace(' ', '_'));
-        return equiposSuc.reduce((sum, e) => sum + (parseFloat(e.Lectura) || 0), 0);
-    });
     
-    const ctxHoras = document.getElementById('horasChart').getContext('2d');
-    if (horasChart) horasChart.destroy();
-    horasChart = new Chart(ctxHoras, {
-        type: 'bar',
-        data: {
-            labels: sucursales,
-            datasets: [{
-                label: 'Horas',
-                data: horasData,
-                backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7'],
-                borderRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } },
-                x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
+    // Calcular tiempo muerto acumulado (horas parados actualmente)
+    let totalHsPerdidas = 0;
+    const ahora = new Date();
+    filteredData.forEach(e => {
+        if (e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO') {
+            const fechaParada = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
+            if (fechaParada > 0) {
+                const diffHs = (ahora.getTime() - fechaParada) / (1000 * 60 * 60);
+                if (diffHs > 0) totalHsPerdidas += diffHs;
+            }
+        }
+    });
+    document.getElementById('kpiTiempoMuerto').innerText = Math.round(totalHsPerdidas) + 'h';
+    document.getElementById('totalHsPerdidas').innerText = Math.round(totalHsPerdidas) + 'h';
+    
+    // Promedio de parada
+    const promParada = parados > 0 ? Math.round(totalHsPerdidas / parados) : 0;
+    document.getElementById('kpiPromedioParada').innerText = promParada + 'h';
+    
+    // Equipo más problemático (el que lleva más tiempo parado)
+    let equipoCritico = null;
+    let maxHs = 0;
+    filteredData.forEach(e => {
+        if (e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO') {
+            const fechaParada = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
+            if (fechaParada > 0) {
+                const diffHs = (ahora.getTime() - fechaParada) / (1000 * 60 * 60);
+                if (diffHs > maxHs) {
+                    maxHs = diffHs;
+                    equipoCritico = e;
+                }
             }
         }
     });
     
+    if (equipoCritico && maxHs > 0) {
+        document.getElementById('kpiEquipoCritico').innerText = equipoCritico.ID_Equipo;
+        const dias = Math.floor(maxHs / 24);
+        const horas = Math.floor(maxHs % 24);
+        document.getElementById('kpiEquipoCriticoInfo').innerText = `${dias}d ${horas}h parado`;
+    } else {
+        document.getElementById('kpiEquipoCritico').innerText = '-';
+        document.getElementById('kpiEquipoCriticoInfo').innerText = 'Sin paradas';
+    }
+}
+
+function updateCharts() {
+    // Doughnut: Estado de flota
     const operativos = filteredData.filter(e => e.Estado === 'OPERATIVO').length;
-    const parados = filteredData.filter(e => e.Estado === 'PARADO').length;
-    const service = filteredData.filter(e => e.Estado === 'EN_SERVICE').length;
+    const parados = filteredData.filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO').length;
     
     const ctxEstado = document.getElementById('estadoChart').getContext('2d');
     if (estadoChart) estadoChart.destroy();
     estadoChart = new Chart(ctxEstado, {
         type: 'doughnut',
         data: {
-            labels: ['Operativo', 'Parado', 'En Service'],
+            labels: ['Operativo', 'Parado'],
             datasets: [{
-                data: [operativos, parados, service],
-                backgroundColor: ['#06b6d4', '#f59e0b', '#ef4444'],
+                data: [operativos, parados],
+                backgroundColor: ['#06b6d4', '#f59e0b'],
                 borderWidth: 0
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '70%',
-            plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 10 } } } }
+            responsive: true, maintainAspectRatio: false, cutout: '70%',
+            plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } } }
         }
     });
     
-    updateTrazabilidadChart();
-}
-
-function updateTrazabilidadChart() {
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    const ctx = document.getElementById('trazabilidadChart').getContext('2d');
+    // Top 5 equipos más parados (por tiempo acumulado)
+    const ahora = new Date();
+    const equiposParados = filteredData
+        .filter(e => e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO')
+        .map(e => {
+            const fechaParada = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
+            const hs = fechaParada > 0 ? (ahora.getTime() - fechaParada) / (1000 * 60 * 60) : 0;
+            return { ...e, hsParado: hs };
+        })
+        .sort((a, b) => b.hsParado - a.hsParado)
+        .slice(0, 5);
     
-    if (trazabilidadChart) trazabilidadChart.destroy();
-    
-    let datosFiltrados = EQUIPMENT_DATA;
-    if (currentTrazabilidadFilter !== 'TODOS') {
-        datosFiltrados = EQUIPMENT_DATA.filter(e => e.Estado === currentTrazabilidadFilter);
-    }
-    
-    const datasets = ['Malagueño', 'Barker', 'La Pampita'].map((suc, idx) => {
-        const colores = ['#06b6d4', '#f59e0b', '#a855f7'];
-        const sucursalCode = suc.toUpperCase().replace(' ', '_');
-        
-        const dataPorMes = meses.map((mes, index) => {
-            const mesNum = (index + 1).toString().padStart(2, '0');
-            return datosFiltrados.filter(e => {
-                if (!e.Fecha_Carga) return false;
-                const parts = e.Fecha_Carga.split('/');
-                if (parts.length >= 2) {
-                    return parts[1] === mesNum;
-                }
-                return e.mes === mes;
-            }).length;
-        });
-        
-        return {
-            label: suc,
-            data: dataPorMes,
-            borderColor: colores[idx],
-            backgroundColor: colores[idx] + '20',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.3,
-            pointRadius: 4,
-            pointBackgroundColor: colores[idx]
-        };
-    });
-    
-    trazabilidadChart = new Chart(ctx, {
-        type: 'line',
+    const ctxTop = document.getElementById('topParadosChart').getContext('2d');
+    if (topParadosChart) topParadosChart.destroy();
+    topParadosChart = new Chart(ctxTop, {
+        type: 'bar',
         data: {
-            labels: meses.map(m => m.substring(0, 3)),
-            datasets: datasets
+            labels: equiposParados.map(e => e.ID_Equipo),
+            datasets: [{
+                label: 'Horas parado',
+                data: equiposParados.map(e => Math.round(e.hsParado)),
+                backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16'],
+                borderRadius: 6
+            }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { color: '#cbd5e1', font: { size: 10 } } },
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
-                            const icons = { 'Malagueño': '📍', 'Barker': '🐺', 'La Pampita': '🌸' };
-                            return `${icons[context.dataset.label]} ${context.dataset.label}: ${context.raw} equipos`;
+                        label: (ctx) => {
+                            const eq = equiposParados[ctx.dataIndex];
+                            const dias = Math.floor(eq.hsParado / 24);
+                            const hs = Math.floor(eq.hsParado % 24);
+                            return `${dias}d ${hs}h - ${eq.Equipo}`;
                         }
                     }
                 }
             },
             scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } },
+                x: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } },
+                y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { weight: 'bold' } } }
+            }
+        }
+    });
+    
+    // Motivos de parada
+    const motivos = {};
+    filteredData.forEach(e => {
+        if ((e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO') && e.Motivo_Parada) {
+            const m = e.Motivo_Parada.substring(0, 30);
+            motivos[m] = (motivos[m] || 0) + 1;
+        }
+    });
+    const motivosArr = Object.entries(motivos).sort((a,b) => b[1]-a[1]).slice(0, 6);
+    
+    const ctxMot = document.getElementById('motivosChart').getContext('2d');
+    if (motivosChart) motivosChart.destroy();
+    motivosChart = new Chart(ctxMot, {
+        type: 'doughnut',
+        data: {
+            labels: motivosArr.map(m => m[0] || 'Sin motivo'),
+            datasets: [{
+                data: motivosArr.map(m => m[1]),
+                backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7', '#ef4444', '#10b981', '#ec4899'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '60%',
+            plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 10 } } } }
+        }
+    });
+    
+    // Barras: cargas por sucursal
+    const sucursales = ['MALAGUENO', 'BARKER', 'LA_PAMPITA'];
+    const nombresSuc = ['Malagueño', 'Barker', 'La Pampita'];
+    const dataSuc = sucursales.map(s => filteredData.filter(e => e.sucursal === s).length);
+    
+    const ctxSuc = document.getElementById('sucursalesChart').getContext('2d');
+    if (sucursalesChart) sucursalesChart.destroy();
+    sucursalesChart = new Chart(ctxSuc, {
+        type: 'bar',
+        data: {
+            labels: nombresSuc,
+            datasets: [{
+                label: 'Equipos',
+                data: dataSuc,
+                backgroundColor: ['#06b6d4', '#f59e0b', '#a855f7'],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 1 } },
                 x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
             }
         }
     });
 }
 
+// ==================== CRONÓMETRO EN VIVO ====================
+function calcularTiempoParado(fechaStr, horaStr) {
+    const fechaParada = parseFechaHora(fechaStr, horaStr);
+    if (!fechaParada) return null;
+    const diffMs = new Date().getTime() - fechaParada;
+    if (diffMs < 0) return null;
+    const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    return { dias, horas, minutos, totalHs: diffMs / (1000 * 60 * 60) };
+}
+
+function actualizarCronometros() {
+    document.querySelectorAll('[data-fecha-parada]').forEach(el => {
+        const fecha = el.getAttribute('data-fecha-parada');
+        const hora = el.getAttribute('data-hora-parada') || '00:00';
+        const t = calcularTiempoParado(fecha, hora);
+        if (t) {
+            let html = '⏱️ ';
+            if (t.dias > 0) html += `<span class="crono-dia">${t.dias}d</span> `;
+            html += `<span class="crono-hora">${t.horas}h</span> `;
+            html += `<span class="crono-min">${t.minutos}m</span>`;
+            el.innerHTML = html;
+        }
+    });
+}
+setInterval(actualizarCronometros, 10000); // Cada 10 segundos
+
+// ==================== TABLA ====================
 function renderTable() {
     const tbody = document.getElementById('equipmentTableBody');
     tbody.innerHTML = '';
+    document.getElementById('contadorRegistros').innerText = filteredData.length + ' registros';
     
     if (filteredData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-cyan-300 p-4">Sin datos</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4">Sin datos</td></tr>';
         return;
     }
     
-    filteredData.slice(0, 50).forEach(e => {
+    filteredData.forEach(e => {
         const tr = document.createElement('tr');
         tr.onclick = () => openEquipmentModal(e);
         
-        const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : (e.Estado === 'PARADO' ? 'status-parado' : 'status-service');
-        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : (e.Estado === 'PARADO' ? '⏸️ Parado' : '🔧 Service');
+        const esParado = e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO';
+        const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : 'status-parado';
+        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : '⏸️ Parado';
+        
+        let celdaTiempo = '<span class="text-slate-500 text-xs">-</span>';
+        if (esParado && e.Fecha_Carga) {
+            celdaTiempo = `<span class="cronometro text-xs" data-fecha-parada="${e.Fecha_Carga}" data-hora-parada="${e.Hora_Carga || '00:00'}">⏱️ ...</span>`;
+        }
+        
+        if (esParado) tr.classList.add('pulse-alert');
         
         tr.innerHTML = `
-            <td class="font-bold text-cyan-300">${e.ID_Equipo}</td>
-            <td class="font-semibold">${e.Equipo}</td>
-            <td>${e.sucursal}</td>
+            <td class="font-bold text-cyan-300">${e.ID_Equipo || '-'}</td>
+            <td class="font-semibold">${e.Equipo || '-'}</td>
+            <td class="text-slate-400">${e.Tipo_Equipo || '-'}</td>
+            <td>${e.sucursal || '-'}</td>
             <td><span class="${badgeClass}">${badgeText}</span></td>
+            <td>${celdaTiempo}</td>
             <td>${e.Lectura || '-'}</td>
-            <td class="max-w-xs truncate">${e.Motivo_Parada || '-'}</td>
+            <td class="max-w-xs truncate" title="${e.Motivo_Parada || ''}">${e.Motivo_Parada || '-'}</td>
             <td>${e.Reportante || '-'}</td>
         `;
         tbody.appendChild(tr);
     });
+    
+    actualizarCronometros();
 }
 
+// ==================== MODAL DETALLE ====================
 function openEquipmentModal(equipo) {
     const modal = document.getElementById('equipmentModal');
     const content = document.getElementById('modalContent');
     
+    const esParado = equipo.Estado === 'FUERA_DE_SERVICIO' || equipo.Estado === 'PARADO';
+    let cronometroHTML = '';
+    if (esParado && equipo.Fecha_Carga) {
+        const t = calcularTiempoParado(equipo.Fecha_Carga, equipo.Hora_Carga);
+        if (t) {
+            cronometroHTML = `
+                <div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center">
+                    <div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div>
+                    <div class="text-3xl font-black cronometro">
+                        ${t.dias > 0 ? `<span class="crono-dia">${t.dias}d</span> ` : ''}
+                        <span class="crono-hora">${t.horas}h</span>
+                        <span class="crono-min">${t.minutos}m</span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 mt-2">Desde: ${equipo.Fecha_Carga} ${equipo.Hora_Carga || ''}</div>
+                </div>
+            `;
+        }
+    }
+    
+    // Buscar historial del equipo (todos los registros de este ID)
+    const historial = EQUIPMENT_DATA.filter(e => e.ID_Equipo === equipo.ID_Equipo)
+        .sort((a,b) => parseFechaHora(b.Fecha_Carga, b.Hora_Carga) - parseFechaHora(a.Fecha_Carga, a.Hora_Carga))
+        .slice(0, 5);
+    
+    let historialHTML = '';
+    if (historial.length > 0) {
+        historialHTML = `
+            <div class="mt-4">
+                <h3 class="font-bold text-cyan-400 text-xs mb-2">📜 ÚLTIMOS REGISTROS</h3>
+                ${historial.map(h => {
+                    const esOp = h.Estado === 'OPERATIVO';
+                    return `
+                        <div class="hist-item ${esOp ? 'operativo' : 'parada'}">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold ${esOp ? 'text-green-400' : 'text-amber-400'}">
+                                    ${esOp ? '✅ OPERATIVO' : '⏸️ PARADO'}
+                                </span>
+                                <span class="text-[10px] text-slate-400">${h.Fecha_Carga} ${h.Hora_Carga || ''}</span>
+                            </div>
+                            <div class="text-[10px] text-slate-300">👤 ${h.Reportante || '-'}</div>
+                            ${h.Motivo_Parada ? `<div class="text-[10px] text-slate-400 mt-1">📝 ${h.Motivo_Parada}</div>` : ''}
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+    
     content.innerHTML = `
-        <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30">
                 <div class="text-xs text-slate-400 mb-1">🔢 ID</div>
                 <div class="text-xl font-bold text-cyan-300">${equipo.ID_Equipo}</div>
             </div>
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30">
                 <div class="text-xs text-slate-400 mb-1">🚜 Equipo</div>
-                <div class="text-lg font-bold text-white">${equipo.Equipo}</div>
+                <div class="text-base font-bold text-white">${equipo.Equipo}</div>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30">
+                <div class="text-xs text-slate-400 mb-1">🏷️ Tipo</div>
+                <div class="text-sm font-bold text-white">${equipo.Tipo_Equipo || '-'}</div>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30">
+                <div class="text-xs text-slate-400 mb-1">🏢 Propiedad</div>
+                <div class="text-sm font-bold text-white">${equipo.Propiedad || '-'}</div>
             </div>
         </div>
-        <div class="space-y-3">
+        
+        ${cronometroHTML}
+        
+        <div class="space-y-2 mt-4">
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg">
                 <span class="text-slate-400">📍 Sucursal</span>
                 <span class="font-bold text-cyan-300">${equipo.sucursal}</span>
             </div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg">
                 <span class="text-slate-400">📊 Estado</span>
-                <span class="font-bold text-cyan-300">${equipo.Estado}</span>
+                <span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span>
             </div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg">
                 <span class="text-slate-400">📈 Lectura</span>
                 <span class="font-bold text-amber-300">${equipo.Lectura || 'N/A'}</span>
+            </div>
+            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg">
+                <span class="text-slate-400">📅 Última carga</span>
+                <span class="font-bold text-cyan-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span>
             </div>
             ${equipo.Motivo_Parada ? `
             <div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30">
@@ -767,10 +978,18 @@ function openEquipmentModal(equipo) {
                 <div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div>
             </div>
             ` : ''}
+            ${equipo.Observaciones ? `
+            <div class="p-3 bg-slate-800/50 rounded-lg">
+                <div class="text-xs text-slate-400 mb-1">📝 Observaciones</div>
+                <div class="text-sm text-slate-300">${equipo.Observaciones}</div>
+            </div>
+            ` : ''}
         </div>
+        
+        ${historialHTML}
     `;
     
-    document.getElementById('modalTitle').innerText = `📋 ${equipo.Equipo}`;
+    document.getElementById('modalTitle').innerText = `📋 ${equipo.ID_Equipo} - ${equipo.Equipo}`;
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
 }
@@ -787,14 +1006,12 @@ function cambiarSucursal(sucursal) {
     aplicarFiltros();
 }
 
-function forceRefreshData() { 
-    knownAlertIds.clear(); // Opcional: limpiar para permitir sonidos de nuevo en recarga manual
-    loadData(); 
-}
+function forceRefreshData() { loadData(); }
 
 window.onload = () => {
     loadData();
     setInterval(loadData, 60000);
+    actualizarCronometros();
 };
 </script>
 </body>
