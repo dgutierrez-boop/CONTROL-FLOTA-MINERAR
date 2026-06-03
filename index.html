@@ -421,25 +421,71 @@ function actualizarKPIsTarjetas() {
     const pa = t - op;
     const disp = t > 0 ? Math.round(op/t*100) : 0;
     
-    let hsPerdidas = 0, critico = null, maxHs = 0;
-    state.filteredData.forEach(e => {
-        if (e.Estado !== 'OPERATIVO') {
-            const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
-            if (ti && ti.totalHs > 0) {
-                hsPerdidas += ti.totalHs;
-                if (ti.totalHs > maxHs) { maxHs = ti.totalHs; critico = e; }
-            }
-        }
-    });
-    const prom = pa > 0 ? Math.round(hsPerdidas / pa) : 0;
+    // 🔥 Detectar si hay equipo específico filtrado
+    const equipoFiltrado = state.equipo !== 'TODOS' 
+        ? state.equipmentData.find(e => e.ID_Equipo === state.equipo)
+        : null;
     
-    cont.innerHTML = `
-        <div class="glass-card p-4 kpi-green"><div class="text-xs font-bold text-green-400 mb-1">✅ DISPONIBILIDAD</div><div class="text-3xl font-black text-green-300">${disp}%</div><div class="kpi-subtitulo text-green-200">${op} de ${t} equipos</div></div>
-        <div class="glass-card p-4 kpi-cyan"><div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div><div class="text-3xl font-black text-cyan-300">${op}</div><div class="kpi-subtitulo text-cyan-200">De ${t} · ${pa} parados</div></div>
-        <div class="glass-card p-4 kpi-amber"><div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div><div class="text-3xl font-black text-amber-300">${Math.round(hsPerdidas)}h</div><div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div></div>
-        <div class="glass-card p-4 kpi-red"><div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div><div class="text-xl font-black text-red-300 truncate">${critico ? critico.ID_Equipo : '-'}</div><div class="kpi-subtitulo text-red-200">${critico ? Math.floor(maxHs/24)+'d '+Math.floor(maxHs%24)+'h parado' : 'Sin paradas'}</div></div>
-        <div class="glass-card p-4 kpi-purple"><div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div><div class="text-3xl font-black text-purple-300">${prom}h</div><div class="kpi-subtitulo text-purple-200">Por equipo parado</div></div>
-    `;
+    if (equipoFiltrado) {
+        //  Mostrar info DETALLADA del equipo filtrado
+        const esParado = equipoFiltrado.Estado !== 'OPERATIVO';
+        const ti = esParado ? calcTiempo(equipoFiltrado.Fecha_Carga, equipoFiltrado.Hora_Carga) : null;
+        const historial = state.rawData.filter(x => x.ID_Equipo === equipoFiltrado.ID_Equipo);
+        const paradasCount = historial.filter(x => x.Estado !== 'OPERATIVO').length;
+        const operativosCount = historial.filter(x => x.Estado === 'OPERATIVO').length;
+        const tiempoParadoTexto = ti 
+            ? `${ti.dias>0?ti.dias+'d ':''}${ti.horas}h ${ti.minutos}m`
+            : 'En servicio';
+        
+        cont.innerHTML = `
+            <div class="glass-card p-4 kpi-${esParado?'red':'green'}">
+                <div class="text-xs font-bold ${esParado?'text-red-400':'text-green-400'} mb-1">📊 ESTADO ACTUAL</div>
+                <div class="text-2xl font-black ${esParado?'text-red-300':'text-green-300'}">${esParado?'⏸️ PARADO':'✅ OPERATIVO'}</div>
+                <div class="kpi-subtitulo text-${esParado?'red':'green'}-200">Última carga: ${equipoFiltrado.Fecha_Carga||'-'}</div>
+            </div>
+            <div class="glass-card p-4 kpi-amber">
+                <div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO PARADO</div>
+                <div class="text-2xl font-black text-amber-300">${ti?tiempoParadoTexto:'-'}</div>
+                <div class="kpi-subtitulo text-amber-200">${esParado?'Desde última carga':'En servicio'}</div>
+            </div>
+            <div class="glass-card p-4 kpi-cyan">
+                <div class="text-xs font-bold text-cyan-400 mb-1">🔢 HORÓMETRO ACTUAL</div>
+                <div class="text-3xl font-black text-cyan-300">${equipoFiltrado.Lectura||'0'}</div>
+                <div class="kpi-subtitulo text-cyan-200">${equipoFiltrado.Tipo_Equipo||'Equipo'} · ${esParado?'️ DETENIDO':' EN SERVICIO'}</div>
+            </div>
+            <div class="glass-card p-4 kpi-purple">
+                <div class="text-xs font-bold text-purple-400 mb-1">📜 HISTORIAL</div>
+                <div class="text-2xl font-black text-purple-300">${historial.length} reg.</div>
+                <div class="kpi-subtitulo text-purple-200">⏸️ ${paradasCount} paradas · ✅ ${operativosCount} operativos</div>
+            </div>
+            <div class="glass-card p-4 kpi-blue">
+                <div class="text-xs font-bold text-blue-400 mb-1">🏷️ INFORMACIÓN</div>
+                <div class="text-lg font-black text-blue-300 truncate">${equipoFiltrado.Equipo||'-'}</div>
+                <div class="kpi-subtitulo text-blue-200">📍 ${equipoFiltrado.sucursal} · 🏢 ${equipoFiltrado.Propiedad||'-'}</div>
+            </div>
+        `;
+    } else {
+        // 📊 Vista general (todos los equipos)
+        let hsPerdidas = 0, critico = null, maxHs = 0;
+        state.filteredData.forEach(e => {
+            if (e.Estado !== 'OPERATIVO') {
+                const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
+                if (ti && ti.totalHs > 0) {
+                    hsPerdidas += ti.totalHs;
+                    if (ti.totalHs > maxHs) { maxHs = ti.totalHs; critico = e; }
+                }
+            }
+        });
+        const prom = pa > 0 ? Math.round(hsPerdidas / pa) : 0;
+        
+        cont.innerHTML = `
+            <div class="glass-card p-4 kpi-green"><div class="text-xs font-bold text-green-400 mb-1">✅ DISPONIBILIDAD</div><div class="text-3xl font-black text-green-300">${disp}%</div><div class="kpi-subtitulo text-green-200">${op} de ${t} equipos</div></div>
+            <div class="glass-card p-4 kpi-cyan"><div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div><div class="text-3xl font-black text-cyan-300">${op}</div><div class="kpi-subtitulo text-cyan-200">De ${t} · ${pa} parados</div></div>
+            <div class="glass-card p-4 kpi-amber"><div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div><div class="text-3xl font-black text-amber-300">${Math.round(hsPerdidas)}h</div><div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div></div>
+            <div class="glass-card p-4 kpi-red"><div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div><div class="text-xl font-black text-red-300 truncate">${critico?critico.ID_Equipo:'-'}</div><div class="kpi-subtitulo text-red-200">${critico?Math.floor(maxHs/24)+'d '+Math.floor(maxHs%24)+'h parado':'Sin paradas'}</div></div>
+            <div class="glass-card p-4 kpi-purple"><div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div><div class="text-3xl font-black text-purple-300">${prom}h</div><div class="kpi-subtitulo text-purple-200">Por equipo parado</div></div>
+        `;
+    }
 }
 
 // ===================== CALC TIEMPO PARADO =====================
@@ -627,7 +673,11 @@ function actualizarFiltroEquipos() {
         return na - nb;
     });
     sel.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>' + 
-        lista.map(e => `<option value="${e.ID_Equipo}">${e.ID_Equipo} - ${(e.Equipo||'').substring(0,25)}</option>`).join('');
+        lista.map(e => {
+            const estadoIcon = e.Estado === 'OPERATIVO' ? '✅' : '⚠️';
+            const estadoColor = e.Estado === 'OPERATIVO' ? '#10b981' : '#f59e0b';
+            return `<option value="${e.ID_Equipo}">🔧 ${e.ID_Equipo} | ${e.Tipo_Equipo||'Otros'} | ${e.Estado||'-'}</option>`;
+        }).join('');
     if (val && val !== 'TODOS' && lista.some(e=>e.ID_Equipo===val)) sel.value = val;
 }
 
