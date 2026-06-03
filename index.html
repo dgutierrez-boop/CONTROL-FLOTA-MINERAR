@@ -254,20 +254,24 @@ if(diffAnios>6)return 0;return d.getTime();
 function obtenerAnioMes(fechaStr){const t=parseFechaHora(fechaStr,'00:00');if(!t)return null;const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 
 function parseCSVLine(line){
-const values=[];let current='',inQuotes=false;
-for(let i=0;i<line.length;i++){const char=line[i],nextChar=line[i+1];if(char==='"'){if(inQuotes&&nextChar==='"'){current+='"';i++;}else{inQuotes=!inQuotes;}}else if(char===','&&!inQuotes){values.push(current.trim());current='';}else{current+=char;}}
+const values=[];let current='',inQuotes=false,i=0;
+while(i<line.length){const char=line[i];
+if(char==='"'){if(inQuotes){if(i+1<line.length&&line[i+1]==='"'){current+='"';i+=2;continue;}else{inQuotes=false;}}else{inQuotes=true;}}
+else if(char===','&&!inQuotes){values.push(current.trim());current='';}
+else{current+=char;}
+i++;}
 values.push(current.trim());return values;
 }
 
 function parseCSV(text,sucursal){
 const lines=text.trim().split('\n').filter(l=>l.trim());if(lines.length<2)return[];
 const headers=parseCSVLine(lines[0]).map(h=>h.trim().replace(/"/g,'')),numColumnasEsperadas=headers.length,data=[];
-if(!window.headersLogueados){console.log('Headers CSV:',headers);window.headersLogueados=true;}
+if(!window.headersLogueados){console.log('Headers CSV:',headers);console.log('Columnas esperadas:',numColumnasEsperadas);window.headersLogueados=true;}
 for(let i=1;i<lines.length;i++){
 if(!lines[i].trim())continue;
 const values=parseCSVLine(lines[i]);
-if(values.length<numColumnasEsperadas){while(values.length<numColumnasEsperadas)values.push('');}
-if(values.length>numColumnasEsperadas){const extra=values.splice(numColumnasEsperadas-1);values.push(extra.join(','));}
+if(values.length>numColumnasEsperadas){const fixedStart=values.slice(0,7),fixedEnd=values.slice(-3),motivoParte=values.slice(7,values.length-3).join(', '),reconstructed=[...fixedStart,motivoParte,...fixedEnd];values.length=0;values.push(...reconstructed);}
+while(values.length<numColumnasEsperadas)values.push('');
 const row={};headers.forEach((h,idx)=>row[h]=(values[idx]||'').replace(/^"|"$/g,'').trim());
 const mapped={
 ID_Equipo:(row['ID_Equipo']||row['ID']||row['id']||values[0]||'').trim(),
