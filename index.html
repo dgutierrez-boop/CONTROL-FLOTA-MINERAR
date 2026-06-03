@@ -366,23 +366,34 @@ window.addEventListener('click', () => { if (window.audioCtx && window.audioCtx.
 
 function esIdEquipoValido(id) {
     if (!id) return false;
-    return /^[A-Z]\d{2,}[A-Z]?$/.test(String(id).trim().toUpperCase());
+    const idLimpio = String(id).trim();
+    // Acepta cualquier ID que tenga al menos 1 carácter alfanumérico
+    // Ejemplos válidos: M101, 102, 127, 20-22, ME12, etc.
+    return /^[A-Za-z0-9\-]+$/.test(idLimpio) && idLimpio.length >= 2;
 }
 
 // 🔥 FUNCIÓN MEJORADA: maneja formato ISO + día 0
 function parseFechaHora(fechaStr, horaStr) {
     try {
-        if (!fechaStr || fechaStr === '-' || String(fechaStr).trim() === '') return 0;
+        if (!fechaStr || fechaStr === '-' || String(fechaStr).trim() === '') {
+            console.log('⚠️ Fecha vacía:', fechaStr);
+            return 0;
+        }
         
         let fecha = String(fechaStr).trim();
         let hora = String(horaStr || '00:00').trim();
         
-        // 🔥 CASO 1: Formato ISO "2026-06-03 14:30:00" (el nuevo formato del Apps Script)
+        console.log('📅 Parseando fecha:', fecha, 'hora:', hora);
+        
+        // 🔥 CASO 1: Formato "2026-06-02 7:49:00" (con espacio)
         if (fecha.match(/^\d{4}-\d{2}-\d{2}/)) {
             let fechaLimpia = fecha.includes('T') ? fecha : fecha.replace(' ', 'T');
             const d = new Date(fechaLimpia);
+            console.log('✅ Formato ISO detectado:', d.getTime());
             if (!isNaN(d.getTime())) return d.getTime();
         }
+        
+        // ... (el resto de la función que ya tenés)
         
         // Separar fecha y hora si vienen juntas
         if (fecha.includes(' ')) {
@@ -570,6 +581,9 @@ function parseCSV(text, sucursal) {
 
 async function loadData() {
     try {
+        console.log('🔄 Iniciando carga de datos...');
+        console.log('📋 URLs configuradas:', SHEETS_URLS);
+        
         if (isFirstLoad) {
             document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr>';
         }
@@ -638,11 +652,14 @@ function actualizarFiltroEquipos() {
 
 async function fetchSheet(url, sucursal) {
     try {
+        console.log(`📡 Intentando cargar ${sucursal}:`, url);
         const response = await fetch(url + '&t=' + Date.now());
+        console.log(`✅ Respuesta de ${sucursal}:`, response.status);
         const text = await response.text();
+        console.log(`📄 Datos de ${sucursal}:`, text.substring(0, 200) + '...');
         return parseCSV(text, sucursal);
     } catch (error) {
-        console.error(`Error ${sucursal}:`, error);
+        console.error(`❌ Error cargando ${sucursal}:`, error);
         return [];
     }
 }
