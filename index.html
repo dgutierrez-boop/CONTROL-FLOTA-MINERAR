@@ -483,69 +483,64 @@ function obtenerAnioMes(fechaStr) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function parseCSVLine(line) {
-    const values = [];
-    let current = '';
-    let inQuotes = false;
-    
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const nextChar = line[i + 1];
-        
-        if (char === '"') {
-            if (inQuotes && nextChar === '"') {
-                current += '"';
-                i++;
-            } else {
-                inQuotes = !inQuotes;
-            }
-        } else if (char === ',' && !inQuotes) {
-            values.push(current.trim());
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-    values.push(current.trim());
-    return values;
-}
-
 function parseCSV(text, sucursal) {
     const lines = text.trim().split('\n').filter(l => l.trim());
     if (lines.length < 2) return [];
     
-    const headers = parseCSVLine(lines[0]).map(h => h.trim().replace(/"/g, ''));
-    const numColumnasEsperadas = headers.length;
+    //  Limpiar headers: quitar espacios, comillas y caracteres raros
+    const rawHeaders = parseCSVLine(lines[0]).map(h => h.trim().replace(/"/g, '').replace(/\s+/g, ' '));
+    const numColumnasEsperadas = rawHeaders.length;
     const data = [];
+    
+    // 🔥 Mapear headers limpios a nombres estándar
+    const headerMap = {};
+    rawHeaders.forEach((h, idx) => {
+        const hLower = h.toLowerCase();
+        if (hLower.includes('id') && hLower.includes('equipo')) headerMap['ID_Equipo'] = idx;
+        else if (hLower === 'equipo') headerMap['Equipo'] = idx;
+        else if (hLower.includes('tipo')) headerMap['Tipo_Equipo'] = idx;
+        else if (hLower.includes('propiedad')) headerMap['Propiedad'] = idx;
+        else if (hLower.includes('estado')) headerMap['Estado'] = idx;
+        else if (hLower.includes('tipo') && hLower.includes('medic')) headerMap['Tipo_Medicion'] = idx;
+        else if (hLower.includes('lectura')) headerMap['Lectura'] = idx;
+        else if (hLower.includes('motivo')) headerMap['Motivo_Parada'] = idx;
+        else if (hLower.includes('reportante')) headerMap['Reportante'] = idx;
+        else if (hLower.includes('fecha')) headerMap['Fecha_Carga'] = idx;
+        else if (hLower.includes('hora')) headerMap['Hora_Carga'] = idx;
+        else if (hLower.includes('observac')) headerMap['Observaciones'] = idx;
+    });
+    
+    console.log('📋 Mapeo de columnas:', headerMap);
     
     for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
         
         const values = parseCSVLine(lines[i]);
         
-        if (values.length < numColumnasEsperadas) {
-            while (values.length < numColumnasEsperadas) values.push('');
-        }
-        if (values.length > numColumnasEsperadas) {
-            const extra = values.splice(numColumnasEsperadas - 1);
-            values.push(extra.join(','));
-        }
+        // Rellenar si faltan columnas
+        while (values.length < numColumnasEsperadas) values.push('');
         
-        const row = {};
-        headers.forEach((h, idx) => row[h] = (values[idx] || '').replace(/^"|"$/g, '').trim());
+        //  Usar el mapeo para obtener valores por posición
+        const getValue = (key) => {
+            const idx = headerMap[key];
+            if (idx !== undefined && values[idx] !== undefined) {
+                return String(values[idx]).replace(/^"|"$/g, '').trim();
+            }
+            return '';
+        };
         
         const mapped = {
-            ID_Equipo: (row['ID_Equipo'] || row['ID'] || row['id'] || values[0] || '').trim(),
-            Equipo: (row['Equipo'] || row['equipo'] || row['Nombre'] || values[1] || '').trim(),
-            Tipo_Equipo: (row['Tipo_Equipo'] || row['Tipo'] || row['tipo'] || values[2] || '').trim(),
-            Propiedad: (row['Propiedad'] || row['propiedad'] || values[3] || '').trim().toUpperCase(),
-            Estado: (row['Estado'] || row['estado'] || values[4] || '').trim(),
-            Lectura: (row['Lectura'] || row['Horó./Kilómetro'] || row['lectura'] || values[6] || '').trim(),
-            Motivo_Parada: (row['Motivo_Parada'] || row['Motivo'] || row['motivo'] || values[7] || '').trim(),
-            Reportante: (row['Reportante'] || row['reportante'] || values[8] || '').trim(),
-            Fecha_Carga: (row['Fecha_Carga'] || row['Fecha_Hora'] || row['fecha'] || values[9] || '').trim(),
-            Hora_Carga: (row['Hora_Carga'] || row['hora'] || values[10] || '').trim(),
-            Observaciones: (row['Observaciones'] || row['observaciones'] || values[11] || '').trim(),
+            ID_Equipo: getValue('ID_Equipo') || values[0] || '',
+            Equipo: getValue('Equipo') || values[1] || '',
+            Tipo_Equipo: getValue('Tipo_Equipo') || values[2] || '',
+            Propiedad: (getValue('Propiedad') || values[3] || '').toUpperCase(),
+            Estado: getValue('Estado') || values[4] || '',
+            Lectura: getValue('Lectura') || values[6] || '',
+            Motivo_Parada: getValue('Motivo_Parada') || values[7] || '',
+            Reportante: getValue('Reportante') || values[8] || '',
+            Fecha_Carga: getValue('Fecha_Carga') || values[9] || '',
+            Hora_Carga: getValue('Hora_Carga') || values[10] || '',
+            Observaciones: getValue('Observaciones') || values[11] || '',
             sucursal: sucursal
         };
         
@@ -560,6 +555,9 @@ function parseCSV(text, sucursal) {
         if (mapped.Estado !== 'OPERATIVO' && mapped.Estado !== 'FUERA_DE_SERVICIO' && mapped.Estado !== 'PARADO') {
             mapped.Estado = 'OPERATIVO';
         }
+        
+        // 🔥 Debug: mostrar datos parseados
+        console.log(`✅ ${mapped.ID_Equipo}: Fecha=${mapped.Fecha_Carga}, Reportante=${mapped.Reportante}`);
         
         data.push(mapped);
     }
