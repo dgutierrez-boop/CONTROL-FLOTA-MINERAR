@@ -1,324 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minerar 2026 - Panel de Flota</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); 
-            color: #e2e8f0; 
-            font-size: clamp(11px, 2.5vw, 12px);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .glass-card {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(16px);
-            border-radius: 16px;
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            overflow: hidden;
-            min-width: 0;
-        }
-        .glass-card:hover {
-            border-color: rgba(6, 182, 212, 0.6);
-            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.15);
-        }
-        .header-container {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(16px);
-            border-radius: 16px;
-            border: 1px solid rgba(6, 182, 212, 0.4);
-            padding: 16px 24px;
-            margin-bottom: 20px;
-        }
-        .logo-shield {
-            width: 48px; height: 48px;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
-            border: 2px solid #06b6d4;
-            flex-shrink: 0;
-        }
-        .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
-        .kpi-cyan { border-left: 4px solid #06b6d4; background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); }
-        .kpi-amber { border-left: 4px solid #f59e0b; background: linear-gradient(115deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); }
-        .kpi-purple { border-left: 4px solid #a855f7; background: linear-gradient(115deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05)); }
-        .kpi-red { border-left: 4px solid #ef4444; background: linear-gradient(115deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05)); }
-        .kpi-green { border-left: 4px solid #10b981; background: linear-gradient(115deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05)); }
-        .kpi-blue { border-left: 4px solid #3b82f6; background: linear-gradient(115deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05)); }
-        .sucursal-btn {
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 12px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            background: rgba(15, 23, 42, 0.8);
-            border: 2px solid rgba(6, 182, 212, 0.4);
-            color: #67e8f9;
-            white-space: nowrap;
-        }
-        .sucursal-btn:hover { background: rgba(6, 182, 212, 0.2); border-color: #06b6d4; }
-        .sucursal-btn.active { background: rgba(6, 182, 212, 0.3); border-color: #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
-        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; border: 1px solid; }
-        .status-operativo { background: rgba(6,182,212,0.2); color: #22d3ee; border-color: #06b6d4; }
-        .status-parado { background: rgba(245,158,11,0.2); color: #fbbf24; border-color: #f59e0b; }
-        .cronometro { font-family: 'Courier New', monospace; font-weight: 900; letter-spacing: 0.5px; }
-        .crono-dia { color: #f87171; }
-        .crono-hora { color: #fbbf24; }
-        .crono-min { color: #67e8f9; }
-        .chart-container { position: relative; height: 280px; width: 100%; margin-top: 12px; }
-        .table-scroll { max-height: 400px; overflow-x: auto; overflow-y: auto; border-radius: 12px; width: 100%; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 10px; font-size: 11px; text-align: left; white-space: nowrap; }
-        table tbody td { padding: 8px 10px; font-size: 11px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); }
-        table tbody td.col-motivo { 
-            max-width: 280px; 
-            white-space: normal; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            cursor: help;
-        }
-        tr { cursor: pointer; transition: background-color 0.2s ease; }
-        tr:hover { background-color: rgba(6, 182, 212, 0.1); }
-        .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
-        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
-        .alert-item { background: rgba(15, 23, 42, 0.6); border-left: 3px solid #06b6d4; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; cursor: pointer; transition: background 0.2s; }
-        .alert-item:hover { background: rgba(6, 182, 212, 0.15); }
-        @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } }
-        .pulse-alert { animation: pulse-red 2s infinite; }
-        .kpi-subtitulo { font-size: 10px; opacity: 0.85; margin-top: 2px; }
-        .kpi-valor { transition: all 0.3s ease; }
-        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; padding-right: 30px !important; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
-        ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(6, 182, 212, 0.6); }
-        .banner-historico {
-            background: linear-gradient(90deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05));
-            border: 1px solid rgba(245,158,11,0.4);
-            border-radius: 12px;
-            padding: 8px 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-        }
-        .banner-historico .mes-label { font-weight: 700; color: #fbbf24; }
-        .banner-historico button {
-            background: rgba(245,158,11,0.3);
-            color: #fbbf24;
-            border: 1px solid rgba(245,158,11,0.5);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .banner-historico button:hover { background: rgba(245,158,11,0.5); }
-        .modal-texto-completo {
-            white-space: normal !important;
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-            line-height: 1.5;
-        }
-        @media (max-width: 1280px) { .main-wrapper { padding: 0 12px; } }
-        @media (max-width: 768px) { .header-container { padding: 12px 16px; } .chart-container { height: 200px; } body { padding: 4px; } .main-wrapper { padding: 0 8px; } }
-    </style>
-</head>
-<body>
-<div class="main-wrapper w-full mx-auto p-4">
-    <div class="header-container flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3 min-w-0">
-            <div class="logo-shield">
-                <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img">
-            </div>
-            <div class="min-w-0">
-                <h1 class="text-xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent truncate">PANEL FLOTA MINERA 2026</h1>
-                <p class="text-xs text-cyan-300"> Control de Horómetros · Monitoreo en Vivo</p>
-            </div>
-        </div>
-        <div class="flex gap-3 items-center flex-wrap">
-            <div class="glass-card px-4 py-2 text-center kpi-cyan">
-                <div class="text-[9px] font-bold text-cyan-400">EQUIPOS</div>
-                <div id="totalEquipos" class="text-2xl font-black text-cyan-300">0</div>
-            </div>
-            <div class="glass-card px-4 py-2 text-center kpi-amber">
-                <div class="text-[9px] font-bold text-amber-400">PARADOS</div>
-                <div id="totalParados" class="text-2xl font-black text-amber-300">0</div>
-            </div>
-            <div class="glass-card px-4 py-2 text-center kpi-red">
-                <div class="text-[9px] font-bold text-red-400">⏱️ HS PERDIDAS</div>
-                <div id="totalHsPerdidas" class="text-2xl font-black text-red-300">0h</div>
-            </div>
-            <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all">🔄 Actualizar</button>
-        </div>
-    </div>
-
-    <div class="glass-card p-5 mb-5">
-        <div class="text-center mb-4">
-            <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
-            <div class="flex flex-wrap items-center justify-center gap-2">
-                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')"> TODAS</button>
-                <button id="btnMalagueno" class="sucursal-btn" onclick="cambiarSucursal('MALAGUENO')">📍 MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
-                <button id="btnPampita" class="sucursal-btn" onclick="cambiarSucursal('LA_PAMPITA')">🌸 LA PAMPITA</button>
-            </div>
-        </div>
-        
-        <div id="bannerHistorico" class="banner-historico" style="display:none;">
-            <div>📅 Viendo datos del mes: <span id="labelMesHistorico" class="mes-label">-</span><span class="text-slate-400 text-xs ml-2">(Los KPIs y tabla muestran el estado al final de ese mes)</span></div>
-            <button onclick="volverAModoActual()">✕ Volver a tiempo real</button>
-        </div>
-        
-        <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5"></div>
-
-        <div class="grid lg:grid-cols-[240px_1fr] gap-4">
-            <aside>
-                <div class="glass-card p-4">
-                    <h3 class="font-bold mb-3 text-cyan-400 text-xs"> FILTROS</h3>
-                    
-                    <label class="text-[10px] font-bold text-amber-300 mb-1 block"> PERÍODO / MES</label>
-                    <select id="filterMes" class="w-full mb-3 bg-slate-800 border border-amber-500/60 rounded-lg p-2 text-xs text-amber-100 font-semibold" onchange="aplicarFiltros()">
-                        <option value="ACTUAL">📍 Tiempo real (actual)</option>
-                        <option value="2026-01">📅 Enero 2026</option>
-                        <option value="2026-02">📅 Febrero 2026</option>
-                        <option value="2026-03"> Marzo 2026</option>
-                        <option value="2026-04">📅 Abril 2026</option>
-                        <option value="2026-05">📅 Mayo 2026</option>
-                        <option value="2026-06">📅 Junio 2026</option>
-                        <option value="2026-07">📅 Julio 2026</option>
-                        <option value="2026-08">📅 Agosto 2026</option>
-                        <option value="2026-09"> Septiembre 2026</option>
-                        <option value="2026-10">📅 Octubre 2026</option>
-                        <option value="2026-11">📅 Noviembre 2026</option>
-                        <option value="2026-12">📅 Diciembre 2026</option>
-                    </select>
-                    
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🏢 PROPIEDAD</label>
-                    <select id="filterPropiedad" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
-                        <option value="TODAS">Todas</option>
-                        <option value="PROPIO">Propio</option>
-                        <option value="ALQUILADO">Alquilado</option>
-                    </select>
-                    
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 EQUIPO (N° Interno)</label>
-                    <select id="filterEquipo" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
-                        <option value="TODOS">🔎 Todos los equipos</option>
-                    </select>
-                    
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block"> ESTADO</label>
-                    <select id="filterEstado" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
-                        <option value="TODOS">Todos</option>
-                        <option value="OPERATIVO">✅ Operativo</option>
-                        <option value="PARADO">⏸️ Parado</option>
-                    </select>
-                    
-                    <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30">
-                        <div class="text-[10px] font-bold text-cyan-400 mb-2">🚨 ALERTAS HOY</div>
-                        <div id="alertasHoy" class="max-h-40 overflow-y-auto text-[10px]">
-                            <p class="text-cyan-200 text-center">Sin alertas</p>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-            
-            <main class="min-w-0">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div class="glass-card p-4 min-w-0">
-                        <h3 class="font-bold text-cyan-400 text-xs mb-2">📊 ESTADO DE FLOTA</h3>
-                        <div class="chart-container"><canvas id="estadoChart"></canvas></div>
-                    </div>
-                    <div class="glass-card p-4 min-w-0">
-                        <h3 class="font-bold text-purple-400 text-xs mb-2">📈 TRAZABILIDAD DE RENDIMIENTO POR EQUIPO (N° Interno)</h3>
-                        <div class="chart-container"><canvas id="trazabilidadChart"></canvas></div>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div class="glass-card p-4 min-w-0">
-                        <h3 class="font-bold text-amber-400 text-xs mb-2">🔧 MOTIVOS DE PARADA</h3>
-                        <div class="chart-container"><canvas id="motivosChart"></canvas></div>
-                    </div>
-                    <div class="glass-card p-4 min-w-0">
-                        <h3 class="font-bold text-red-400 text-xs mb-2"> TOP 5 EQUIPOS MÁS PARADOS</h3>
-                        <div class="chart-container"><canvas id="topParadosChart"></canvas></div>
-                    </div>
-                </div>
-                
-                <div class="glass-card p-4 min-w-0">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-cyan-400 text-xs">📋 FLOTA EN TIEMPO REAL</h3>
-                        <div class="flex gap-2 items-center">
-                            <span id="contadorRegistros" class="text-[10px] text-cyan-300">0 registros</span>
-                            <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-bold">🔄</button>
-                        </div>
-                    </div>
-                    <div class="table-scroll">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th><th>EQUIPO</th><th>TIPO</th><th>SUCURSAL</th>
-                                    <th>ESTADO</th><th>️ TIEMPO</th><th>LECTURA</th><th>MOTIVO</th><th>REPORTANTE</th>
-                                </tr>
-                            </thead>
-                            <tbody id="equipmentTableBody">
-                                <tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando datos...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-</div>
-
-<div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-slate-900 rounded-2xl shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[92vh] flex flex-col overflow-hidden">
-        <div class="flex-shrink-0 border-b border-cyan-500/30 px-6 py-3 flex items-center justify-between bg-slate-900/95">
-            <div class="flex items-center gap-2 min-w-0 flex-1">
-                <button onclick="navegarEquipo(-1)" id="btnPrevEquipo" class="bg-slate-700 hover:bg-cyan-600 text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold transition-all flex-shrink-0">◀</button>
-                <div class="min-w-0 flex-1 text-center">
-                    <h2 id="modalTitle" class="text-lg font-black text-cyan-400 truncate">📋 Detalle</h2>
-                    <div id="modalEquipoCounter" class="text-[10px] text-slate-400">-</div>
-                </div>
-                <button onclick="navegarEquipo(1)" id="btnNextEquipo" class="bg-cyan-600 hover:bg-cyan-500 text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold transition-all flex-shrink-0">▶</button>
-            </div>
-            <button onclick="closeEquipmentModal()" class="text-2xl text-cyan-300 hover:text-white ml-3 flex-shrink-0">&times;</button>
-        </div>
-        <div id="modalContent" class="flex-1 overflow-y-auto p-6"></div>
-        <div class="flex-shrink-0 border-t border-cyan-500/30 px-6 py-3 flex justify-end bg-slate-900/95">
-            <button onclick="closeEquipmentModal()" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
-        </div>
-    </div>
-</div>
-
 <script>
 let currentSucursal = 'TODAS';
 let currentEquipoFiltro = 'TODOS';
@@ -342,9 +21,9 @@ const NOMBRES_MESES = {
 };
 
 const SHEETS_URLS = {
-    'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1740570339&single=true&output=csv',
-    'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=645868350&single=true&output=csv',
-    'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1964233948&single=true&output=csv'
+    'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1207352402&single=true&output=csv',
+    'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1538096170&single=true&output=csv',
+    'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1473811609&single=true&output=csv'
 };
 
 function playNotificationSound() {
@@ -370,6 +49,7 @@ function esIdEquipoValido(id) {
     return /^[A-Za-z0-9\-]+$/.test(idLimpio) && idLimpio.length >= 2;
 }
 
+// 🔥 PARSEO DE FECHA ROBUSTO
 function parseFechaHora(fechaStr, horaStr) {
     try {
         if (!fechaStr || fechaStr === '-' || String(fechaStr).trim() === '') return 0;
@@ -377,91 +57,51 @@ function parseFechaHora(fechaStr, horaStr) {
         let fecha = String(fechaStr).trim();
         let hora = String(horaStr || '00:00').trim();
         
-        // Formato ISO "2026-06-02 7:49:00"
-        if (fecha.match(/^\d{4}-\d{2}-\d{2}/)) {
-            let fechaLimpia = fecha.includes('T') ? fecha : fecha.replace(' ', 'T');
-            const d = new Date(fechaLimpia);
-            if (!isNaN(d.getTime())) return d.getTime();
-        }
-        
-        if (fecha.includes(' ')) {
+        // Separar fecha y hora si vienen juntas (ej: "2026-05-06 6:21:00")
+        if (fecha.includes(' ') && !fecha.includes('T')) {
             const partes = fecha.split(' ');
             fecha = partes[0];
             if (partes[1] && partes[1].includes(':')) hora = partes[1];
         }
         
-        if (/^\d{4,5}(\.\d+)?$/.test(fecha)) {
-            const serial = parseFloat(fecha);
-            const excelEpoch = new Date(1899, 11, 30);
-            const d = new Date(excelEpoch.getTime() + serial * 86400000);
-            if (fecha.includes('.')) {
-                const decimal = parseFloat('0.' + fecha.split('.')[1]);
-                const totalSegundos = Math.round(decimal * 86400);
-                d.setHours(Math.floor(totalSegundos / 3600));
-                d.setMinutes(Math.floor((totalSegundos % 3600) / 60));
-            }
-            return d.getTime();
+        // Formato ISO "2026-05-06" con hora separada
+        if (fecha.match(/^\d{4}-\d{2}-\d{2}$/) && hora.includes(':')) {
+            const d = new Date(fecha + 'T' + hora + ':00');
+            if (!isNaN(d.getTime())) return d.getTime();
         }
         
+        // Formato ISO con T
         if (fecha.includes('T')) {
             const d = new Date(fecha);
-            if (!isNaN(d.getTime())) {
-                if (hora.includes(':')) {
-                    const hp = hora.split(':');
-                    d.setHours(parseInt(hp[0]) || 0);
-                    d.setMinutes(parseInt(hp[1]) || 0);
-                }
-                return d.getTime();
-            }
+            if (!isNaN(d.getTime())) return d.getTime();
         }
         
-        let day, month, year, h = 0, m = 0;
-        
+        // Formato dd/mm/yyyy
         if (fecha.includes('/')) {
             const partes = fecha.split('/');
             if (partes.length === 3) {
-                day = parseInt(partes[0]);
-                month = parseInt(partes[1]) - 1;
-                year = parseInt(partes[2]);
+                let day = parseInt(partes[0]);
+                let month = parseInt(partes[1]) - 1;
+                let year = parseInt(partes[2]);
+                if (day === 0 || isNaN(day)) day = 1;
                 if (year < 100) year += 2000;
-            }
-        } else if (fecha.includes('-')) {
-            const partes = fecha.split('-');
-            if (partes.length === 3) {
-                if (partes[0].length === 4) {
-                    year = parseInt(partes[0]);
-                    month = parseInt(partes[1]) - 1;
-                    day = parseInt(partes[2]);
-                } else {
-                    day = parseInt(partes[0]);
-                    month = parseInt(partes[1]) - 1;
-                    year = parseInt(partes[2]);
-                    if (year < 100) year += 2000;
+                
+                let h = 0, m = 0;
+                if (hora && hora.includes(':')) {
+                    const hp = hora.split(':');
+                    h = parseInt(hp[0]) || 0;
+                    m = parseInt(hp[1]) || 0;
                 }
+                
+                const d = new Date(year, month, day, h, m, 0);
+                if (!isNaN(d.getTime())) return d.getTime();
             }
-        } else {
-            const d = new Date(fecha);
-            if (!isNaN(d.getTime())) return d.getTime();
-            return 0;
         }
         
-        if (day === 0 || isNaN(day)) day = 1;
-        if (isNaN(month) || month < 0) month = 0;
-        if (isNaN(year) || year < 1990 || year > 2030) return 0;
-        
-        if (hora && hora.includes(':')) {
-            const hp = hora.split(':');
-            h = parseInt(hp[0]) || 0;
-            m = parseInt(hp[1]) || 0;
-        }
-        
-        const d = new Date(year, month, day, h, m, 0);
-        const ahora = new Date();
-        const diffMs = Math.abs(d.getTime() - ahora.getTime());
-        const diffAnios = diffMs / (1000 * 60 * 60 * 24 * 365);
-        if (diffAnios > 6) return 0;
-        
-        return d.getTime();
+        // Último recurso
+        const d = new Date(fecha);
+        if (!isNaN(d.getTime())) return d.getTime();
+        return 0;
     } catch (e) {
         return 0;
     }
@@ -472,7 +112,7 @@ function obtenerMesAnio(fechaStr) {
     const fecha = parseFechaHora(fechaStr, '00:00');
     if (!fecha) return 'N/A';
     const d = new Date(fecha);
-    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     return `${meses[d.getMonth()]}-${d.getFullYear().toString().substr(-2)}`;
 }
 
@@ -482,91 +122,99 @@ function obtenerAnioMes(fechaStr) {
     const d = new Date(t);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
-// 🔥 FUNCIÓN NECESARIA: parsea cada línea del CSV respetando comillas
-function parseCSVLine(line) {
-    const values = [];
-    let current = '';
+
+// 🔥 PARSEO CSV CORRECTO QUE MANEJA COMILLAS MULTILÍNEA
+function parseCSVCompleto(text) {
+    const rows = [];
+    let currentRow = [];
+    let currentField = '';
     let inQuotes = false;
+    let i = 0;
     
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const nextChar = line[i + 1];
+    while (i < text.length) {
+        const char = text[i];
+        const nextChar = text[i + 1];
         
-        if (char === '"') {
-            if (inQuotes && nextChar === '"') {
-                current += '"';
+        if (inQuotes) {
+            if (char === '"' && nextChar === '"') {
+                currentField += '"';
+                i += 2;
+                continue;
+            } else if (char === '"') {
+                inQuotes = false;
                 i++;
+                continue;
             } else {
-                inQuotes = !inQuotes;
+                currentField += char;
+                i++;
+                continue;
             }
-        } else if (char === ',' && !inQuotes) {
-            values.push(current.trim());
-            current = '';
         } else {
-            current += char;
+            if (char === '"') {
+                inQuotes = true;
+                i++;
+                continue;
+            } else if (char === ',') {
+                currentRow.push(currentField.trim());
+                currentField = '';
+                i++;
+                continue;
+            } else if (char === '\n' || (char === '\r' && nextChar === '\n')) {
+                currentRow.push(currentField.trim());
+                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
+                    rows.push(currentRow);
+                }
+                currentRow = [];
+                currentField = '';
+                if (char === '\r') i++;
+                i++;
+                continue;
+            } else {
+                currentField += char;
+                i++;
+            }
         }
     }
-    values.push(current.trim());
-    return values;
-}
-function parseCSV(text, sucursal) {
-    const lines = text.trim().split('\n').filter(l => l.trim());
-    if (lines.length < 2) return [];
     
-    //  Limpiar headers: quitar espacios, comillas y caracteres raros
-    const rawHeaders = parseCSVLine(lines[0]).map(h => h.trim().replace(/"/g, '').replace(/\s+/g, ' '));
-    const numColumnasEsperadas = rawHeaders.length;
+    // Última fila
+    if (currentField || currentRow.length > 0) {
+        currentRow.push(currentField.trim());
+        rows.push(currentRow);
+    }
+    
+    return rows;
+}
+
+function parseCSV(text, sucursal) {
+    const rows = parseCSVCompleto(text);
+    if (rows.length < 2) return [];
+    
+    const headers = rows[0].map(h => h.replace(/"/g, '').trim());
     const data = [];
     
-    // 🔥 Mapear headers limpios a nombres estándar
-    const headerMap = {};
-    rawHeaders.forEach((h, idx) => {
-        const hLower = h.toLowerCase();
-        if (hLower.includes('id') && hLower.includes('equipo')) headerMap['ID_Equipo'] = idx;
-        else if (hLower === 'equipo') headerMap['Equipo'] = idx;
-        else if (hLower.includes('tipo')) headerMap['Tipo_Equipo'] = idx;
-        else if (hLower.includes('propiedad')) headerMap['Propiedad'] = idx;
-        else if (hLower.includes('estado')) headerMap['Estado'] = idx;
-        else if (hLower.includes('tipo') && hLower.includes('medic')) headerMap['Tipo_Medicion'] = idx;
-        else if (hLower.includes('lectura')) headerMap['Lectura'] = idx;
-        else if (hLower.includes('motivo')) headerMap['Motivo_Parada'] = idx;
-        else if (hLower.includes('reportante')) headerMap['Reportante'] = idx;
-        else if (hLower.includes('fecha')) headerMap['Fecha_Carga'] = idx;
-        else if (hLower.includes('hora')) headerMap['Hora_Carga'] = idx;
-        else if (hLower.includes('observac')) headerMap['Observaciones'] = idx;
-    });
+    console.log(`📋 Headers de ${sucursal}:`, headers);
     
-    console.log('📋 Mapeo de columnas:', headerMap);
-    
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
+    for (let i = 1; i < rows.length; i++) {
+        const values = rows[i];
+        if (values.length === 0 || (values.length === 1 && values[0] === '')) continue;
         
-        const values = parseCSVLine(lines[i]);
-        
-        // Rellenar si faltan columnas
-        while (values.length < numColumnasEsperadas) values.push('');
-        
-        //  Usar el mapeo para obtener valores por posición
-        const getValue = (key) => {
-            const idx = headerMap[key];
-            if (idx !== undefined && values[idx] !== undefined) {
-                return String(values[idx]).replace(/^"|"$/g, '').trim();
-            }
-            return '';
-        };
+        const row = {};
+        headers.forEach((h, idx) => {
+            row[h] = (values[idx] || '').replace(/^"|"$/g, '').trim();
+        });
         
         const mapped = {
-            ID_Equipo: getValue('ID_Equipo') || values[0] || '',
-            Equipo: getValue('Equipo') || values[1] || '',
-            Tipo_Equipo: getValue('Tipo_Equipo') || values[2] || '',
-            Propiedad: (getValue('Propiedad') || values[3] || '').toUpperCase(),
-            Estado: getValue('Estado') || values[4] || '',
-            Lectura: getValue('Lectura') || values[6] || '',
-            Motivo_Parada: getValue('Motivo_Parada') || values[7] || '',
-            Reportante: getValue('Reportante') || values[8] || '',
-            Fecha_Carga: getValue('Fecha_Carga') || values[9] || '',
-            Hora_Carga: getValue('Hora_Carga') || values[10] || '',
-            Observaciones: getValue('Observaciones') || values[11] || '',
+            ID_Equipo: (row['ID_Equipo'] || row['ID'] || row['id'] || values[0] || '').trim(),
+            Equipo: (row['Equipo'] || row['equipo'] || row['Nombre'] || values[1] || '').trim(),
+            Tipo_Equipo: (row['Tipo_Equipo'] || row['Tipo'] || row['tipo'] || values[2] || '').trim(),
+            Propiedad: (row['Propiedad'] || row['propiedad'] || values[3] || '').trim().toUpperCase(),
+            Estado: (row['Estado'] || row['estado'] || values[4] || '').trim(),
+            Lectura: (row['Lectura'] || row['Horó./Kilómetro'] || row['lectura'] || values[6] || '').trim(),
+            Motivo_Parada: (row['Motivo_Parada'] || row['Motivo'] || row['motivo'] || values[7] || '').trim(),
+            Reportante: (row['Reportante'] || row['reportante'] || values[8] || '').trim(),
+            Fecha_Carga: (row['Fecha_Carga'] || row['Fecha_Hora'] || row['fecha'] || values[9] || '').trim(),
+            Hora_Carga: (row['Hora_Carga'] || row['hora'] || values[10] || '').trim(),
+            Observaciones: (row['Observaciones'] || row['observaciones'] || values[11] || '').trim(),
             sucursal: sucursal
         };
         
@@ -582,11 +230,21 @@ function parseCSV(text, sucursal) {
             mapped.Estado = 'OPERATIVO';
         }
         
-        // 🔥 Debug: mostrar datos parseados
-        console.log(`✅ ${mapped.ID_Equipo}: Fecha=${mapped.Fecha_Carga}, Reportante=${mapped.Reportante}`);
+        // 🔥 Debug específico
+        if (mapped.ID_Equipo === 'M403' || mapped.ID_Equipo === 'M443') {
+            console.log(`✅ ${mapped.ID_Equipo} de ${sucursal}:`, {
+                Fecha: mapped.Fecha_Carga,
+                Hora: mapped.Hora_Carga,
+                Reportante: mapped.Reportante,
+                Estado: mapped.Estado,
+                Motivo: mapped.Motivo_Parada.substring(0, 50)
+            });
+        }
         
         data.push(mapped);
     }
+    
+    console.log(`✅ ${sucursal}: ${data.length} registros cargados`);
     return data;
 }
 
@@ -597,7 +255,6 @@ async function loadData() {
         }
         
         console.log('🔄 Iniciando carga de datos...');
-        console.log('📋 URLs configuradas:', SHEETS_URLS);
         
         let allData = [];
         for (const [sucursal, url] of Object.entries(SHEETS_URLS)) {
@@ -623,9 +280,9 @@ async function loadData() {
         updateAlertasUI();
         
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error general:', error);
         if (isFirstLoad) {
-            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-red-400 p-4">❌ Error al cargar</td></tr>';
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-red-400 p-4">❌ Error al cargar: ' + error.message + '</td></tr>';
         }
     }
     isFirstLoad = false;
@@ -646,7 +303,7 @@ function actualizarFiltroEquipos() {
         return a.ID_Equipo.localeCompare(b.ID_Equipo);
     });
     
-    select.innerHTML = '<option value="TODOS"> Todos los equipos</option>';
+    select.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>';
     lista.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.ID_Equipo;
@@ -663,11 +320,9 @@ function actualizarFiltroEquipos() {
 
 async function fetchSheet(url, sucursal) {
     try {
-        console.log(`📡 Intentando cargar ${sucursal}:`, url);
         const response = await fetch(url + '&t=' + Date.now());
-        console.log(`✅ Respuesta de ${sucursal}:`, response.status);
+        if (!response.ok) throw new Error('HTTP ' + response.status);
         const text = await response.text();
-        console.log(`📄 Datos de ${sucursal}:`, text.substring(0, 200) + '...');
         return parseCSV(text, sucursal);
     } catch (error) {
         console.error(`❌ Error cargando ${sucursal}:`, error);
@@ -867,7 +522,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-amber-200">${esParado ? 'Desde última carga' : 'En servicio'}</div>
             </div>
             <div class="glass-card p-4 kpi-cyan">
-                <div class="text-xs font-bold text-cyan-400 mb-1"> LECTURA ACTUAL</div>
+                <div class="text-xs font-bold text-cyan-400 mb-1">🔢 LECTURA ACTUAL</div>
                 <div class="kpi-valor text-2xl font-black text-cyan-300">${equipoSeleccionado.Lectura || '0'}</div>
                 <div class="kpi-subtitulo text-cyan-200">${equipoSeleccionado.Tipo_Equipo || 'Equipo'}</div>
             </div>
@@ -877,7 +532,7 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-purple-200">⏸️ ${paradasCount} paradas · ✅ ${operativosCount} oper.</div>
             </div>
             <div class="glass-card p-4 kpi-blue">
-                <div class="text-xs font-bold text-blue-400 mb-1">️ INFORMACIÓN</div>
+                <div class="text-xs font-bold text-blue-400 mb-1">🏷️ INFORMACIÓN</div>
                 <div class="text-sm font-bold text-blue-300 truncate">${equipoSeleccionado.Equipo || '-'}</div>
                 <div class="kpi-subtitulo text-blue-200">📍 ${equipoSeleccionado.sucursal} · 🏢 ${(equipoSeleccionado.Propiedad || 'N/A').toLowerCase()}</div>
             </div>
@@ -975,7 +630,6 @@ function actualizarCronometros() {
 }
 setInterval(actualizarCronometros, 10000);
 
-//  GRÁFICO DE TRAZABILIDAD POR EQUIPO
 function updateTrazabilidadChart() {
     const equiposUnicos = {};
     
@@ -1046,64 +700,29 @@ function updateTrazabilidadChart() {
         };
     });
     
-    const ctx = document.getElementById('trazabilidadChart').getContext('2d');
+    const ctx = document.getElementById('trazabilidadChart');
+    if (!ctx) return;
     if (trazabilidadChart) trazabilidadChart.destroy();
     
-    trazabilidadChart = new Chart(ctx, {
+    trazabilidadChart = new Chart(ctx.getContext('2d'), {
         type: 'line',
-        data: {
-            labels: mesesOrdenados,
-            datasets: datasets
-        },
+        data: { labels: mesesOrdenados, datasets: datasets },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: {
-                    position: 'top',
-                    labels: { 
-                        color: '#cbd5e1',
-                        font: { size: 10 },
-                        boxWidth: 12,
-                        padding: 10
-                    }
-                },
+                legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 12, padding: 10 } },
                 tooltip: {
                     backgroundColor: 'rgba(15, 23, 42, 0.9)',
                     titleColor: '#06b6d4',
                     bodyColor: '#e2e8f0',
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: ${context.parsed.y.toLocaleString()} hs`;
-                        }
-                    }
+                    callbacks: { label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString()} hs` }
                 }
             },
             scales: {
-                x: {
-                    grid: { color: 'rgba(100,100,150,0.1)' },
-                    ticks: { 
-                        color: '#cbd5e1',
-                        font: { size: 9 },
-                        maxRotation: 45,
-                        minRotation: 45
-                    }
-                },
-                y: {
-                    beginAtZero: false,
-                    grid: { color: 'rgba(100,100,150,0.1)' },
-                    ticks: { 
-                        color: '#cbd5e1',
-                        font: { size: 10 },
-                        callback: function(value) {
-                            return value.toLocaleString() + 'h';
-                        }
-                    }
-                }
+                x: { grid: { color: 'rgba(100,100,150,0.1)' }, ticks: { color: '#cbd5e1', font: { size: 9 }, maxRotation: 45, minRotation: 45 } },
+                y: { beginAtZero: false, grid: { color: 'rgba(100,100,150,0.1)' }, ticks: { color: '#cbd5e1', font: { size: 10 }, callback: (v) => v.toLocaleString() + 'h' } }
             }
         }
     });
@@ -1168,17 +787,15 @@ function updateCharts() {
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                 plugins: { 
                     legend: { display: false },
-                    tooltip: { callbacks: {
-                        label: (ctx) => {
-                            const eq = equiposParados[ctx.dataIndex];
-                            if (currentMesFiltro === 'ACTUAL') {
-                                const dias = Math.floor(eq.hsParado / 24);
-                                const hs = Math.floor(eq.hsParado % 24);
-                                return `${dias}d ${hs}h - ${eq.Equipo}`;
-                            }
-                            return `${eq.Equipo}`;
+                    tooltip: { callbacks: { label: (ctx) => {
+                        const eq = equiposParados[ctx.dataIndex];
+                        if (currentMesFiltro === 'ACTUAL') {
+                            const dias = Math.floor(eq.hsParado / 24);
+                            const hs = Math.floor(eq.hsParado % 24);
+                            return `${dias}d ${hs}h - ${eq.Equipo}`;
                         }
-                    }}
+                        return `${eq.Equipo}`;
+                    }}}
                 },
                 scales: {
                     x: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', maxTicksLimit: 6 } },
@@ -1241,7 +858,7 @@ function renderTable() {
         
         const esParado = e.Estado === 'FUERA_DE_SERVICIO' || e.Estado === 'PARADO';
         const badgeClass = e.Estado === 'OPERATIVO' ? 'status-operativo' : 'status-parado';
-        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : '️ Parado';
+        const badgeText = e.Estado === 'OPERATIVO' ? '✅ Operativo' : '⏸️ Parado';
         
         let celdaTiempo = '<span class="text-slate-500 text-xs">-</span>';
         
@@ -1249,13 +866,13 @@ function renderTable() {
             if (currentMesFiltro === 'ACTUAL') {
                 const t = calcularTiempoParado(e.Fecha_Carga, e.Hora_Carga);
                 if (t && t.totalHs > 0) {
-                    let html = '️ ';
+                    let html = '⏱️ ';
                     if (t.dias > 0) html += `<span class="crono-dia">${t.dias}d</span> `;
                     html += `<span class="crono-hora">${t.horas}h</span> `;
                     html += `<span class="crono-min">${t.minutos}m</span>`;
                     celdaTiempo = `<span class="cronometro text-xs" data-fecha-parada="${e.Fecha_Carga}" data-hora-parada="${e.Hora_Carga || '00:00'}">${html}</span>`;
                 } else {
-                    celdaTiempo = `<span class="text-xs text-amber-300 cursor-help" title="Fecha registrada: ${e.Fecha_Carga} ${e.Hora_Carga || ''}">📅 ${e.Fecha_Carga || ''}</span>`;
+                    celdaTiempo = `<span class="text-xs text-amber-300 cursor-help" title="Fecha: ${e.Fecha_Carga} ${e.Hora_Carga || ''}">📅 ${e.Fecha_Carga || ''}</span>`;
                 }
             } else {
                 celdaTiempo = `<span class="text-xs text-amber-300">📅 ${e.Fecha_Carga || ''}</span>`;
@@ -1288,9 +905,7 @@ function openEquipmentModal(equipo, indiceOpcional) {
         const idx = filteredData.findIndex(e => e.ID_Equipo === equipo.ID_Equipo && e.sucursal === equipo.sucursal);
         if (idx >= 0) indiceEquipoModal = idx;
     }
-    
     renderizarContenidoModal();
-    
     const modal = document.getElementById('equipmentModal');
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
@@ -1364,13 +979,9 @@ function renderizarContenidoModal() {
                 </div>
                 <div id="historialSlide">${renderizarSlideHistorial(regActual, 0)}</div>
                 <div class="flex items-center justify-between mt-4 gap-2">
-                    <button onclick="cambiarRegistroHistorial(-1)" id="btnAnterior"
-                        class="flex-1 bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all ${totalRegistros <= 1 ? 'opacity-30 cursor-not-allowed' : ''}"
-                        ${totalRegistros <= 1 ? 'disabled' : ''}>← Anterior registro</button>
+                    <button onclick="cambiarRegistroHistorial(-1)" id="btnAnterior" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all ${totalRegistros <= 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${totalRegistros <= 1 ? 'disabled' : ''}>← Anterior registro</button>
                     <div class="flex gap-1 items-center" id="historialDots">${generarDotsHistorial(totalRegistros, 0)}</div>
-                    <button onclick="cambiarRegistroHistorial(1)" id="btnSiguiente"
-                        class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all ${totalRegistros <= 1 ? 'opacity-30 cursor-not-allowed' : ''}"
-                        ${totalRegistros <= 1 ? 'disabled' : ''}>Siguiente registro →</button>
+                    <button onclick="cambiarRegistroHistorial(1)" id="btnSiguiente" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all ${totalRegistros <= 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${totalRegistros <= 1 ? 'disabled' : ''}>Siguiente registro →</button>
                 </div>
             </div>
         `;
@@ -1390,17 +1001,11 @@ function renderizarContenidoModal() {
         ${cronometroHTML}
         <div class="space-y-2 mt-4">
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-cyan-300">${equipo.sucursal}</span></div>
-            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400"> Estado</span><span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span></div>
+            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${equipo.Lectura || 'N/A'}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📅 Último registro</span><span class="font-bold text-cyan-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span></div>
-            ${motivoCompleto ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30">
-                <div class="text-xs text-amber-400 mb-1">⚠️ Motivo</div>
-                <div class="text-sm text-slate-300 modal-texto-completo">${motivoCompleto}</div>
-            </div>` : ''}
-            ${observacionesCompletas ? `<div class="p-3 bg-slate-800/50 rounded-lg">
-                <div class="text-xs text-slate-400 mb-1">📝 Observaciones</div>
-                <div class="text-sm text-slate-300 modal-texto-completo">${observacionesCompletas}</div>
-            </div>` : ''}
+            ${motivoCompleto ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">⚠️ Motivo</div><div class="text-sm text-slate-300 modal-texto-completo">${motivoCompleto}</div></div>` : ''}
+            ${observacionesCompletas ? `<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300 modal-texto-completo">${observacionesCompletas}</div></div>` : ''}
         </div>
         ${sliderHTML}
     `;
@@ -1420,7 +1025,7 @@ function renderizarSlideHistorial(reg, indice) {
         const lectActual = parseFloat(reg.Lectura) || 0;
         const lectAnterior = parseFloat(regAnterior.Lectura) || 0;
         const diff = lectActual - lectAnterior;
-        if (diff > 0) diffHs = `<div class="text-[10px] text-cyan-400 mt-1">️ +${diff.toFixed(1)} desde anterior</div>`;
+        if (diff > 0) diffHs = `<div class="text-[10px] text-cyan-400 mt-1">↗️ +${diff.toFixed(1)} desde anterior</div>`;
     }
     
     let diffTiempo = '';
@@ -1446,12 +1051,9 @@ function renderizarSlideHistorial(reg, indice) {
             </div>
             <div class="grid grid-cols-2 gap-2 mb-2">
                 <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500">🔢 HORÓMETRO</div><div class="text-lg font-black text-amber-300">${reg.Lectura || 'N/A'}</div>${diffHs}</div>
-                <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500"> REPORTANTE</div><div class="text-sm font-bold text-cyan-300">${reg.Reportante || 'N/A'}</div>${diffTiempo}</div>
+                <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500">👤 REPORTANTE</div><div class="text-sm font-bold text-cyan-300">${reg.Reportante || 'N/A'}</div>${diffTiempo}</div>
             </div>
-            ${reg.Motivo_Parada ? `<div class="bg-slate-900/50 rounded-lg p-2 mt-2">
-                <div class="text-[9px] text-amber-400 mb-1">⚠️ MOTIVO</div>
-                <div class="text-xs text-slate-300 leading-relaxed modal-texto-completo">${reg.Motivo_Parada}</div>
-            </div>` : ''}
+            ${reg.Motivo_Parada ? `<div class="bg-slate-900/50 rounded-lg p-2 mt-2"><div class="text-[9px] text-amber-400 mb-1">⚠️ MOTIVO</div><div class="text-xs text-slate-300 leading-relaxed modal-texto-completo">${reg.Motivo_Parada}</div></div>` : ''}
         </div>
     `;
 }
@@ -1497,20 +1099,14 @@ function cambiarRegistroHistorial(direccion) {
 function navegarEquipo(direccion) {
     const nuevoIndice = indiceEquipoModal + direccion;
     if (nuevoIndice < 0 || nuevoIndice >= filteredData.length) return;
-    
     indiceEquipoModal = nuevoIndice;
-    
     const content = document.getElementById('modalContent');
     content.style.opacity = '0';
     content.style.transform = direccion > 0 ? 'translateX(30px)' : 'translateX(-30px)';
-    
     setTimeout(() => {
         renderizarContenidoModal();
         content.style.transform = direccion > 0 ? 'translateX(-30px)' : 'translateX(30px)';
-        setTimeout(() => {
-            content.style.opacity = '1';
-            content.style.transform = 'translateX(0)';
-        }, 50);
+        setTimeout(() => { content.style.opacity = '1'; content.style.transform = 'translateX(0)'; }, 50);
     }, 150);
 }
 
@@ -1527,7 +1123,6 @@ function forceRefreshData() {
 document.addEventListener('keydown', (e) => {
     const modal = document.getElementById('equipmentModal');
     if (modal.classList.contains('hidden')) return;
-    
     if (e.key === 'Escape') closeEquipmentModal();
     if (e.key === 'ArrowLeft') { e.preventDefault(); navegarEquipo(-1); }
     if (e.key === 'ArrowRight') { e.preventDefault(); navegarEquipo(1); }
@@ -1535,5 +1130,3 @@ document.addEventListener('keydown', (e) => {
 
 window.onload = () => { loadData(); setInterval(loadData, 60000); actualizarCronometros(); };
 </script>
-</body>
-</html>
