@@ -97,7 +97,18 @@
         .table-scroll { max-height: 400px; overflow-x: auto; overflow-y: auto; border-radius: 12px; width: 100%; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
         table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 10px; font-size: 11px; text-align: left; white-space: nowrap; }
-        table tbody td { padding: 8px 10px; font-size: 11px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); white-space: nowrap; }
+        table tbody td { padding: 8px 10px; font-size: 11px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); }
+        /* 🔥 Columna MOTIVO: permite wrap y muestra tooltip */
+        table tbody td.col-motivo { 
+            max-width: 280px; 
+            white-space: normal; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            cursor: help;
+        }
         tr { cursor: pointer; transition: background-color 0.2s ease; }
         tr:hover { background-color: rgba(6, 182, 212, 0.1); }
         
@@ -145,6 +156,14 @@
         }
         .banner-historico button:hover { background: rgba(245,158,11,0.5); }
         
+        /* 🔥 Texto completo en el modal - sin truncar */
+        .modal-texto-completo {
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            line-height: 1.5;
+        }
+        
         @media (max-width: 1280px) { .main-wrapper { padding: 0 12px; } }
         @media (max-width: 768px) { .header-container { padding: 12px 16px; } .chart-container { height: 200px; } body { padding: 4px; } .main-wrapper { padding: 0 8px; } }
     </style>
@@ -182,7 +201,7 @@
         <div class="text-center mb-4">
             <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
             <div class="flex flex-wrap items-center justify-center gap-2">
-                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')">🏭 TODAS</button>
+                <button id="btnTodas" class="sucursal-btn active" onclick="cambiarSucursal('TODAS')"> TODAS</button>
                 <button id="btnMalagueno" class="sucursal-btn" onclick="cambiarSucursal('MALAGUENO')"> MALAGUEÑO</button>
                 <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')">🐺 BARKER</button>
                 <button id="btnPampita" class="sucursal-btn" onclick="cambiarSucursal('LA_PAMPITA')">🌸 LA PAMPITA</button>
@@ -206,16 +225,16 @@
                         <option value="ACTUAL">📍 Tiempo real (actual)</option>
                         <option value="2026-01">📅 Enero 2026</option>
                         <option value="2026-02">📅 Febrero 2026</option>
-                        <option value="2026-03">📅 Marzo 2026</option>
+                        <option value="2026-03"> Marzo 2026</option>
                         <option value="2026-04">📅 Abril 2026</option>
                         <option value="2026-05"> Mayo 2026</option>
                         <option value="2026-06">📅 Junio 2026</option>
                         <option value="2026-07">📅 Julio 2026</option>
                         <option value="2026-08">📅 Agosto 2026</option>
                         <option value="2026-09">📅 Septiembre 2026</option>
-                        <option value="2026-10">📅 Octubre 2026</option>
+                        <option value="2026-10"> Octubre 2026</option>
                         <option value="2026-11"> Noviembre 2026</option>
-                        <option value="2026-12">📅 Diciembre 2026</option>
+                        <option value="2026-12"> Diciembre 2026</option>
                     </select>
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🏢 PROPIEDAD</label>
@@ -227,7 +246,7 @@
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 EQUIPO (N° Interno)</label>
                     <select id="filterEquipo" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100" onchange="aplicarFiltros()">
-                        <option value="TODOS">🔎 Todos los equipos</option>
+                        <option value="TODOS"> Todos los equipos</option>
                     </select>
                     
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🔍 ESTADO</label>
@@ -263,7 +282,7 @@
                         <div class="chart-container"><canvas id="motivosChart"></canvas></div>
                     </div>
                     <div class="glass-card p-4 min-w-0">
-                        <h3 class="font-bold text-purple-400 text-xs mb-2">📈 CARGAS POR SUCURSAL</h3>
+                        <h3 class="font-bold text-purple-400 text-xs mb-2"> CARGAS POR SUCURSAL</h3>
                         <div class="chart-container"><canvas id="sucursalesChart"></canvas></div>
                     </div>
                 </div>
@@ -285,7 +304,7 @@
                                 </tr>
                             </thead>
                             <tbody id="equipmentTableBody">
-                                <tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando datos...</td></tr>
+                                <tr><td colspan="9" class="text-center text-cyan-300 p-4"> Cargando datos...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -295,30 +314,20 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE CON NAVEGACIÓN ENTRE EQUIPOS -->
 <div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-slate-900 rounded-2xl shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[92vh] overflow-y-auto">
-        <!-- HEADER DEL MODAL CON NAVEGACIÓN DE EQUIPOS -->
         <div class="sticky top-0 bg-slate-900/95 backdrop-blur border-b border-cyan-500/30 px-6 py-3 flex items-center justify-between z-10">
             <div class="flex items-center gap-2 min-w-0 flex-1">
-                <button onclick="navegarEquipo(-1)" id="btnPrevEquipo" class="bg-slate-700 hover:bg-cyan-600 text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold transition-all flex-shrink-0" title="Equipo anterior">
-                    ◀
-                </button>
+                <button onclick="navegarEquipo(-1)" id="btnPrevEquipo" class="bg-slate-700 hover:bg-cyan-600 text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold transition-all flex-shrink-0" title="Equipo anterior">◀</button>
                 <div class="min-w-0 flex-1 text-center">
                     <h2 id="modalTitle" class="text-lg font-black text-cyan-400 truncate">📋 Detalle</h2>
                     <div id="modalEquipoCounter" class="text-[10px] text-slate-400">-</div>
                 </div>
-                <button onclick="navegarEquipo(1)" id="btnNextEquipo" class="bg-cyan-600 hover:bg-cyan-500 text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold transition-all flex-shrink-0" title="Siguiente equipo">
-                    ▶
-                </button>
+                <button onclick="navegarEquipo(1)" id="btnNextEquipo" class="bg-cyan-600 hover:bg-cyan-500 text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold transition-all flex-shrink-0" title="Siguiente equipo">▶</button>
             </div>
             <button onclick="closeEquipmentModal()" class="text-2xl text-cyan-300 hover:text-white ml-3 flex-shrink-0">&times;</button>
         </div>
-        
-        <!-- CONTENIDO DEL MODAL -->
         <div id="modalContent" class="p-6"></div>
-        
-        <!-- FOOTER -->
         <div class="sticky bottom-0 bg-slate-900/95 backdrop-blur border-t border-cyan-500/30 px-6 py-3 flex justify-end">
             <button onclick="closeEquipmentModal()" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
         </div>
@@ -338,9 +347,7 @@ let knownAlertIds = new Set();
 let isFirstLoad = true;
 let historialActual = [];
 let indiceHistorial = 0;
-
-//  NUEVO: Navegación entre equipos
-let indiceEquipoModal = 0; // Índice del equipo actual en filteredData
+let indiceEquipoModal = 0;
 
 const NOMBRES_MESES = {
     '2026-01': 'Enero 2026', '2026-02': 'Febrero 2026', '2026-03': 'Marzo 2026',
@@ -377,13 +384,15 @@ function esIdEquipoValido(id) {
     return /^[A-Z]\d{2,}[A-Z]?$/.test(String(id).trim().toUpperCase());
 }
 
+// 🔥 PARSEO DE FECHA ULTRA ROBUSTO - maneja TODOS los formatos posibles
 function parseFechaHora(fechaStr, horaStr) {
     try {
-        if (!fechaStr || fechaStr === '-' || fechaStr.trim() === '') return 0;
+        if (!fechaStr || fechaStr === '-' || String(fechaStr).trim() === '') return 0;
         
         let fecha = String(fechaStr).trim();
         let hora = String(horaStr || '00:00').trim();
         
+        // 1. Separar fecha y hora si vienen juntas (ej: "22/06/2023 14:30:00")
         if (fecha.includes(' ')) {
             const partes = fecha.split(' ');
             fecha = partes[0];
@@ -392,6 +401,7 @@ function parseFechaHora(fechaStr, horaStr) {
             }
         }
         
+        // 2. Números seriales de Excel/Google Sheets (ej: 45042 o 45042.5)
         if (/^\d{4,5}(\.\d+)?$/.test(fecha)) {
             const serial = parseFloat(fecha);
             const excelEpoch = new Date(1899, 11, 30);
@@ -405,16 +415,34 @@ function parseFechaHora(fechaStr, horaStr) {
             return d.getTime();
         }
         
+        // 3. Formato ISO con T (ej: 2026-06-02T08:22:00.000Z)
+        if (fecha.includes('T')) {
+            const d = new Date(fecha);
+            if (!isNaN(d.getTime())) {
+                if (hora.includes(':')) {
+                    const hp = hora.split(':');
+                    d.setHours(parseInt(hp[0]) || 0);
+                    d.setMinutes(parseInt(hp[1]) || 0);
+                }
+                return d.getTime();
+            }
+        }
+        
         let day, month, year, h = 0, m = 0;
         
+        // 4. Formato dd/mm/yyyy (el más común en Argentina)
         if (fecha.includes('/')) {
             const partes = fecha.split('/');
             if (partes.length === 3) {
                 day = parseInt(partes[0]);
                 month = parseInt(partes[1]) - 1;
                 year = parseInt(partes[2]);
+                // Si el año tiene 2 dígitos, asumir 2000+
+                if (year < 100) year += 2000;
             }
-        } else if (fecha.includes('-')) {
+        }
+        // 5. Formato dd-mm-yyyy o yyyy-mm-dd
+        else if (fecha.includes('-')) {
             const partes = fecha.split('-');
             if (partes.length === 3) {
                 if (partes[0].length === 4) {
@@ -425,18 +453,24 @@ function parseFechaHora(fechaStr, horaStr) {
                     day = parseInt(partes[0]);
                     month = parseInt(partes[1]) - 1;
                     year = parseInt(partes[2]);
+                    if (year < 100) year += 2000;
                 }
             }
-        } else {
+        }
+        // 6. Último recurso: parseo nativo
+        else {
             const d = new Date(fecha);
             if (!isNaN(d.getTime())) return d.getTime();
             return 0;
         }
         
+        // Validar valores
         if (isNaN(day) || isNaN(month) || isNaN(year)) return 0;
         if (day < 1 || day > 31) return 0;
         if (month < 0 || month > 11) return 0;
+        if (year < 1990 || year > 2030) return 0;
         
+        // Parsear hora
         if (hora && hora.includes(':')) {
             const hp = hora.split(':');
             h = parseInt(hp[0]) || 0;
@@ -444,6 +478,8 @@ function parseFechaHora(fechaStr, horaStr) {
         }
         
         const d = new Date(year, month, day, h, m, 0);
+        
+        // Validar rango razonable (no más de 6 años de diferencia)
         const ahora = new Date();
         const diffMs = Math.abs(d.getTime() - ahora.getTime());
         const diffAnios = diffMs / (1000 * 60 * 60 * 24 * 365);
@@ -548,7 +584,7 @@ function parseCSV(text, sucursal) {
 async function loadData() {
     try {
         if (isFirstLoad) {
-            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr>';
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4"> Cargando...</td></tr>';
         }
         
         let allData = [];
@@ -577,7 +613,7 @@ async function loadData() {
     } catch (error) {
         console.error('Error:', error);
         if (isFirstLoad) {
-            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-red-400 p-4"> Error al cargar</td></tr>';
+            document.getElementById('equipmentTableBody').innerHTML = '<tr><td colspan="9" class="text-center text-red-400 p-4">❌ Error al cargar</td></tr>';
         }
     }
     isFirstLoad = false;
@@ -598,7 +634,7 @@ function actualizarFiltroEquipos() {
         return a.ID_Equipo.localeCompare(b.ID_Equipo);
     });
     
-    select.innerHTML = '<option value="TODOS"> Todos los equipos</option>';
+    select.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>';
     lista.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.ID_Equipo;
@@ -676,7 +712,7 @@ function updateAlertasUI() {
                 <span class="text-[9px] text-slate-400">${a.hora}</span>
             </div>
             <div class="text-[10px] text-cyan-200 truncate">${a.equipo}</div>
-            <div class="text-[10px] text-slate-400">👤 ${a.reportante}</div>
+            <div class="text-[10px] text-slate-400"> ${a.reportante}</div>
         </div>
     `).join('');
 }
@@ -804,7 +840,7 @@ function updateKPIs() {
         container.innerHTML = `
             <div class="glass-card p-4 ${esParado ? 'kpi-red' : 'kpi-green'}">
                 <div class="text-xs font-bold ${esParado ? 'text-red-400' : 'text-green-400'} mb-1">📊 ESTADO ACTUAL</div>
-                <div class="text-2xl font-black ${esParado ? 'text-red-300' : 'text-green-300'}">${esParado ? '️ PARADO' : '✅ OPERATIVO'}</div>
+                <div class="text-2xl font-black ${esParado ? 'text-red-300' : 'text-green-300'}">${esParado ? '⏸️ PARADO' : '✅ OPERATIVO'}</div>
                 <div class="kpi-subtitulo text-${esParado ? 'red' : 'green'}-200">Último registro: ${equipoSeleccionado.Fecha_Carga || '-'}</div>
             </div>
             <div class="glass-card p-4 kpi-amber">
@@ -820,9 +856,9 @@ function updateKPIs() {
                 <div class="kpi-subtitulo text-cyan-200">${equipoSeleccionado.Tipo_Equipo || 'Equipo'}</div>
             </div>
             <div class="glass-card p-4 kpi-purple">
-                <div class="text-xs font-bold text-purple-400 mb-1"> HISTORIAL</div>
+                <div class="text-xs font-bold text-purple-400 mb-1">📜 HISTORIAL</div>
                 <div class="kpi-valor text-2xl font-black text-purple-300">${historial.length}</div>
-                <div class="kpi-subtitulo text-purple-200">⏸️ ${paradasCount} paradas · ✅ ${operativosCount} oper.</div>
+                <div class="kpi-subtitulo text-purple-200">️ ${paradasCount} paradas · ✅ ${operativosCount} oper.</div>
             </div>
             <div class="glass-card p-4 kpi-blue">
                 <div class="text-xs font-bold text-blue-400 mb-1">🏷️ INFORMACIÓN</div>
@@ -971,7 +1007,7 @@ function updateCharts() {
                     legend: { display: false },
                     tooltip: { callbacks: {
                         title: (items) => { const h = historial.slice(-10)[items[0].dataIndex]; return `${h.Fecha_Carga} ${h.Hora_Carga || ''}`; },
-                        label: (ctx) => ctx.raw === 1 ? '✅ Operativo' : '️ Parado'
+                        label: (ctx) => ctx.raw === 1 ? '✅ Operativo' : '⏸️ Parado'
                     }}
                 },
                 scales: {
@@ -1102,10 +1138,11 @@ function renderTable() {
                     html += `<span class="crono-min">${t.minutos}m</span>`;
                     celdaTiempo = `<span class="cronometro text-xs" data-fecha-parada="${e.Fecha_Carga}" data-hora-parada="${e.Hora_Carga || '00:00'}">${html}</span>`;
                 } else {
-                    celdaTiempo = `<span class="text-xs text-amber-300 cursor-help" title="Fecha: ${e.Fecha_Carga} ${e.Hora_Carga || ''}">📅 ${e.Fecha_Carga || ''}</span>`;
+                    // Fallback: mostrar la fecha cruda con tooltip
+                    celdaTiempo = `<span class="text-xs text-amber-300 cursor-help" title="Fecha registrada: ${e.Fecha_Carga} ${e.Hora_Carga || ''}">📅 ${e.Fecha_Carga || ''}</span>`;
                 }
             } else {
-                celdaTiempo = `<span class="text-xs text-amber-300"> ${e.Fecha_Carga || ''}</span>`;
+                celdaTiempo = `<span class="text-xs text-amber-300">📅 ${e.Fecha_Carga || ''}</span>`;
             }
         }
         
@@ -1119,7 +1156,7 @@ function renderTable() {
             <td><span class="${badgeClass}">${badgeText}</span></td>
             <td>${celdaTiempo}</td>
             <td>${e.Lectura || '-'}</td>
-            <td class="max-w-xs truncate" title="${e.Motivo_Parada || ''}">${e.Motivo_Parada || '-'}</td>
+            <td class="col-motivo" title="${(e.Motivo_Parada || '').replace(/"/g, '&quot;')}">${e.Motivo_Parada || '-'}</td>
             <td>${e.Reportante || '-'}</td>
         `;
         tbody.appendChild(tr);
@@ -1128,10 +1165,7 @@ function renderTable() {
     actualizarCronometros();
 }
 
-// ==================== MODAL CON NAVEGACIÓN ENTRE EQUIPOS ====================
-
 function openEquipmentModal(equipo, indiceOpcional) {
-    // Encontrar el índice del equipo en filteredData
     if (indiceOpcional !== undefined && filteredData[indiceOpcional] === equipo) {
         indiceEquipoModal = indiceOpcional;
     } else {
@@ -1150,15 +1184,12 @@ function renderizarContenidoModal() {
     const equipo = filteredData[indiceEquipoModal];
     if (!equipo) return;
     
-    const modal = document.getElementById('equipmentModal');
     const content = document.getElementById('modalContent');
     const esParado = equipo.Estado === 'FUERA_DE_SERVICIO' || equipo.Estado === 'PARADO';
     
-    // Actualizar título y contador
     document.getElementById('modalTitle').innerText = `📋 ${equipo.ID_Equipo} - ${equipo.Equipo}`;
     document.getElementById('modalEquipoCounter').innerText = `Equipo ${indiceEquipoModal + 1} de ${filteredData.length}`;
     
-    // Estado de botones de navegación
     const btnPrev = document.getElementById('btnPrevEquipo');
     const btnNext = document.getElementById('btnNextEquipo');
     btnPrev.style.opacity = indiceEquipoModal === 0 ? '0.3' : '1';
@@ -1181,13 +1212,22 @@ function renderizarContenidoModal() {
                     <div class="text-[10px] text-slate-400 mt-2">Desde: ${equipo.Fecha_Carga} ${equipo.Hora_Carga || ''}</div>
                 </div>
             `;
+        } else {
+            // Fallback: mostrar fecha sin cronómetro
+            cronometroHTML = `
+                <div class="bg-amber-950/30 border border-amber-500/50 rounded-xl p-4 text-center">
+                    <div class="text-xs text-amber-400 mb-1"> FECHA REGISTRADA</div>
+                    <div class="text-lg font-bold text-amber-300">${equipo.Fecha_Carga || 'Sin fecha'} ${equipo.Hora_Carga || ''}</div>
+                    <div class="text-[10px] text-slate-400 mt-1">No se pudo calcular el tiempo transcurrido</div>
+                </div>
+            `;
         }
     }
     
     let bannerModal = '';
     if (currentMesFiltro !== 'ACTUAL') {
         bannerModal = `<div class="bg-amber-950/30 border border-amber-500/50 rounded-lg p-3 mb-3 text-center">
-            <div class="text-xs text-amber-300"> Estado del equipo al final de <strong>${NOMBRES_MESES[currentMesFiltro]}</strong></div>
+            <div class="text-xs text-amber-300">📅 Estado del equipo al final de <strong>${NOMBRES_MESES[currentMesFiltro]}</strong></div>
         </div>`;
     }
     
@@ -1204,7 +1244,7 @@ function renderizarContenidoModal() {
         sliderHTML = `
             <div class="mt-4 bg-slate-800/50 rounded-xl p-4 border border-cyan-500/30">
                 <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-bold text-cyan-400 text-xs"> HISTORIAL DE REGISTROS</h3>
+                    <h3 class="font-bold text-cyan-400 text-xs">📜 HISTORIAL DE REGISTROS</h3>
                     <span id="historialContador" class="text-[10px] font-bold text-cyan-300 bg-cyan-900/30 px-2 py-1 rounded-full">1 de ${totalRegistros}</span>
                 </div>
                 <div id="historialSlide">${renderizarSlideHistorial(regActual, 0)}</div>
@@ -1221,12 +1261,16 @@ function renderizarContenidoModal() {
         `;
     }
     
+    // 🔥 MOTIVO COMPLETO - sin truncar
+    const motivoCompleto = equipo.Motivo_Parada || '';
+    const observacionesCompletas = equipo.Observaciones || '';
+    
     content.innerHTML = `
         ${bannerModal}
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">🔢 ID</div><div class="text-xl font-bold text-cyan-300">${equipo.ID_Equipo}</div></div>
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">🚜 Equipo</div><div class="text-base font-bold text-white">${equipo.Equipo}</div></div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">️ Tipo</div><div class="text-sm font-bold text-white">${equipo.Tipo_Equipo || '-'}</div></div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">🏷️ Tipo</div><div class="text-sm font-bold text-white">${equipo.Tipo_Equipo || '-'}</div></div>
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400 mb-1">🏢 Propiedad</div><div class="text-sm font-bold text-white">${equipo.Propiedad || '-'}</div></div>
         </div>
         ${cronometroHTML}
@@ -1235,21 +1279,25 @@ function renderizarContenidoModal() {
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="font-bold ${esParado ? 'text-amber-300' : 'text-green-300'}">${equipo.Estado}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${equipo.Lectura || 'N/A'}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📅 Último registro</span><span class="font-bold text-cyan-300">${equipo.Fecha_Carga || '-'} ${equipo.Hora_Carga || ''}</span></div>
-            ${equipo.Motivo_Parada ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 mb-1">⚠️ Motivo</div><div class="text-sm text-slate-300">${equipo.Motivo_Parada}</div></div>` : ''}
-            ${equipo.Observaciones ? `<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 mb-1">📝 Observaciones</div><div class="text-sm text-slate-300">${equipo.Observaciones}</div></div>` : ''}
+            ${motivoCompleto ? `<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30">
+                <div class="text-xs text-amber-400 mb-1">️ Motivo</div>
+                <div class="text-sm text-slate-300 modal-texto-completo">${motivoCompleto}</div>
+            </div>` : ''}
+            ${observacionesCompletas ? `<div class="p-3 bg-slate-800/50 rounded-lg">
+                <div class="text-xs text-slate-400 mb-1"> Observaciones</div>
+                <div class="text-sm text-slate-300 modal-texto-completo">${observacionesCompletas}</div>
+            </div>` : ''}
         </div>
         ${sliderHTML}
     `;
 }
 
-// 🔥 NUEVO: Navegación entre equipos
 function navegarEquipo(direccion) {
     const nuevoIndice = indiceEquipoModal + direccion;
     if (nuevoIndice < 0 || nuevoIndice >= filteredData.length) return;
     
     indiceEquipoModal = nuevoIndice;
     
-    // Animación de transición
     const content = document.getElementById('modalContent');
     content.style.opacity = '0';
     content.style.transform = direccion > 0 ? 'translateX(30px)' : 'translateX(-30px)';
@@ -1262,10 +1310,6 @@ function navegarEquipo(direccion) {
             content.style.transform = 'translateX(0)';
         }, 50);
     }, 150);
-    
-    // Scroll al inicio del modal
-    const modal = document.getElementById('equipmentModal');
-    modal.scrollTop = 0;
 }
 
 function renderizarSlideHistorial(reg, indice) {
@@ -1298,17 +1342,22 @@ function renderizarSlideHistorial(reg, indice) {
         }
     }
     
+    const fechaDisplay = reg.Fecha_Carga ? `${reg.Fecha_Carga} ${reg.Hora_Carga || ''}` : 'Sin fecha';
+    
     return `
         <div class="${badgeBg} border ${badgeBorder} rounded-lg p-3">
             <div class="flex justify-between items-center mb-2">
                 <span class="font-bold ${estadoColor} text-sm">${estadoIcon} ${estadoTexto}</span>
-                <span class="text-[11px] text-slate-400 font-mono bg-slate-900/50 px-2 py-1 rounded"> ${reg.Fecha_Carga || 'Sin fecha'} ${reg.Hora_Carga ? ' ' + reg.Hora_Carga : ''}</span>
+                <span class="text-[11px] text-slate-400 font-mono bg-slate-900/50 px-2 py-1 rounded"> ${fechaDisplay}</span>
             </div>
             <div class="grid grid-cols-2 gap-2 mb-2">
-                <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500"> HORÓMETRO</div><div class="text-lg font-black text-amber-300">${reg.Lectura || 'N/A'}</div>${diffHs}</div>
+                <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500">🔢 HORÓMETRO</div><div class="text-lg font-black text-amber-300">${reg.Lectura || 'N/A'}</div>${diffHs}</div>
                 <div class="bg-slate-900/50 rounded-lg p-2"><div class="text-[9px] text-slate-500">👤 REPORTANTE</div><div class="text-sm font-bold text-cyan-300">${reg.Reportante || 'N/A'}</div>${diffTiempo}</div>
             </div>
-            ${reg.Motivo_Parada ? `<div class="bg-slate-900/50 rounded-lg p-2 mt-2"><div class="text-[9px] text-amber-400 mb-1">⚠️ MOTIVO</div><div class="text-xs text-slate-300 leading-relaxed">${reg.Motivo_Parada}</div></div>` : ''}
+            ${reg.Motivo_Parada ? `<div class="bg-slate-900/50 rounded-lg p-2 mt-2">
+                <div class="text-[9px] text-amber-400 mb-1">⚠️ MOTIVO</div>
+                <div class="text-xs text-slate-300 leading-relaxed modal-texto-completo">${reg.Motivo_Parada}</div>
+            </div>` : ''}
         </div>
     `;
 }
@@ -1361,20 +1410,13 @@ function forceRefreshData() {
     loadData(); 
 }
 
-// Navegación con teclado
 document.addEventListener('keydown', (e) => {
     const modal = document.getElementById('equipmentModal');
     if (modal.classList.contains('hidden')) return;
     
     if (e.key === 'Escape') closeEquipmentModal();
-    if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        navegarEquipo(-1);
-    }
-    if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        navegarEquipo(1);
-    }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); navegarEquipo(-1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); navegarEquipo(1); }
 });
 
 window.onload = () => { loadData(); setInterval(loadData, 60000); actualizarCronometros(); };
