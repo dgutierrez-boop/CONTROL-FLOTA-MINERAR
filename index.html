@@ -83,12 +83,12 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
     <div class="glass-card p-5 mb-5">
         <div class="text-center mb-4">
-            <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
+            <h2 class="text-sm font-bold text-cyan-300 mb-3">🏭 SELECCIONAR SUCURSAL</h2>
             <div class="flex flex-wrap items-center justify-center gap-2">
                 <button id="btnTodas" class="sucursal-btn active"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🏭 TODAS</button>
-                <button id="btnMalagueno" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">📍 MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🐺 BARKER</button>
-                <button id="btnPampita" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🌸 LA PAMPITA</button>
+                <button id="btnMalagueno" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> BARKER</button>
+                <button id="btnPampita" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> LA PAMPITA</button>
             </div>
         </div>
 
@@ -132,26 +132,34 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
                         <div id="alertasHoy" class="max-h-40 overflow-y-auto text-[10px] custom-scrollbar"><p class="text-cyan-200 text-center">Sin alertas</p></div>
                     </div>
 
-                    <!-- LISTA DE EQUIPOS LATERAL (MODIFICADA) -->
+                    <!-- LISTA DE EQUIPOS LATERAL (MODIFICADA: SIN FILTROS, DOS BLOQUES) -->
                     <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30 mt-4">
                         <div class="text-[10px] font-bold text-cyan-400 mb-2 flex justify-between items-center">
                             🚜 FLOTA ACTUAL
                             <span class="text-[9px] bg-cyan-900 px-2 py-0.5 rounded-full" id="totalFlotaCount">0</span>
                         </div>
                         
-                        <div class="flex gap-1 mb-2 bg-slate-800 p-1 rounded-md">
-                            <button onclick="filtrarListaEquipos('operativos')" id="btnListaOp" 
-                                class="flex-1 text-[10px] py-1 rounded transition-all bg-cyan-600 text-white font-bold">
-                                ✅ Op. (<span id="countOp">0</span>)
-                            </button>
-                            <button onclick="filtrarListaEquipos('parados')" id="btnListaPa" 
-                                class="flex-1 text-[10px] py-1 rounded transition-all text-slate-400 hover:text-white">
-                                ⚠️ Pa. (<span id="countPa">0</span>)
-                            </button>
+                        <!-- Bloque Operativos -->
+                        <div class="mb-3">
+                            <div class="text-[9px] font-bold text-green-400 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                ✅ Operativos (<span id="countOp">0</span>)
+                            </div>
+                            <div id="listaOpsContainer" class="space-y-1 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
+                                <!-- Se llena con JS -->
+                            </div>
                         </div>
 
-                        <div id="listaEquiposContainer" class="max-h-[300px] overflow-y-auto space-y-1 pr-1 custom-scrollbar">
-                            <p class="text-[10px] text-slate-500 text-center py-4">Cargando flota...</p>
+                        <!-- Separador -->
+                        <div class="h-px bg-slate-700 my-2"></div>
+
+                        <!-- Bloque Parados -->
+                        <div>
+                            <div class="text-[9px] font-bold text-amber-400 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                ⚠️ Parados (<span id="countPa">0</span>)
+                            </div>
+                            <div id="listaPasContainer" class="space-y-1 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
+                                <!-- Se llena con JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -163,31 +171,20 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
                     <div class="glass-card p-4 min-w-0"><h3 class="font-bold text-red-400 text-xs mb-2">🚨 TOP 5 EQUIPOS MÁS PARADOS</h3><div class="chart-container"><canvas id="topParadosChart"></canvas></div></div>
                 </div>
                 
-                <!-- PANEL TRAZABILIDAD INTERACTIVA -->
+                <!-- PANEL TRAZABILIDAD INTERACTIVA (ALARGADO) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
                             📈 TRAZABILIDAD DE RENDIMIENTO POR EQUIPO
                         </h3>
                         <div class="text-[10px] text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
-                            Filtrá por tipo o estado
+                            Líneas punteadas = Detenciones > 30 días
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-4 h-[400px]">
-                        <div class="bg-slate-800/50 rounded-xl p-3 border border-slate-700 overflow-y-auto custom-scrollbar">
-                            <div class="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Filtrar por Tipo</div>
-                            <div id="filterTypesContainer" class="space-y-1 mb-4"></div>
-                            
-                            <div class="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Estado</div>
-                            <div class="flex gap-2">
-                                <button onclick="filtrarTrazabilidad('TODOS')" id="btnTrzTodos" class="flex-1 text-[10px] py-1 rounded bg-cyan-600 text-white font-bold transition-all shadow-lg shadow-cyan-500/20">Todos</button>
-                                <button onclick="filtrarTrazabilidad('PARADO')" id="btnTrzParado" class="flex-1 text-[10px] py-1 rounded bg-slate-700 text-slate-400 hover:bg-amber-600 hover:text-white transition-all">Parados</button>
-                            </div>
-                        </div>
-                        <div class="relative w-full h-full">
-                            <canvas id="trazabilidadLineChart"></canvas>
-                        </div>
+                    <!-- Gráfico más alto (500px) -->
+                    <div class="relative w-full h-[500px]">
+                        <canvas id="trazabilidadLineChart"></canvas>
                     </div>
                 </div>
 
@@ -242,11 +239,6 @@ const URLS = {
 
 const MESES = {'2026-01':'Enero','2026-02':'Febrero','2026-03':'Marzo','2026-04':'Abril','2026-05':'Mayo','2026-06':'Junio','2026-07':'Julio','2026-08':'Agosto','2026-09':'Septiembre','2026-10':'Octubre','2026-11':'Noviembre','2026-12':'Diciembre'};
 const charts = {};
-let modoListaEquipos = 'operativos'; 
-
-let chartTrazabilidad = null;
-let filtroTipoActual = 'TODOS';
-let filtroEstadoActual = 'TODOS';
 
 const EMOJIS_EQUIPO = {
     'Camión': '🚛', 'Cargador': '🚜', 'Topador': '🚜', 
@@ -399,45 +391,125 @@ function actualizarGraficos() {
 }
 
 // ==========================================
-// LÓGICA DEL GRÁFICO DE TRAZABILIDAD
+// LÓGICA DEL GRÁFICO DE TRAZABILIDAD (MEJORADO)
 // ==========================================
-function inicializarGraficoTrazabilidad() { renderizarFiltrosTipos(); actualizarGraficoTrazabilidad(); }
-function renderizarFiltrosTipos() {
-    const container = document.getElementById('filterTypesContainer'); if (!container) return;
-    const tiposUnicos = [...new Set(state.rawData.map(e => e.Tipo_Equipo || 'Otros'))].sort();
-    let html = `<button onclick="setFiltroTipo('TODOS')" class="w-full text-left text-[11px] px-2 py-1.5 rounded transition-colors flex items-center gap-2 ${filtroTipoActual === 'TODOS' ? 'bg-cyan-900/50 text-cyan-300 font-bold border border-cyan-700' : 'text-slate-400 hover:bg-slate-700 border border-transparent'}"><span>🌐</span> Todos los tipos</button>`;
-    tiposUnicos.forEach(tipo => { const emoji = EMOJIS_EQUIPO[tipo] || '⚙️'; html += `<button onclick="setFiltroTipo('${tipo}')" class="w-full text-left text-[11px] px-2 py-1.5 rounded transition-colors flex items-center gap-2 ${filtroTipoActual === tipo ? 'bg-cyan-900/50 text-cyan-300 font-bold border border-cyan-700' : 'text-slate-400 hover:bg-slate-700 border border-transparent'}"><span>${emoji}</span> ${tipo}</button>`; });
-    container.innerHTML = html;
-}
-function setFiltroTipo(tipo) { filtroTipoActual = tipo; renderizarFiltrosTipos(); actualizarGraficoTrazabilidad(); }
-function filtrarTrazabilidad(estado) {
-    filtroEstadoActual = estado;
-    const btnTodos = document.getElementById('btnTrzTodos'); const btnParado = document.getElementById('btnTrzParado');
-    if (estado === 'TODOS') { btnTodos.className = "flex-1 text-[10px] py-1 rounded bg-cyan-600 text-white font-bold transition-all shadow-lg shadow-cyan-500/20"; btnParado.className = "flex-1 text-[10px] py-1 rounded bg-slate-700 text-slate-400 hover:bg-amber-600 hover:text-white transition-all"; }
-    else { btnTodos.className = "flex-1 text-[10px] py-1 rounded bg-slate-700 text-slate-400 hover:bg-cyan-600 hover:text-white transition-all"; btnParado.className = "flex-1 text-[10px] py-1 rounded bg-amber-600 text-white font-bold transition-all shadow-lg shadow-amber-500/20"; }
-    actualizarGraficoTrazabilidad();
-}
+let chartTrazabilidad = null;
+
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadLineChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
+
+    // Usamos state.rawData para ver TODO el historial temporal, no solo lo filtrado actual
     let datosBase = state.rawData;
-    if (filtroEstadoActual !== 'TODOS') { const idsFiltrados = new Set(state.rawData.filter(e => e.Estado === filtroEstadoActual).map(e => e.ID_Equipo)); datosBase = datosBase.filter(e => idsFiltrados.has(e.ID_Equipo)); }
-    if (filtroTipoActual !== 'TODOS') { datosBase = datosBase.filter(e => e.Tipo_Equipo === filtroTipoActual); }
+    
+    // Agrupar por equipo
     const equiposMap = {};
-    datosBase.forEach(reg => { const id = reg.ID_Equipo; const fechaMs = parseFechaHora(reg.Fecha_Carga, reg.Hora_Carga); if (!fechaMs) return; if (!equiposMap[id]) equiposMap[id] = { id: id, tipo: reg.Tipo_Equipo || 'Otros', dataPoints: [] }; equiposMap[id].dataPoints.push({ x: fechaMs, y: parseFloat(reg.Lectura) || 0, estado: reg.Estado }); });
-    const datasets = Object.values(equiposMap).map((eq) => { eq.dataPoints.sort((a, b) => a.x - b.x); const ultimoEstado = eq.dataPoints[eq.dataPoints.length - 1].estado; const isParado = ultimoEstado !== 'OPERATIVO'; const colorBase = isParado ? '#ef4444' : '#06b6d4'; return { label: `${EMOJIS_EQUIPO[eq.tipo] || '⚙️'} ${eq.id}`, data: eq.dataPoints.map(p => ({ x: p.x, y: p.y })), borderColor: colorBase, backgroundColor: colorBase + '20', borderWidth: isParado ? 3 : 2, pointRadius: isParado ? 4 : 2, pointHoverRadius: 6, tension: 0.3, fill: false, spanGaps: true }; });
-    chartTrazabilidad = new Chart(ctx, { type: 'line', data: { datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8, font: { size: 10 } } }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', titleColor: '#06b6d4', bodyColor: '#e2e8f0', borderColor: '#334155', borderWidth: 1, callbacks: { title: (context) => { const date = new Date(context[0].parsed.x); return `📅 ${date.toLocaleDateString('es-AR')}`; }, label: (context) => { const val = context.parsed.y; return `${context.dataset.label}: ${val.toLocaleString('es-AR')} hs`; } } } }, scales: { x: { type: 'time', time: { unit: 'month', displayFormats: { month: 'MMM yy' } }, grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', maxRotation: 45 } }, y: { beginAtZero: false, grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', callback: (v) => (v / 1000).toFixed(1) + 'k' } } } } });
+    datosBase.forEach(reg => { 
+        const id = reg.ID_Equipo; 
+        const fechaMs = parseFechaHora(reg.Fecha_Carga, reg.Hora_Carga); 
+        if (!fechaMs) return; 
+        if (!equiposMap[id]) equiposMap[id] = { id: id, tipo: reg.Tipo_Equipo || 'Otros', dataPoints: [] }; 
+        equiposMap[id].dataPoints.push({ x: fechaMs, y: parseFloat(reg.Lectura) || 0, estado: reg.Estado }); 
+    });
+
+    const datasets = Object.values(equiposMap).map((eq) => {
+        // Ordenar cronológicamente
+        eq.dataPoints.sort((a, b) => a.x - b.x);
+        
+        // Determinar color según el ESTADO ACTUAL del equipo
+        const ultimoEstado = eq.dataPoints[eq.dataPoints.length - 1].estado;
+        const isParado = ultimoEstado !== 'OPERATIVO';
+        
+        // Color Rojo para parados, Cyan para operativos
+        const colorBase = isParado ? '#ef4444' : '#06b6d4'; 
+        
+        // Lógica para detectar detenciones largas (>30 días entre cargas)
+        // Si hay un salto grande de tiempo, marcamos ese segmento como punteado
+        const segmentBorderDash = [];
+        for(let i=0; i<eq.dataPoints.length-1; i++) {
+            const diffDays = (eq.dataPoints[i+1].x - eq.dataPoints[i].x) / (1000 * 60 * 60 * 24);
+            // Si pasan más de 30 días entre una carga y otra, ese tramo es punteado
+            segmentBorderDash.push(diffDays > 30 ? [5, 5] : []); 
+        }
+
+        return {
+            label: `${EMOJIS_EQUIPO[eq.tipo] || '⚙️'} ${eq.id}`,
+            data: eq.dataPoints.map(p => ({ x: p.x, y: p.y })),
+            borderColor: colorBase,
+            backgroundColor: colorBase + '20',
+            borderWidth: isParado ? 3 : 2,
+            pointRadius: isParado ? 4 : 2,
+            pointHoverRadius: 6,
+            tension: 0.3,
+            fill: false,
+            spanGaps: true,
+            // Aplicar bordes punteados dinámicamente si hay saltos grandes
+            borderDash: segmentBorderDash.length > 0 ? segmentBorderDash : [], 
+            borderDashOffset: 0
+        };
+    });
+
+    chartTrazabilidad = new Chart(ctx, {
+        type: 'line',
+        data: { datasets: datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8, font: { size: 10 } }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#06b6d4',
+                    bodyColor: '#e2e8f0',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    callbacks: {
+                        title: (context) => {
+                            const date = new Date(context[0].parsed.x);
+                            return `📅 ${date.toLocaleDateString('es-AR')}`;
+                        },
+                        label: (context) => {
+                            const val = context.parsed.y;
+                            return `${context.dataset.label}: ${val.toLocaleString('es-AR')} hs`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'month',
+                        displayFormats: { month: 'MMM yy' }
+                    },
+                    grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    ticks: { color: '#94a3b8', maxRotation: 45 }
+                },
+                y: {
+                    beginAtZero: false,
+                    grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    ticks: { 
+                        color: '#94a3b8',
+                        callback: (v) => (v / 1000).toFixed(1) + 'k'
+                    }
+                }
+            }
+        }
+    });
 }
 
 // ============================================
-// LISTA LATERAL MODIFICADA
+// LISTA LATERAL MODIFICADA (DOS BLOQUES FIJOS)
 // ============================================
 function actualizarListaLateral() {
-    const container = document.getElementById('listaEquiposContainer');
-    if (!container) return;
+    const containerOps = document.getElementById('listaOpsContainer');
+    const containerPas = document.getElementById('listaPasContainer');
+    if (!containerOps || !containerPas) return;
 
-    // Obtenemos TODOS los equipos filtrados por sucursal/propiedad/etc, pero NO por estado
-    // Para luego mostrarlos según la pestaña activa
     const todosLosEquipos = state.filteredData; 
     
     const ops = todosLosEquipos.filter(e => e.Estado === 'OPERATIVO');
@@ -447,54 +519,47 @@ function actualizarListaLateral() {
     document.getElementById('countPa').innerText = pas.length;
     document.getElementById('totalFlotaCount').innerText = todosLosEquipos.length;
 
-    const btnOp = document.getElementById('btnListaOp');
-    const btnPa = document.getElementById('btnListaPa');
-    
-    if (modoListaEquipos === 'operativos') {
-        btnOp.className = "flex-1 text-[10px] py-1 rounded transition-all bg-cyan-600 text-white font-bold";
-        btnPa.className = "flex-1 text-[10px] py-1 rounded transition-all text-slate-400 hover:text-white";
+    // Renderizar Operativos
+    if (ops.length === 0) {
+        containerOps.innerHTML = `<p class="text-[10px] text-slate-500 text-center py-2">Sin operativos</p>`;
     } else {
-        btnOp.className = "flex-1 text-[10px] py-1 rounded transition-all text-slate-400 hover:text-white";
-        btnPa.className = "flex-1 text-[10px] py-1 rounded transition-all bg-amber-600 text-white font-bold";
-    }
-
-    // Seleccionamos la lista a mostrar según la pestaña
-    const lista = modoListaEquipos === 'operativos' ? ops : pas;
-    
-    if (lista.length === 0) {
-        container.innerHTML = `<p class="text-[10px] text-slate-500 text-center py-4">No hay equipos ${modoListaEquipos}</p>`;
-        return;
-    }
-
-    // Renderizamos la lista completa uno debajo del otro
-    container.innerHTML = lista.map(e => `
-        <div class="bg-slate-800/50 hover:bg-slate-700/80 p-2 rounded border-l-2 cursor-pointer transition-colors group"
-             style="border-left-color: ${e.Estado === 'OPERATIVO' ? '#06b6d4' : '#f59e0b'}"
-             onclick="abrirModalPorId('${e.ID_Equipo}')">
-            <div class="flex justify-between items-start">
-                <div>
-                    <div class="text-[11px] font-bold text-cyan-300 group-hover:text-white transition-colors">
-                        🔧 ${e.ID_Equipo}
+        containerOps.innerHTML = ops.map(e => `
+            <div class="bg-slate-800/50 hover:bg-slate-700/80 p-2 rounded border-l-2 cursor-pointer transition-colors group"
+                 style="border-left-color: #06b6d4"
+                 onclick="abrirModalPorId('${e.ID_Equipo}')">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-[11px] font-bold text-cyan-300 group-hover:text-white transition-colors">🔧 ${e.ID_Equipo}</div>
+                        <div class="text-[10px] text-slate-400 truncate max-w-[140px]">${e.Equipo || 'Sin nombre'}</div>
                     </div>
-                    <div class="text-[10px] text-slate-400 truncate max-w-[140px]">
-                        ${e.Equipo || 'Sin nombre'}
-                    </div>
-                </div>
-                <div class="text-[9px] font-mono ${e.Estado === 'OPERATIVO' ? 'text-green-400' : 'text-amber-400'}">
-                    ${e.Lectura || '-'}h
+                    <div class="text-[9px] font-mono text-green-400">${e.Lectura || '-'}h</div>
                 </div>
             </div>
-            ${e.Estado !== 'OPERATIVO' && e.Fecha_Carga ? 
-                `<div class="text-[9px] text-red-300 mt-1 flex items-center gap-1">
-                    ⏱️ ${calcTiempo(e.Fecha_Carga, e.Hora_Carga)?.dias || 0}d parado
-                 </div>` : ''}
-        </div>
-    `).join('');
-}
+        `).join('');
+    }
 
-function filtrarListaEquipos(modo) {
-    modoListaEquipos = modo;
-    actualizarListaLateral();
+    // Renderizar Parados
+    if (pas.length === 0) {
+        containerPas.innerHTML = `<p class="text-[10px] text-slate-500 text-center py-2">Sin parados</p>`;
+    } else {
+        containerPas.innerHTML = pas.map(e => `
+            <div class="bg-slate-800/50 hover:bg-slate-700/80 p-2 rounded border-l-2 cursor-pointer transition-colors group"
+                 style="border-left-color: #f59e0b"
+                 onclick="abrirModalPorId('${e.ID_Equipo}')">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-[11px] font-bold text-amber-300 group-hover:text-white transition-colors">🔧 ${e.ID_Equipo}</div>
+                        <div class="text-[10px] text-slate-400 truncate max-w-[140px]">${e.Equipo || 'Sin nombre'}</div>
+                    </div>
+                    <div class="text-[9px] font-mono text-amber-400">${e.Lectura || '-'}h</div>
+                </div>
+                ${e.Fecha_Carga ? 
+                    `<div class="text-[9px] text-red-300 mt-1 flex items-center gap-1">
+                        ⏱️ ${calcTiempo(e.Fecha_Carga, e.Hora_Carga)?.dias || 0}d parado
+                     </div>` : ''}
+            </div>
+        `).join('');
+    }
 }
 
 function abrirModalPorId(idEquipo) {
@@ -566,7 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bc1) bc1.addEventListener('click', cerrarModal); if (bc2) bc2.addEventListener('click', cerrarModal);
     if (bv) bv.addEventListener('click', () => { const fm = document.getElementById('filterMes'); if (fm) fm.value = 'ACTUAL'; state.mes = 'ACTUAL'; aplicarFiltros(); });
     document.addEventListener('keydown', (e) => { const m = document.getElementById('equipmentModal'); if (m && !m.classList.contains('hidden')) { if (e.key === 'Escape') cerrarModal(); if (e.key === 'ArrowLeft') navModal(-1); if (e.key === 'ArrowRight') navModal(1); } });
-    loadData(); setInterval(loadData, 60000); inicializarGraficoTrazabilidad();
+    loadData(); setInterval(loadData, 60000);
 });
 </script>
 </body>
