@@ -60,6 +60,24 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.3); border-radius: 4px; }
+
+/* Estilos para botones flotantes de selección */
+.floating-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+    background: rgba(30, 41, 59, 0.8); color: #94a3b8;
+}
+.floating-tag:hover { background: rgba(51, 65, 85, 0.9); color: #e2e8f0; }
+.floating-tag.selected {
+    background: rgba(6, 182, 212, 0.2); color: #22d3ee; border-color: #06b6d4;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+}
+.floating-tag .remove-btn {
+    width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center; font-size: 10px;
+}
+.floating-tag .remove-btn:hover { background: #ef4444; color: white; }
 </style>
 </head>
 <body>
@@ -83,12 +101,12 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
     <div class="glass-card p-5 mb-5">
         <div class="text-center mb-4">
-            <h2 class="text-sm font-bold text-cyan-300 mb-3">🏭 SELECCIONAR SUCURSAL</h2>
+            <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
             <div class="flex flex-wrap items-center justify-center gap-2">
                 <button id="btnTodas" class="sucursal-btn active"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🏭 TODAS</button>
-                <button id="btnMalagueno" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> BARKER</button>
-                <button id="btnPampita" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> LA PAMPITA</button>
+                <button id="btnMalagueno" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">📍 MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🐺 BARKER</button>
+                <button id="btnPampita" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🌸 LA PAMPITA</button>
             </div>
         </div>
 
@@ -132,33 +150,32 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
                         <div id="alertasHoy" class="max-h-40 overflow-y-auto text-[10px] custom-scrollbar"><p class="text-cyan-200 text-center">Sin alertas</p></div>
                     </div>
 
-                    <!-- LISTA DE EQUIPOS LATERAL (MODIFICADA: SIN FILTROS, DOS BLOQUES) -->
+                    <!-- LISTA DE EQUIPOS LATERAL (MODIFICADA SEGÚN CAPTURA) -->
                     <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30 mt-4">
-                        <div class="text-[10px] font-bold text-cyan-400 mb-2 flex justify-between items-center">
+                        <div class="text-[10px] font-bold text-cyan-400 mb-3 flex justify-between items-center border-b border-cyan-800 pb-2">
                             🚜 FLOTA ACTUAL
                             <span class="text-[9px] bg-cyan-900 px-2 py-0.5 rounded-full" id="totalFlotaCount">0</span>
                         </div>
                         
-                        <!-- Bloque Operativos -->
-                        <div class="mb-3">
-                            <div class="text-[9px] font-bold text-green-400 mb-1 uppercase tracking-wider flex items-center gap-1">
-                                ✅ Operativos (<span id="countOp">0</span>)
+                        <div class="grid grid-cols-2 gap-2">
+                            <!-- Columna Izquierda: Operativos -->
+                            <div>
+                                <div class="text-[9px] font-bold text-green-400 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                    ✅ Operativos (<span id="countOp">0</span>)
+                                </div>
+                                <div id="listaOpsContainer" class="space-y-1 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+                                    <!-- Se llena con JS -->
+                                </div>
                             </div>
-                            <div id="listaOpsContainer" class="space-y-1 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
-                                <!-- Se llena con JS -->
-                            </div>
-                        </div>
 
-                        <!-- Separador -->
-                        <div class="h-px bg-slate-700 my-2"></div>
-
-                        <!-- Bloque Parados -->
-                        <div>
-                            <div class="text-[9px] font-bold text-amber-400 mb-1 uppercase tracking-wider flex items-center gap-1">
-                                ⚠️ Parados (<span id="countPa">0</span>)
-                            </div>
-                            <div id="listaPasContainer" class="space-y-1 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
-                                <!-- Se llena con JS -->
+                            <!-- Columna Derecha: Parados -->
+                            <div>
+                                <div class="text-[9px] font-bold text-amber-400 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                    ⚠️ Parados (<span id="countPa">0</span>)
+                                </div>
+                                <div id="listaPasContainer" class="space-y-1 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+                                    <!-- Se llena con JS -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -171,15 +188,20 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
                     <div class="glass-card p-4 min-w-0"><h3 class="font-bold text-red-400 text-xs mb-2">🚨 TOP 5 EQUIPOS MÁS PARADOS</h3><div class="chart-container"><canvas id="topParadosChart"></canvas></div></div>
                 </div>
                 
-                <!-- PANEL TRAZABILIDAD INTERACTIVA (ALARGADO) -->
+                <!-- PANEL TRAZABILIDAD INTERACTIVA (BITÁCORA DEL GERENTE) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
                             📈 TRAZABILIDAD DE RENDIMIENTO POR EQUIPO
                         </h3>
                         <div class="text-[10px] text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
-                            Líneas punteadas = Detenciones > 30 días
+                            Clic en lista lateral para resaltar · Zoom automático al "Hoy"
                         </div>
+                    </div>
+
+                    <!-- Contenedor de Botones Flotantes (Selección Múltiple) -->
+                    <div id="floatingTagsContainer" class="flex flex-wrap gap-2 mb-3 min-h-[30px]">
+                        <!-- Aquí aparecen los equipos seleccionados -->
                     </div>
 
                     <!-- Gráfico más alto (500px) -->
@@ -205,30 +227,13 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
     </div>
 </div>
 
-<div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-slate-900 rounded-2xl shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[92vh] flex flex-col overflow-hidden">
-        <div class="flex-shrink-0 border-b border-cyan-500/30 px-6 py-3 flex items-center justify-between bg-slate-900/95">
-            <button id="btnPrevEquipo" class="bg-slate-700 hover:bg-cyan-600 text-white w-9 h-9 rounded-lg flex-shrink-0">◀</button>
-            <div class="min-w-0 flex-1 text-center mx-2">
-                <h2 id="modalTitle" class="text-lg font-black text-cyan-400 truncate">📋 Detalle</h2>
-                <div id="modalEquipoCounter" class="text-[10px] text-slate-400">-</div>
-            </div>
-            <button id="btnNextEquipo" class="bg-cyan-600 hover:bg-cyan-500 text-white w-9 h-9 rounded-lg flex-shrink-0">▶</button>
-            <button id="btnCerrarModal" class="text-2xl text-cyan-300 hover:text-white ml-3 flex-shrink-0">&times;</button>
-        </div>
-        <div id="modalContent" class="flex-1 overflow-y-auto p-6"></div>
-        <div class="flex-shrink-0 border-t border-cyan-500/30 px-6 py-3 flex justify-end bg-slate-900/95">
-            <button id="btnCerrarModalFooter" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
-        </div>
-    </div>
-</div>
-
 <script>
 const state = {
     sucursal: 'TODAS', equipo: 'TODOS', mes: 'ACTUAL', estado: 'TODOS', propiedad: 'TODAS',
     rawData: [], equipmentData: [], filteredData: [], alertas: [],
     knownAlertIds: new Set(), isFirstLoad: true,
-    historialActual: [], indiceHistorial: 0, indiceModal: 0
+    historialActual: [], indiceHistorial: 0, indiceModal: 0,
+    selectedEquipos: [] // Array para guardar IDs de equipos seleccionados en el gráfico
 };
 
 const URLS = {
@@ -370,7 +375,6 @@ function actualizarTabla() {
         }
         return `<tr class="${esParado ? 'pulse-alert' : ''}" data-idx="${i}"><td class="font-bold text-cyan-300">${e.ID_Equipo||'-'}</td><td class="font-semibold">${e.Equipo||'-'}</td><td class="text-slate-400">${e.Tipo_Equipo||'-'}</td><td>${e.sucursal||'-'}</td><td><span class="${badge}">${txt}</span></td><td>${celdaTiempo}</td><td>${e.Lectura||'-'}</td><td class="col-motivo" title="${(e.Motivo_Parada||'').replace(/"/g,'&quot;')}">${e.Motivo_Parada||'-'}</td><td>${e.Reportante||'-'}</td></tr>`;
     }).join('');
-    tb.querySelectorAll('tr[data-idx]').forEach(tr => { tr.addEventListener('click', () => abrirModal(parseInt(tr.dataset.idx))); });
     actualizarCronometros();
 }
 
@@ -391,15 +395,49 @@ function actualizarGraficos() {
 }
 
 // ==========================================
-// LÓGICA DEL GRÁFICO DE TRAZABILIDAD (MEJORADO)
+// LÓGICA DEL GRÁFICO DE TRAZABILIDAD (BITÁCORA FUTURISTA)
 // ==========================================
 let chartTrazabilidad = null;
+
+function toggleSeleccionEquipo(idEquipo) {
+    const idx = state.selectedEquipos.indexOf(idEquipo);
+    if (idx > -1) {
+        state.selectedEquipos.splice(idx, 1);
+    } else {
+        state.selectedEquipos.push(idEquipo);
+    }
+    renderizarTagsFlotantes();
+    actualizarGraficoTrazabilidad();
+    actualizarListaLateral(); // Para actualizar el resaltado visual en la lista
+}
+
+function renderizarTagsFlotantes() {
+    const container = document.getElementById('floatingTagsContainer');
+    if (!container) return;
+    
+    if (state.selectedEquipos.length === 0) {
+        container.innerHTML = '<span class="text-[10px] text-slate-500 italic">Seleccioná equipos desde la lista lateral para comparar trazabilidad...</span>';
+        return;
+    }
+
+    container.innerHTML = state.selectedEquipos.map(id => {
+        const eq = state.equipmentData.find(e => e.ID_Equipo === id);
+        const tipo = eq ? eq.Tipo_Equipo : 'Otros';
+        const emoji = EMOJIS_EQUIPO[tipo] || '⚙️';
+        return `
+            <div class="floating-tag selected" onclick="toggleSeleccionEquipo('${id}')">
+                ${emoji} ${id}
+                <span class="remove-btn">×</span>
+            </div>
+        `;
+    }).join('');
+}
 
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadLineChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
 
-    // Usamos state.rawData para ver TODO el historial temporal, no solo lo filtrado actual
+    // Usamos state.rawData para ver TODO el historial temporal
     let datosBase = state.rawData;
     
     // Agrupar por equipo
@@ -413,41 +451,59 @@ function actualizarGraficoTrazabilidad() {
     });
 
     const datasets = Object.values(equiposMap).map((eq) => {
-        // Ordenar cronológicamente
         eq.dataPoints.sort((a, b) => a.x - b.x);
-        
-        // Determinar color según el ESTADO ACTUAL del equipo
         const ultimoEstado = eq.dataPoints[eq.dataPoints.length - 1].estado;
         const isParado = ultimoEstado !== 'OPERATIVO';
-        
-        // Color Rojo para parados, Cyan para operativos
         const colorBase = isParado ? '#ef4444' : '#06b6d4'; 
         
-        // Lógica para detectar detenciones largas (>30 días entre cargas)
-        // Si hay un salto grande de tiempo, marcamos ese segmento como punteado
+        // Lógica de detenciones largas (>30 días)
         const segmentBorderDash = [];
         for(let i=0; i<eq.dataPoints.length-1; i++) {
             const diffDays = (eq.dataPoints[i+1].x - eq.dataPoints[i].x) / (1000 * 60 * 60 * 24);
-            // Si pasan más de 30 días entre una carga y otra, ese tramo es punteado
             segmentBorderDash.push(diffDays > 30 ? [5, 5] : []); 
         }
 
+        // Determinar si este equipo está seleccionado
+        const isSelected = state.selectedEquipos.includes(eq.id);
+        
         return {
             label: `${EMOJIS_EQUIPO[eq.tipo] || '⚙️'} ${eq.id}`,
             data: eq.dataPoints.map(p => ({ x: p.x, y: p.y })),
             borderColor: colorBase,
             backgroundColor: colorBase + '20',
-            borderWidth: isParado ? 3 : 2,
-            pointRadius: isParado ? 4 : 2,
-            pointHoverRadius: 6,
+            borderWidth: isSelected ? 4 : (isParado ? 2 : 1),
+            pointRadius: isSelected ? 5 : 2,
+            pointHoverRadius: 7,
             tension: 0.3,
             fill: false,
             spanGaps: true,
-            // Aplicar bordes punteados dinámicamente si hay saltos grandes
-            borderDash: segmentBorderDash.length > 0 ? segmentBorderDash : [], 
-            borderDashOffset: 0
+            borderDash: segmentBorderDash.length > 0 ? segmentBorderDash : [],
+            // Si hay selección y este NO está seleccionado, lo hacemos transparente
+            hidden: state.selectedEquipos.length > 0 && !isSelected,
+            order: isSelected ? 0 : 1 // Los seleccionados van encima
         };
     });
+
+    // Configuración de Zoom Automático al "Hoy"
+    let minDate = new Date(); minDate.setMonth(minDate.getMonth() - 6); // Por defecto últimos 6 meses
+    let maxDate = new Date();
+    
+    // Si hay equipos seleccionados, ajustamos el zoom a sus datos
+    if (state.selectedEquipos.length > 0) {
+        let selMin = Infinity; let selMax = -Infinity;
+        state.selectedEquipos.forEach(id => {
+            if (equiposMap[id]) {
+                equiposMap[id].dataPoints.forEach(p => {
+                    if (p.x < selMin) selMin = p.x;
+                    if (p.x > selMax) selMax = p.x;
+                });
+            }
+        });
+        if (selMin !== Infinity) {
+            minDate = new Date(selMin); minDate.setDate(minDate.getDate() - 7); // Margen de 7 días
+            maxDate = new Date(selMax); maxDate.setDate(maxDate.getDate() + 7);
+        }
+    }
 
     chartTrazabilidad = new Chart(ctx, {
         type: 'line',
@@ -457,10 +513,7 @@ function actualizarGraficoTrazabilidad() {
             maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: {
-                    position: 'top',
-                    labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8, font: { size: 10 } }
-                },
+                legend: { display: false }, // Ocultamos leyenda tradicional para usar tags flotantes
                 tooltip: {
                     backgroundColor: 'rgba(15, 23, 42, 0.95)',
                     titleColor: '#06b6d4',
@@ -474,7 +527,8 @@ function actualizarGraficoTrazabilidad() {
                         },
                         label: (context) => {
                             const val = context.parsed.y;
-                            return `${context.dataset.label}: ${val.toLocaleString('es-AR')} hs`;
+                            const label = context.dataset.label;
+                            return `${label}: ${val.toLocaleString('es-AR')} hs`;
                         }
                     }
                 }
@@ -482,20 +536,16 @@ function actualizarGraficoTrazabilidad() {
             scales: {
                 x: {
                     type: 'time',
-                    time: {
-                        unit: 'month',
-                        displayFormats: { month: 'MMM yy' }
-                    },
+                    time: { unit: 'month', displayFormats: { month: 'MMM yy' } },
+                    min: minDate.getTime(),
+                    max: maxDate.getTime(),
                     grid: { color: 'rgba(148, 163, 184, 0.1)' },
                     ticks: { color: '#94a3b8', maxRotation: 45 }
                 },
                 y: {
                     beginAtZero: false,
                     grid: { color: 'rgba(148, 163, 184, 0.1)' },
-                    ticks: { 
-                        color: '#94a3b8',
-                        callback: (v) => (v / 1000).toFixed(1) + 'k'
-                    }
+                    ticks: { color: '#94a3b8', callback: (v) => (v / 1000).toFixed(1) + 'k' }
                 }
             }
         }
@@ -503,7 +553,7 @@ function actualizarGraficoTrazabilidad() {
 }
 
 // ============================================
-// LISTA LATERAL MODIFICADA (DOS BLOQUES FIJOS)
+// LISTA LATERAL MODIFICADA (DOS COLUMNAS LADO A LADO)
 // ============================================
 function actualizarListaLateral() {
     const containerOps = document.getElementById('listaOpsContainer');
@@ -511,7 +561,6 @@ function actualizarListaLateral() {
     if (!containerOps || !containerPas) return;
 
     const todosLosEquipos = state.filteredData; 
-    
     const ops = todosLosEquipos.filter(e => e.Estado === 'OPERATIVO');
     const pas = todosLosEquipos.filter(e => e.Estado !== 'OPERATIVO');
     
@@ -519,18 +568,18 @@ function actualizarListaLateral() {
     document.getElementById('countPa').innerText = pas.length;
     document.getElementById('totalFlotaCount').innerText = todosLosEquipos.length;
 
-    // Renderizar Operativos
+    // Renderizar Operativos (Columna Izquierda)
     if (ops.length === 0) {
         containerOps.innerHTML = `<p class="text-[10px] text-slate-500 text-center py-2">Sin operativos</p>`;
     } else {
         containerOps.innerHTML = ops.map(e => `
-            <div class="bg-slate-800/50 hover:bg-slate-700/80 p-2 rounded border-l-2 cursor-pointer transition-colors group"
+            <div class="bg-slate-800/50 hover:bg-slate-700/80 p-2 rounded border-l-2 cursor-pointer transition-colors group ${state.selectedEquipos.includes(e.ID_Equipo) ? 'ring-1 ring-cyan-400 bg-cyan-900/20' : ''}"
                  style="border-left-color: #06b6d4"
-                 onclick="abrirModalPorId('${e.ID_Equipo}')">
+                 onclick="toggleSeleccionEquipo('${e.ID_Equipo}')">
                 <div class="flex justify-between items-start">
                     <div>
                         <div class="text-[11px] font-bold text-cyan-300 group-hover:text-white transition-colors">🔧 ${e.ID_Equipo}</div>
-                        <div class="text-[10px] text-slate-400 truncate max-w-[140px]">${e.Equipo || 'Sin nombre'}</div>
+                        <div class="text-[10px] text-slate-400 truncate max-w-[100px]">${e.Equipo || 'Sin nombre'}</div>
                     </div>
                     <div class="text-[9px] font-mono text-green-400">${e.Lectura || '-'}h</div>
                 </div>
@@ -538,33 +587,28 @@ function actualizarListaLateral() {
         `).join('');
     }
 
-    // Renderizar Parados
+    // Renderizar Parados (Columna Derecha)
     if (pas.length === 0) {
         containerPas.innerHTML = `<p class="text-[10px] text-slate-500 text-center py-2">Sin parados</p>`;
     } else {
         containerPas.innerHTML = pas.map(e => `
-            <div class="bg-slate-800/50 hover:bg-slate-700/80 p-2 rounded border-l-2 cursor-pointer transition-colors group"
+            <div class="bg-slate-800/50 hover:bg-slate-700/80 p-2 rounded border-l-2 cursor-pointer transition-colors group ${state.selectedEquipos.includes(e.ID_Equipo) ? 'ring-1 ring-amber-400 bg-amber-900/20' : ''}"
                  style="border-left-color: #f59e0b"
-                 onclick="abrirModalPorId('${e.ID_Equipo}')">
+                 onclick="toggleSeleccionEquipo('${e.ID_Equipo}')">
                 <div class="flex justify-between items-start">
                     <div>
                         <div class="text-[11px] font-bold text-amber-300 group-hover:text-white transition-colors">🔧 ${e.ID_Equipo}</div>
-                        <div class="text-[10px] text-slate-400 truncate max-w-[140px]">${e.Equipo || 'Sin nombre'}</div>
+                        <div class="text-[10px] text-slate-400 truncate max-w-[100px]">${e.Equipo || 'Sin nombre'}</div>
                     </div>
                     <div class="text-[9px] font-mono text-amber-400">${e.Lectura || '-'}h</div>
                 </div>
                 ${e.Fecha_Carga ? 
                     `<div class="text-[9px] text-red-300 mt-1 flex items-center gap-1">
-                        ⏱️ ${calcTiempo(e.Fecha_Carga, e.Hora_Carga)?.dias || 0}d parado
+                        ⏱️ ${calcTiempo(e.Fecha_Carga, e.Hora_Carga)?.dias || 0}d
                      </div>` : ''}
             </div>
         `).join('');
     }
-}
-
-function abrirModalPorId(idEquipo) {
-    const idx = state.filteredData.findIndex(e => e.ID_Equipo === idEquipo);
-    if (idx !== -1) abrirModal(idx);
 }
 
 function actualizarFiltroEquipos() {
@@ -587,38 +631,6 @@ function actualizarAlertas() {
     cont.innerHTML = filtradas.map(a => `<div class="alert-item"><div class="flex justify-between"><span class="font-bold text-cyan-300">${a.ID_Equipo}</span><span class="text-[9px] text-slate-400">${a.Hora_Carga||''}</span></div><div class="text-[10px] text-cyan-200 truncate">${a.Equipo}</div><div class="text-[10px] text-slate-400"> 👤 ${a.Reportante||'-'}</div></div>`).join('');
 }
 
-function abrirModal(idx) { if (idx < 0 || idx >= state.filteredData.length) return; state.indiceModal = idx; renderModal(); const m = document.getElementById('equipmentModal'); if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; } }
-
-function renderModal() {
-    const e = state.filteredData[state.indiceModal]; if (!e) return;
-    const mt = document.getElementById('modalTitle'); const mc = document.getElementById('modalEquipoCounter'); const bp = document.getElementById('btnPrevEquipo'); const bn = document.getElementById('btnNextEquipo'); const cont = document.getElementById('modalContent');
-    if (mt) mt.innerText = `📋 ${e.ID_Equipo} - ${e.Tipo_Equipo||'Sin tipo'}`;
-    if (mc) mc.innerText = `Equipo ${state.indiceModal+1} de ${state.filteredData.length}`;
-    if (bp) { bp.disabled = state.indiceModal === 0; bp.style.opacity = state.indiceModal === 0 ? '0.3' : '1'; }
-    if (bn) { bn.disabled = state.indiceModal === state.filteredData.length-1; bn.style.opacity = state.indiceModal === state.filteredData.length-1 ? '0.3' : '1'; }
-    if (!cont) return;
-    const esParado = e.Estado !== 'OPERATIVO'; const ti = esParado ? calcTiempo(e.Fecha_Carga, e.Hora_Carga) : null;
-    let cronHTML = '';
-    if (esParado && e.Fecha_Carga) {
-        if (ti && ti.totalHs > 0 && ti.totalHs < 100000) { cronHTML = `<div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center"><div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div><div class="text-3xl font-black cronometro">${ti.dias>0?`<span class="crono-dia">${ti.dias}d</span> `:''}<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span></div><div class="text-[10px] text-slate-400 mt-2">Desde: ${e.Fecha_Carga} ${e.Hora_Carga||''}</div></div>`; }
-        else { cronHTML = `<div class="bg-amber-950/30 border border-amber-500/50 rounded-xl p-4 text-center"><div class="text-xs text-amber-400"> 📅 ${e.Fecha_Carga||''} ${e.Hora_Carga||''}</div><div class="text-[10px] text-slate-400 mt-1">No se pudo calcular el tiempo</div></div>`; }
-    }
-    const hist = state.rawData.filter(x=>x.ID_Equipo===e.ID_Equipo).sort((a,b)=>parseFechaHora(b.Fecha_Carga,b.Hora_Carga)-parseFechaHora(a.Fecha_Carga,a.Hora_Carga));
-    const motivoActual = e.Motivo_Parada || '';
-    let histHTML = '';
-    if (hist.length > 0) {
-        histHTML = `<div class="mt-4 bg-slate-800/50 rounded-xl p-5 border border-cyan-500/30"><h3 class="font-bold text-cyan-400 text-base mb-4">📜 HISTORIAL DE REGISTROS (${hist.length})</h3><div class="space-y-4">` +
-            hist.map((h, idx) => {
-                const esOp = h.Estado === 'OPERATIVO'; const tiH = !esOp ? calcTiempo(h.Fecha_Carga, h.Hora_Carga) : null;
-                const esPrimerRegistro = idx === 0; const motivoEsIgual = h.Motivo_Parada === motivoActual && motivoActual !== ''; const omitirMotivo = esPrimerRegistro && motivoEsIgual;
-                return `<div class="p-4 rounded-lg border-2 ${esOp?'bg-green-950/20 border-green-500/40':'bg-amber-950/20 border-amber-500/40'}"><div class="flex justify-between items-center mb-3"><span class="font-bold text-lg ${esOp?'text-green-400':'text-amber-400'}">${esOp?'✅ OPERATIVO':'⏸️ PARADO'}</span><span class="text-sm font-semibold text-cyan-300">📅 ${h.Fecha_Carga} ${h.Hora_Carga||''}</span></div><div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-slate-900/50 rounded-lg p-3"><div class="text-xs text-slate-400 mb-1"> 🔢 HORÓMETRO</div><div class="text-xl font-black text-amber-300">${h.Lectura||'N/A'}</div></div><div class="bg-slate-900/50 rounded-lg p-3"><div class="text-xs text-slate-400 mb-1">👤 REPORTANTE</div><div class="text-base font-bold text-cyan-300">${h.Reportante||'N/A'}</div></div></div>${tiH && tiH.totalHs > 0 && tiH.totalHs < 100000 ? `<div class="bg-red-950/30 rounded-lg p-2 mb-3 text-center border border-red-500/30"><span class="text-sm font-bold text-red-300">⏱️ Tiempo desde este registro: <span class="crono-dia">${tiH.dias}d</span> <span class="crono-hora">${tiH.horas}h</span> <span class="crono-min">${tiH.minutos}m</span></span></div>`:''}${!omitirMotivo && h.Motivo_Parada?`<div class="bg-slate-900/50 rounded-lg p-3 mt-2"><div class="text-xs text-amber-400 mb-2 font-bold uppercase tracking-wide">⚠️ Motivo / Descripción</div><div class="text-[14px] text-slate-200 leading-relaxed modal-texto-completo">${h.Motivo_Parada}</div></div>`:''}${h.Observaciones?`<div class="bg-slate-900/50 rounded-lg p-3 mt-2"><div class="text-xs text-cyan-400 mb-2 font-bold uppercase tracking-wide">📝 Observaciones</div><div class="text-[14px] text-slate-200 leading-relaxed">${h.Observaciones}</div></div>`:''}</div>`;
-            }).join('') + '</div></div>';
-    }
-    cont.innerHTML = `<div class="grid grid-cols-2 gap-3 mb-4"><div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🔢 ID</div><div class="text-xl font-bold text-cyan-300">${e.ID_Equipo}</div></div><div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🏷️ Tipo</div><div class="text-sm font-bold text-white">${e.Tipo_Equipo||'-'}</div></div><div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🚜 Equipo</div><div class="text-base font-bold text-white">${e.Equipo}</div></div><div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🏢 Propiedad</div><div class="text-sm font-bold text-white">${e.Propiedad||'-'}</div></div></div>${cronHTML}<div class="space-y-2 mt-4"><div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-cyan-300">${e.sucursal}</span></div><div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="font-bold ${esParado?'text-amber-300':'text-green-300'}">${e.Estado}</span></div><div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${e.Lectura||'-'}</span></div>${e.Motivo_Parada?`<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 font-bold uppercase tracking-wide mb-2">⚠️ Motivo</div><div class="text-[14px] text-slate-200 leading-relaxed modal-texto-completo">${e.Motivo_Parada}</div></div>`:''}${e.Observaciones?`<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-2">📝 Observaciones</div><div class="text-[14px] text-slate-200 leading-relaxed modal-texto-completo">${e.Observaciones}</div></div>`:''}</div>${histHTML}`;
-}
-
-function cerrarModal() { const m = document.getElementById('equipmentModal'); if (m) { m.classList.add('hidden'); m.style.display = 'none'; } }
-function navModal(dir) { const n = state.indiceModal + dir; if (n < 0 || n >= state.filteredData.length) return; state.indiceModal = n; renderModal(); }
 function safeSet(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
 function forceRefreshData() { loadData(); }
 
@@ -626,12 +638,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btns = { btnTodas: 'TODAS', btnMalagueno: 'MALAGUENO', btnBarker: 'BARKER', btnPampita: 'LA_PAMPITA' };
     Object.entries(btns).forEach(([id, val]) => { const b = document.getElementById(id); if (b) b.addEventListener('click', () => { document.querySelectorAll('.sucursal-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); state.sucursal = val; document.getElementById('filterEquipo').value = 'TODOS'; aplicarFiltros(); }); });
     ['filterMes','filterPropiedad','filterEquipo','filterEstado'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('change', (e) => { if (id === 'filterMes') state.mes = e.target.value; else if (id === 'filterPropiedad') state.propiedad = e.target.value; else if (id === 'filterEquipo') state.equipo = e.target.value; else if (id === 'filterEstado') state.estado = e.target.value; aplicarFiltros(); }); });
-    const bp = document.getElementById('btnPrevEquipo'); const bn = document.getElementById('btnNextEquipo'); const bc1 = document.getElementById('btnCerrarModal'); const bc2 = document.getElementById('btnCerrarModalFooter'); const bv = document.getElementById('btnVolverActual');
-    if (bp) bp.addEventListener('click', () => navModal(-1)); if (bn) bn.addEventListener('click', () => navModal(1));
-    if (bc1) bc1.addEventListener('click', cerrarModal); if (bc2) bc2.addEventListener('click', cerrarModal);
-    if (bv) bv.addEventListener('click', () => { const fm = document.getElementById('filterMes'); if (fm) fm.value = 'ACTUAL'; state.mes = 'ACTUAL'; aplicarFiltros(); });
-    document.addEventListener('keydown', (e) => { const m = document.getElementById('equipmentModal'); if (m && !m.classList.contains('hidden')) { if (e.key === 'Escape') cerrarModal(); if (e.key === 'ArrowLeft') navModal(-1); if (e.key === 'ArrowRight') navModal(1); } });
+    
     loadData(); setInterval(loadData, 60000);
+    renderizarTagsFlotantes(); // Inicializar tags vacíos
 });
 </script>
 </body>
