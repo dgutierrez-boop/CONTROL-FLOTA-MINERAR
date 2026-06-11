@@ -13,8 +13,8 @@
 body { font-family: 'Inter', sans-serif; background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); color: #e2e8f0; font-size: clamp(11px, 2.5vw, 12px); min-height: 100vh; position: relative; overflow-x: hidden; }
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
 
-/* CONTENEDOR PRINCIPAL MÁS ANGOSTO */
-.main-wrapper { max-width: 1600px; margin: 0 auto; padding: 1rem; position: relative; z-index: 1; }
+/* CONTENEDOR PRINCIPAL ENSANCHADO PERO CON MÁRGENES */
+.main-wrapper { max-width: 1800px; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 1; }
 
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: visible !important; min-width: 0; }
 .header-container { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.4); padding: 16px 24px; margin-bottom: 20px; }
@@ -223,7 +223,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                 </div>
 
-                <!-- PANEL TRAZABILIDAD (BARRAS VERTICALES CON ETIQUETAS) -->
+                <!-- PANEL TRAZABILIDAD (AHORA BARRAS HORIZONTALES PARA MEJOR LEGIBILIDAD) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
@@ -239,8 +239,8 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                         <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>
                     </div>
 
-                    <!-- Gráfico de Barras Verticales -->
-                    <div class="relative w-full h-[400px]">
+                    <!-- Gráfico de Barras Horizontales (Más alto para acomodar 32 equipos) -->
+                    <div class="relative w-full h-[800px]">
                         <canvas id="trazabilidadBarChart"></canvas>
                     </div>
                 </div>
@@ -363,9 +363,10 @@ function parseCSV(text, sucursalOrigen) {
         const rawEquipo = get(['Equipo']) || vals[1] || '';
         const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
         
-        // CORRECCIÓN: Lógica mejorada para detectar propiedad
+        // CORRECCIÓN 1: Lógica mejorada y más flexible para detectar propiedad
         let propiedadDetectada = 'PROPIO'; 
-        const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat'];
+        // Buscamos varias variantes comunes de "alquilado"
+        const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat', 'leasing', 'hertz'];
         if (keywordsAlquilado.some(kw => combinedText.includes(kw))) {
             propiedadDetectada = 'ALQUILADO';
         }
@@ -612,24 +613,29 @@ function actualizarTablaInferior() {
     cr.innerText = state.filteredData.length + ' registros';
     if (state.filteredData.length === 0) { tb.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4"> Sin datos para la selección actual</td></tr>'; return; }
     
-    tb.innerHTML = state.filteredData.map((e, i) => {
+    // CORRECCIÓN 2: Usar el ID del equipo en lugar del índice para abrir el modal correctamente
+    tb.innerHTML = state.filteredData.map((e) => {
         const esParado = e.Estado !== 'OPERATIVO'; const badge = esParado ? 'status-parado' : 'status-operativo'; const txt = esParado ? '⏸️ Parado' : '✅ Operativo';
         let celdaTiempo = '<span class="text-slate-500 text-xs">-</span>';
         if (esParado && e.Fecha_Carga) {
             const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
             if (ti && ti.totalHs > 0) { let h = '⏱️ '; if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `; h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`; celdaTiempo = `<span class="cronometro text-xs">${h}</span>`; }
         }
-        return `<tr class="${esParado ? 'pulse-alert' : ''}" onclick="abrirModal(${i})"><td class="font-bold text-cyan-300">${e.ID_Equipo}</td><td>${e.Equipo}</td><td class="text-slate-400">${e.Tipo_Equipo}</td><td>${e.sucursal}</td><td><span class="${badge}">${txt}</span></td><td>${celdaTiempo}</td><td>${e.Lectura}</td><td class="col-motivo">${e.Motivo_Parada||'-'}</td><td>${e.Reportante||'-'}</td></tr>`;
+        // Pasamos el ID del equipo como argumento string para evitar problemas de índice
+        return `<tr class="${esParado ? 'pulse-alert' : ''}" onclick="abrirModalPorId('${e.ID_Equipo}')"><td class="font-bold text-cyan-300">${e.ID_Equipo}</td><td>${e.Equipo}</td><td class="text-slate-400">${e.Tipo_Equipo}</td><td>${e.sucursal}</td><td><span class="${badge}">${txt}</span></td><td>${celdaTiempo}</td><td>${e.Lectura}</td><td class="col-motivo">${e.Motivo_Parada||'-'}</td><td>${e.Reportante||'-'}</td></tr>`;
     }).join('');
 }
 
-// --- LÓGICA DEL MODAL ---
-function abrirModal(idx) {
-    if (idx < 0 || idx >= state.filteredData.length) return;
-    state.indiceModal = idx;
-    renderModal();
-    const m = document.getElementById('equipmentModal');
-    if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; }
+// --- LÓGICA DEL MODAL CORREGIDA ---
+function abrirModalPorId(idEquipo) {
+    // Buscar el índice correcto dentro de los datos filtrados actuales
+    const idx = state.filteredData.findIndex(e => e.ID_Equipo === idEquipo);
+    if (idx !== -1) {
+        state.indiceModal = idx;
+        renderModal();
+        const m = document.getElementById('equipmentModal');
+        if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; }
+    }
 }
 
 function cerrarModal() {
@@ -702,7 +708,7 @@ function renderModal() {
     `;
 }
 
-// --- GRÁFICO DE BARRAS VERTICALES CON ETIQUETAS PERSONALIZADAS ---
+// --- GRÁFICO DE BARRAS HORIZONTALES (CORRECCIÓN 3: PARA EVITAR AMONTONAMIENTO) ---
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
@@ -712,23 +718,25 @@ function actualizarGraficoTrazabilidad() {
         dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
     }
 
+    // Ordenar por horómetro descendente para mejor visualización horizontal
     dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
 
     const labels = dataToShow.map(e => e.ID_Equipo);
     const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
     const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
     
+    // Plugin personalizado para dibujar etiquetas al final de las barras horizontales
     const labelsPlugin = {
-        id: 'customLabels',
+        id: 'customLabelsHorizontal',
         afterDatasetsDraw(chart) {
             const { ctx, data, scales: { x, y } } = chart;
             ctx.save();
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
             
             data.datasets[0].data.forEach((value, index) => {
-                const xPos = x.getPixelForValue(index);
-                const yPos = y.getPixelForValue(value);
+                const xPos = x.getPixelForValue(value);
+                const yPos = y.getPixelForValue(index);
                 const equipo = dataToShow[index];
                 
                 let emoji = '⚙️';
@@ -739,13 +747,10 @@ function actualizarGraficoTrazabilidad() {
                 else if(tipo.includes('perforadora')) emoji = '🔩';
                 else if(tipo.includes('motoniveladora')) emoji = '🛣️';
                 
-                ctx.font = 'bold 12px Inter';
+                // Dibujar Emoji + Interno + Horómetro al lado de la barra
+                ctx.font = 'bold 11px Inter';
                 ctx.fillStyle = '#e2e8f0';
-                ctx.fillText(`${emoji} ${equipo.ID_Equipo}`, xPos, yPos - 25);
-                
-                ctx.font = 'bold 10px Inter';
-                ctx.fillStyle = '#94a3b8';
-                ctx.fillText(`${value.toLocaleString('es-AR')}h`, xPos, yPos - 12);
+                ctx.fillText(`${emoji} ${equipo.ID_Equipo} (${value.toLocaleString('es-AR')}h)`, xPos + 8, yPos);
             });
             ctx.restore();
         }
@@ -760,32 +765,33 @@ function actualizarGraficoTrazabilidad() {
                 data: values,
                 backgroundColor: colors,
                 borderRadius: 6,
-                barPercentage: 0.6
+                barPercentage: 0.7
             }]
         },
         plugins: [labelsPlugin],
         options: {
+            indexAxis: 'y', // CAMBIO CLAVE: Barras horizontales
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { top: 40 } },
+            layout: { padding: { right: 150 } }, // Espacio extra a la derecha para las etiquetas
             plugins: {
                 legend: { display: false },
                 tooltip: {
                     backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0',
                     callbacks: {
                         title: (items) => items[0].label,
-                        label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs`
+                        label: (item) => `Horómetro: ${item.parsed.x.toLocaleString('es-AR')} hs`
                     }
                 }
             },
             scales: {
                 x: { 
-                    ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45, minRotation: 45 }, 
-                    grid: { display: false } 
-                },
-                y: { 
-                    beginAtZero: true, 
+                    beginAtZero: true,
                     grid: { color: 'rgba(148,163,184,0.1)' }, 
                     ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } 
+                },
+                y: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { size: 11, weight: 'bold' } }
                 }
             }
         }
