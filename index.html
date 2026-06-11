@@ -223,7 +223,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                 </div>
 
-                <!-- PANEL TRAZABILIDAD (AHORA VERTICAL CON ETIQUETAS ROTADAS) -->
+                <!-- PANEL TRAZABILIDAD (AHORA BARRAS HORIZONTALES PARA MEJOR LEGIBILIDAD) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
@@ -239,8 +239,8 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                         <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>
                     </div>
 
-                    <!-- Gráfico de Barras Verticales (Más alto para acomodar etiquetas rotadas) -->
-                    <div class="relative w-full h-[500px]">
+                    <!-- Gráfico de Barras Horizontales (Más alto para acomodar 32 equipos) -->
+                    <div class="relative w-full h-[800px]">
                         <canvas id="trazabilidadBarChart"></canvas>
                     </div>
                 </div>
@@ -361,14 +361,18 @@ function parseCSV(text, sucursalOrigen) {
         
         const rawTipo = get(['TipoEquipo','Tipo']) || vals[2] || '';
         const rawEquipo = get(['Equipo']) || vals[1] || '';
-        // CORRECCIÓN 1: Búsqueda case-insensitive y más amplia para propiedad
-        const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
         
-        let propiedadDetectada = 'PROPIO'; 
-        // Lista ampliada de keywords para detectar alquilados
-        const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat', 'leasing', 'hertz', 'outsourcing', 'prestado'];
-        if (keywordsAlquilado.some(kw => combinedText.includes(kw))) {
-            propiedadDetectada = 'ALQUILADO';
+        // CORRECCIÓN 3: Buscar explícitamente la columna "Propiedad" en el CSV
+        let propiedadDetectada = get(['Propiedad', 'Ownership', 'Type']); 
+        
+        // Si no encuentra la columna, usa la lógica de keywords como fallback
+        if (!propiedadDetectada || propiedadDetectada === '') {
+            const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
+            const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat', 'leasing', 'hertz', 'outsourcing', 'prestado'];
+            propiedadDetectada = keywordsAlquilado.some(kw => combinedText.includes(kw)) ? 'ALQUILADO' : 'PROPIO';
+        } else {
+            // Normalizar el valor encontrado (ej: "Alquilado" -> "ALQUILADO")
+            propiedadDetectada = propiedadDetectada.toUpperCase().includes('ALQ') || propiedadDetectada.toUpperCase().includes('RENT') ? 'ALQUILADO' : 'PROPIO';
         }
 
         const mapped = { 
@@ -708,7 +712,7 @@ function renderModal() {
     `;
 }
 
-// --- GRÁFICO DE BARRAS VERTICALES CON ETIQUETAS ROTADAS (CORRECCIÓN 1) ---
+// --- GRÁFICO DE BARRAS HORIZONTALES (CORRECCIÓN 1: PARA EVITAR AMONTONAMIENTO) ---
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
@@ -725,18 +729,18 @@ function actualizarGraficoTrazabilidad() {
     const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
     const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
     
-    // Plugin personalizado para dibujar etiquetas encima de las barras verticales
+    // Plugin personalizado para dibujar etiquetas al final de las barras horizontales
     const labelsPlugin = {
-        id: 'customLabelsVertical',
+        id: 'customLabels',
         afterDatasetsDraw(chart) {
             const { ctx, data, scales: { x, y } } = chart;
             ctx.save();
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
             
             data.datasets[0].data.forEach((value, index) => {
-                const xPos = x.getPixelForValue(index);
-                const yPos = y.getPixelForValue(value);
+                const xPos = x.getPixelForValue(value);
+                const yPos = y.getPixelForValue(index);
                 const equipo = dataToShow[index];
                 
                 let emoji = '⚙️';
@@ -747,20 +751,10 @@ function actualizarGraficoTrazabilidad() {
                 else if(tipo.includes('perforadora')) emoji = '🔩';
                 else if(tipo.includes('motoniveladora')) emoji = '🛣️';
                 
-                // Dibujar Emoji + Interno + Horómetro encima de la barra
-                ctx.font = 'bold 10px Inter';
+                // Dibujar Emoji + Interno + Horómetro al lado de la barra
+                ctx.font = 'bold 11px Inter';
                 ctx.fillStyle = '#e2e8f0';
-                // Rotar el texto 45 grados si hay muchos equipos para que no se solape
-                if (dataToShow.length > 15) {
-                    ctx.translate(xPos, yPos - 5);
-                    ctx.rotate(-Math.PI / 4);
-                    ctx.fillText(`${emoji} ${equipo.ID_Equipo}`, 0, 0);
-                    ctx.fillText(`${(value/1000).toFixed(1)}k`, 0, 12);
-                    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
-                } else {
-                    ctx.fillText(`${emoji} ${equipo.ID_Equipo}`, xPos, yPos - 20);
-                    ctx.fillText(`${(value/1000).toFixed(1)}k`, xPos, yPos - 8);
-                }
+                ctx.fillText(`${emoji} ${equipo.ID_Equipo} (${value.toLocaleString('es-AR')}h)`, xPos + 8, yPos);
             });
             ctx.restore();
         }
@@ -775,38 +769,33 @@ function actualizarGraficoTrazabilidad() {
                 data: values,
                 backgroundColor: colors,
                 borderRadius: 6,
-                barPercentage: 0.8
+                barPercentage: 0.7
             }]
         },
         plugins: [labelsPlugin],
         options: {
+            indexAxis: 'y', // CAMBIO CLAVE: Barras horizontales
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { top: 60 } }, // Espacio extra arriba para las etiquetas rotadas
+            layout: { padding: { right: 150 } }, // Espacio extra a la derecha para las etiquetas
             plugins: {
                 legend: { display: false },
                 tooltip: {
                     backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0',
                     callbacks: {
                         title: (items) => items[0].label,
-                        label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs`
+                        label: (item) => `Horómetro: ${item.parsed.x.toLocaleString('es-AR')} hs`
                     }
                 }
             },
             scales: {
                 x: { 
-                    grid: { display: false },
-                    ticks: { 
-                        color: '#94a3b8', 
-                        font: { size: 10 }, 
-                        maxRotation: 45, // Rotar etiquetas del eje X
-                        minRotation: 45,
-                        autoSkip: false // Mostrar todas las etiquetas
-                    } 
-                },
-                y: { 
-                    beginAtZero: true, 
+                    beginAtZero: true,
                     grid: { color: 'rgba(148,163,184,0.1)' }, 
                     ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } 
+                },
+                y: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { size: 11, weight: 'bold' } }
                 }
             }
         }
