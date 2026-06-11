@@ -12,6 +12,10 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Inter', sans-serif; background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); color: #e2e8f0; font-size: clamp(11px, 2.5vw, 12px); min-height: 100vh; position: relative; overflow-x: hidden; }
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+
+/* CONTENEDOR PRINCIPAL MÁS ANGOSTO */
+.main-wrapper { max-width: 1600px; margin: 0 auto; padding: 1rem; position: relative; z-index: 1; }
+
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: visible !important; min-width: 0; }
 .header-container { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.4); padding: 16px 24px; margin-bottom: 20px; }
 .logo-shield { width: 48px; height: 48px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); border: 2px solid #06b6d4; flex-shrink: 0; }
@@ -105,7 +109,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
 </style>
 </head>
 <body>
-<div class="main-wrapper w-full mx-auto p-4" style="position:relative;z-index:1;">
+<div class="main-wrapper">
 
     <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center gap-4">
@@ -129,10 +133,10 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
         <div class="text-center mb-4">
             <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
             <div class="flex flex-wrap items-center justify-center gap-2">
-                <button id="btnTodas" class="sucursal-btn active"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🏭 TODAS</button>
-                <button id="btnMalagueno" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">📍 MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🐺 BARKER</button>
-                <button id="btnPampita" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🌸 LA PAMPITA</button>
+                <button id="btnTodas" class="sucursal-btn active" data-suc="TODAS"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🏭 TODAS</button>
+                <button id="btnMalagueno" class="sucursal-btn" data-suc="MALAGUEÑO"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">📍 MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn" data-suc="BARKER"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🐺 BARKER</button>
+                <button id="btnPampita" class="sucursal-btn" data-suc="LA_PAMPITA"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🌸 LA PAMPITA</button>
             </div>
         </div>
 
@@ -287,7 +291,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
 
 <script>
 const state = {
-    sucursal: 'TODAS', mes: 'ACTUAL', 
+    sucursal: 'TODAS', mes: 'ACTUAL', propiedad: 'TODAS', equipo: 'TODOS', estado: 'TODOS',
     rawData: [], equipmentData: [], filteredData: [],
     selectedEquipos: [], indiceModal: 0
 };
@@ -384,15 +388,31 @@ async function loadData() {
         if (!cons[k] || fa >= fe) cons[k] = e; 
     });
     state.equipmentData = Object.values(cons);
+    
+    // CORRECCIÓN 1 & 2: Aplicar filtros y actualizar UI solo después de tener datos
     aplicarFiltros();
+    actualizarFiltroEquipos(); // Llenar el select de equipos ahora que tenemos datos
 }
 
 function aplicarFiltros() {
-    let base = state.equipmentData;
+    // CORRECCIÓN 2: Filtrado estricto por sucursal
+    let base = state.sucursal === 'TODAS' ? state.equipmentData : state.equipmentData.filter(e => e.sucursal === state.sucursal);
+    
     if (state.mes !== 'ACTUAL') {
         const [y, m] = state.mes.split('-').map(Number);
         base = base.filter(e => { const f = parseFechaHora(e.Fecha_Carga, e.Hora_Carga); if(!f) return false; const d=new Date(f); return d.getFullYear()===y && (d.getMonth()+1)===m; });
     }
+    
+    // Filtros adicionales
+    base = base.filter(e => {
+        const mp = state.propiedad === 'TODAS' || e.Propiedad === state.propiedad;
+        const me = state.equipo === 'TODOS' || e.ID_Equipo === state.equipo;
+        let me2 = true;
+        if (state.estado === 'OPERATIVO') me2 = e.Estado === 'OPERATIVO'; 
+        else if (state.estado === 'PARADO') me2 = e.Estado !== 'OPERATIVO';
+        return mp && me && me2;
+    });
+
     state.filteredData = base.sort((a,b) => a.ID_Equipo.localeCompare(b.ID_Equipo, undefined, {numeric:true}));
     actualizarTodo();
 }
@@ -540,7 +560,7 @@ function actualizarGraficosPrincipales(opCount, paCount, paradosList) {
 function actualizarTablaInferior() {
     const tb = document.getElementById('equipmentTableBody'); const cr = document.getElementById('contadorRegistros'); if (!tb) return;
     cr.innerText = state.filteredData.length + ' registros';
-    if (state.filteredData.length === 0) { tb.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4"> Sin datos</td></tr>'; return; }
+    if (state.filteredData.length === 0) { tb.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4"> Sin datos para la selección actual</td></tr>'; return; }
     
     tb.innerHTML = state.filteredData.map((e, i) => {
         const esParado = e.Estado !== 'OPERATIVO'; const badge = esParado ? 'status-parado' : 'status-operativo'; const txt = esParado ? '⏸️ Parado' : '✅ Operativo';
@@ -549,7 +569,6 @@ function actualizarTablaInferior() {
             const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
             if (ti && ti.totalHs > 0) { let h = '⏱️ '; if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `; h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`; celdaTiempo = `<span class="cronometro text-xs">${h}</span>`; }
         }
-        // Agregamos onclick para abrir el modal
         return `<tr class="${esParado ? 'pulse-alert' : ''}" onclick="abrirModal(${i})"><td class="font-bold text-cyan-300">${e.ID_Equipo}</td><td>${e.Equipo}</td><td class="text-slate-400">${e.Tipo_Equipo}</td><td>${e.sucursal}</td><td><span class="${badge}">${txt}</span></td><td>${celdaTiempo}</td><td>${e.Lectura}</td><td class="col-motivo">${e.Motivo_Parada||'-'}</td><td>${e.Reportante||'-'}</td></tr>`;
     }).join('');
 }
@@ -597,7 +616,6 @@ function renderModal() {
         }
     }
     
-    // Historial simple (últimos registros del mismo equipo)
     const hist = state.rawData.filter(x=>x.ID_Equipo===e.ID_Equipo).sort((a,b)=>parseFechaHora(b.Fecha_Carga,b.Hora_Carga)-parseFechaHora(a.Fecha_Carga,a.Hora_Carga)).slice(0, 5);
     let histHTML = '';
     if (hist.length > 0) {
@@ -644,14 +662,12 @@ function actualizarGraficoTrazabilidad() {
         dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
     }
 
-    // Ordenar por horómetro descendente
     dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
 
     const labels = dataToShow.map(e => e.ID_Equipo);
     const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
     const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
     
-    // Plugin personalizado para dibujar etiquetas sobre las barras
     const labelsPlugin = {
         id: 'customLabels',
         afterDatasetsDraw(chart) {
@@ -665,7 +681,6 @@ function actualizarGraficoTrazabilidad() {
                 const yPos = y.getPixelForValue(value);
                 const equipo = dataToShow[index];
                 
-                // Emoji según tipo
                 let emoji = '⚙️';
                 const tipo = (equipo.Tipo_Equipo||'').toLowerCase();
                 if(tipo.includes('camion')) emoji = '🚛';
@@ -674,12 +689,10 @@ function actualizarGraficoTrazabilidad() {
                 else if(tipo.includes('perforadora')) emoji = '🔩';
                 else if(tipo.includes('motoniveladora')) emoji = '🛣️';
                 
-                // Dibujar Emoji + Interno
                 ctx.font = 'bold 12px Inter';
                 ctx.fillStyle = '#e2e8f0';
                 ctx.fillText(`${emoji} ${equipo.ID_Equipo}`, xPos, yPos - 25);
                 
-                // Dibujar Horómetro
                 ctx.font = 'bold 10px Inter';
                 ctx.fillStyle = '#94a3b8';
                 ctx.fillText(`${value.toLocaleString('es-AR')}h`, xPos, yPos - 12);
@@ -703,7 +716,7 @@ function actualizarGraficoTrazabilidad() {
         plugins: [labelsPlugin],
         options: {
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { top: 40 } }, // Espacio extra arriba para las etiquetas
+            layout: { padding: { top: 40 } },
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -729,17 +742,49 @@ function actualizarGraficoTrazabilidad() {
     });
 }
 
+// --- ACTUALIZAR SELECT DE EQUIPOS (CORRECCIÓN 1) ---
+function actualizarFiltroEquipos() {
+    const sel = document.getElementById('filterEquipo'); if (!sel) return;
+    const val = sel.value;
+    
+    // Usar filteredData para que dependa de la sucursal seleccionada
+    const eqs = state.filteredData; 
+    const unicos = {}; 
+    eqs.forEach(e => { if (!unicos[e.ID_Equipo]) unicos[e.ID_Equipo] = e; });
+    
+    const lista = Object.values(unicos).sort((a,b) => { 
+        const na = parseInt(a.ID_Equipo.replace(/\D/g,''))||0, nb = parseInt(b.ID_Equipo.replace(/\D/g,''))||0; 
+        return na - nb; 
+    });
+    
+    sel.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>' + 
+        lista.map(e => `<option value="${e.ID_Equipo}">🔧 ${e.ID_Equipo} | ${e.Tipo_Equipo||'Otros'}</option>`).join('');
+        
+    if (val && val !== 'TODOS' && lista.some(e=>e.ID_Equipo===val)) sel.value = val;
+    else sel.value = 'TODOS';
+}
+
 function safeSet(id, val) { const el=document.getElementById(id); if(el) el.innerText=val; }
 function forceRefreshData() { loadData(); }
 
 document.addEventListener('DOMContentLoaded', () => {
-    ['btnTodas','btnMalagueno','btnBarker','btnPampita'].forEach(id => {
-        document.getElementById(id).addEventListener('click', (e) => {
+    // Listeners de sucursales
+    document.querySelectorAll('.sucursal-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
             document.querySelectorAll('.sucursal-btn').forEach(b=>b.classList.remove('active'));
-            e.currentTarget.classList.add('active'); aplicarFiltros();
+            e.currentTarget.classList.add('active');
+            state.sucursal = e.currentTarget.getAttribute('data-suc');
+            state.selectedEquipos = []; // Limpiar selecciones al cambiar sucursal
+            aplicarFiltros();
+            actualizarFiltroEquipos(); // Actualizar lista de equipos para la nueva sucursal
         });
     });
+    
+    // Listeners de filtros
     document.getElementById('filterMes').addEventListener('change', (e) => { state.mes = e.target.value; aplicarFiltros(); });
+    document.getElementById('filterPropiedad').addEventListener('change', (e) => { state.propiedad = e.target.value; aplicarFiltros(); });
+    document.getElementById('filterEquipo').addEventListener('change', (e) => { state.equipo = e.target.value; aplicarFiltros(); });
+    document.getElementById('filterEstado').addEventListener('change', (e) => { state.estado = e.target.value; aplicarFiltros(); });
     
     // Listeners del Modal
     document.getElementById('btnPrevEquipo').addEventListener('click', () => navModal(-1));
@@ -755,7 +800,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    loadData(); setInterval(loadData, 60000);
+    // Cargar datos iniciales
+    loadData(); 
+    setInterval(loadData, 60000);
 });
 </script>
 </body>
