@@ -13,8 +13,8 @@
 body { font-family: 'Inter', sans-serif; background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); color: #e2e8f0; font-size: clamp(11px, 2.5vw, 12px); min-height: 100vh; position: relative; overflow-x: hidden; }
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
 
-/* CONTENEDOR PRINCIPAL ENSANCHADO PERO CON MÁRGENES */
-.main-wrapper { max-width: 1800px; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 1; }
+/* CONTENEDOR PRINCIPAL MÁS ANCHO */
+.main-wrapper { max-width: 95%; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 1; }
 
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: visible !important; min-width: 0; }
 .header-container { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.4); padding: 16px 24px; margin-bottom: 20px; }
@@ -223,7 +223,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                 </div>
 
-                <!-- PANEL TRAZABILIDAD (AHORA BARRAS HORIZONTALES PARA MEJOR LEGIBILIDAD) -->
+                <!-- PANEL TRAZABILIDAD (AHORA VERTICAL CON ETIQUETAS ROTADAS) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
@@ -239,8 +239,8 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                         <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>
                     </div>
 
-                    <!-- Gráfico de Barras Horizontales (Más alto para acomodar 32 equipos) -->
-                    <div class="relative w-full h-[800px]">
+                    <!-- Gráfico de Barras Verticales (Más alto para acomodar etiquetas rotadas) -->
+                    <div class="relative w-full h-[500px]">
                         <canvas id="trazabilidadBarChart"></canvas>
                     </div>
                 </div>
@@ -361,12 +361,12 @@ function parseCSV(text, sucursalOrigen) {
         
         const rawTipo = get(['TipoEquipo','Tipo']) || vals[2] || '';
         const rawEquipo = get(['Equipo']) || vals[1] || '';
+        // CORRECCIÓN 3: Búsqueda case-insensitive y más amplia para propiedad
         const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
         
-        // CORRECCIÓN 1: Lógica mejorada y más flexible para detectar propiedad
         let propiedadDetectada = 'PROPIO'; 
-        // Buscamos varias variantes comunes de "alquilado"
-        const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat', 'leasing', 'hertz'];
+        // Lista ampliada de keywords para detectar alquilados
+        const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat', 'leasing', 'hertz', 'outsourcing', 'prestado'];
         if (keywordsAlquilado.some(kw => combinedText.includes(kw))) {
             propiedadDetectada = 'ALQUILADO';
         }
@@ -708,7 +708,7 @@ function renderModal() {
     `;
 }
 
-// --- GRÁFICO DE BARRAS HORIZONTALES (CORRECCIÓN 3: PARA EVITAR AMONTONAMIENTO) ---
+// --- GRÁFICO DE BARRAS VERTICALES CON ETIQUETAS ROTADAS (CORRECCIÓN 1) ---
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
@@ -718,25 +718,25 @@ function actualizarGraficoTrazabilidad() {
         dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
     }
 
-    // Ordenar por horómetro descendente para mejor visualización horizontal
+    // Ordenar por horómetro descendente para mejor visualización
     dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
 
     const labels = dataToShow.map(e => e.ID_Equipo);
     const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
     const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
     
-    // Plugin personalizado para dibujar etiquetas al final de las barras horizontales
+    // Plugin personalizado para dibujar etiquetas encima de las barras verticales
     const labelsPlugin = {
-        id: 'customLabelsHorizontal',
+        id: 'customLabelsVertical',
         afterDatasetsDraw(chart) {
             const { ctx, data, scales: { x, y } } = chart;
             ctx.save();
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
             
             data.datasets[0].data.forEach((value, index) => {
-                const xPos = x.getPixelForValue(value);
-                const yPos = y.getPixelForValue(index);
+                const xPos = x.getPixelForValue(index);
+                const yPos = y.getPixelForValue(value);
                 const equipo = dataToShow[index];
                 
                 let emoji = '⚙️';
@@ -747,10 +747,20 @@ function actualizarGraficoTrazabilidad() {
                 else if(tipo.includes('perforadora')) emoji = '🔩';
                 else if(tipo.includes('motoniveladora')) emoji = '🛣️';
                 
-                // Dibujar Emoji + Interno + Horómetro al lado de la barra
-                ctx.font = 'bold 11px Inter';
+                // Dibujar Emoji + Interno + Horómetro encima de la barra
+                ctx.font = 'bold 10px Inter';
                 ctx.fillStyle = '#e2e8f0';
-                ctx.fillText(`${emoji} ${equipo.ID_Equipo} (${value.toLocaleString('es-AR')}h)`, xPos + 8, yPos);
+                // Rotar el texto 45 grados si hay muchos equipos para que no se solape
+                if (dataToShow.length > 15) {
+                    ctx.translate(xPos, yPos - 5);
+                    ctx.rotate(-Math.PI / 4);
+                    ctx.fillText(`${emoji} ${equipo.ID_Equipo}`, 0, 0);
+                    ctx.fillText(`${(value/1000).toFixed(1)}k`, 0, 12);
+                    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+                } else {
+                    ctx.fillText(`${emoji} ${equipo.ID_Equipo}`, xPos, yPos - 20);
+                    ctx.fillText(`${(value/1000).toFixed(1)}k`, xPos, yPos - 8);
+                }
             });
             ctx.restore();
         }
@@ -765,33 +775,38 @@ function actualizarGraficoTrazabilidad() {
                 data: values,
                 backgroundColor: colors,
                 borderRadius: 6,
-                barPercentage: 0.7
+                barPercentage: 0.8
             }]
         },
         plugins: [labelsPlugin],
         options: {
-            indexAxis: 'y', // CAMBIO CLAVE: Barras horizontales
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { right: 150 } }, // Espacio extra a la derecha para las etiquetas
+            layout: { padding: { top: 60 } }, // Espacio extra arriba para las etiquetas rotadas
             plugins: {
                 legend: { display: false },
                 tooltip: {
                     backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0',
                     callbacks: {
                         title: (items) => items[0].label,
-                        label: (item) => `Horómetro: ${item.parsed.x.toLocaleString('es-AR')} hs`
+                        label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs`
                     }
                 }
             },
             scales: {
                 x: { 
-                    beginAtZero: true,
-                    grid: { color: 'rgba(148,163,184,0.1)' }, 
-                    ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } 
+                    grid: { display: false },
+                    ticks: { 
+                        color: '#94a3b8', 
+                        font: { size: 10 }, 
+                        maxRotation: 45, // Rotar etiquetas del eje X
+                        minRotation: 45,
+                        autoSkip: false // Mostrar todas las etiquetas
+                    } 
                 },
                 y: { 
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8', font: { size: 11, weight: 'bold' } }
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(148,163,184,0.1)' }, 
+                    ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } 
                 }
             }
         }
