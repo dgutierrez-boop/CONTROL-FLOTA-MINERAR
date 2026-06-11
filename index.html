@@ -17,7 +17,7 @@ body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; heigh
 .logo-shield { width: 48px; height: 48px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); border: 2px solid #06b6d4; flex-shrink: 0; }
 .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
 
-/* TARJETAS KPI RESTAURADAS */
+/* TARJETAS KPI */
 .kpi-cyan { border-left: 4px solid #06b6d4; background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); }
 .kpi-amber { border-left: 4px solid #f59e0b; background: linear-gradient(115deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); }
 .kpi-purple { border-left: 4px solid #a855f7; background: linear-gradient(115deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05)); }
@@ -29,42 +29,39 @@ body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; heigh
 .sucursal-btn.active { background: rgba(6, 182, 212, 0.3); border-color: #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
 .sucursal-btn img { height: 16px; width: auto; }
 
-/* ESTILOS PARA SELECTS */
 select { 
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
     background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; 
     padding-right: 30px !important; background-color: #0f172a; border: 1px solid #1e293b; color: #e2e8f0;
 }
 
-/* SCROLLBAR */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
 ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 4px; }
 
-/* BOTONES FLOTANTES MINIMALISTAS */
+/* BOTONES FLOTANTES COMPACTOS */
 .eq-btn {
     display: flex; align-items: center; justify-content: center;
-    width: 100%; height: 48px; border-radius: 10px; font-weight: 800; font-size: 16px;
+    width: 100%; height: 36px; border-radius: 8px; font-weight: 800; font-size: 13px;
     cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(255,255,255,0.1); position: relative;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5), 0 2px 4px -1px rgba(0,0,0,0.3);
-    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.5); letter-spacing: 0.5px;
 }
-.eq-btn:hover { transform: translateY(-3px) scale(1.02); filter: brightness(1.2); z-index: 10; }
+.eq-btn:hover { transform: translateY(-2px) scale(1.02); filter: brightness(1.2); z-index: 10; }
 .eq-btn:active { transform: translateY(0) scale(0.98); }
 
 .eq-op { background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-.eq-op.selected { border: 2px solid #ffffff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); background: linear-gradient(135deg, #047857, #059669); }
+.eq-op.selected { border: 2px solid #ffffff; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); background: linear-gradient(135deg, #047857, #059669); }
 
 .eq-pa { background: linear-gradient(135deg, #b91c1c, #ef4444); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-.eq-pa.selected { border: 2px solid #ffffff; box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); background: linear-gradient(135deg, #991b1b, #b91c1c); }
+.eq-pa.selected { border: 2px solid #ffffff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); background: linear-gradient(135deg, #991b1b, #b91c1c); }
 
 /* TOOLTIP FLOTANTE */
 .eq-tooltip {
     visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
     background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
-    border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px; padding: 10px 14px;
-    width: max-content; max-width: 220px; z-index: 50; pointer-events: none;
+    border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px; padding: 8px 12px;
+    width: max-content; max-width: 200px; z-index: 50; pointer-events: none;
     box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transition: all 0.2s ease; text-align: left;
 }
 .eq-btn:hover .eq-tooltip { visibility: visible; opacity: 1; bottom: 120%; }
@@ -72,8 +69,8 @@ select {
     content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px;
     border-width: 6px; border-style: solid; border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
 }
-.tooltip-title { font-size: 12px; font-weight: 700; color: #22d3ee; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
-.tooltip-row { font-size: 11px; color: #cbd5e1; margin-bottom: 3px; display: flex; justify-content: space-between; gap: 12px; }
+.tooltip-title { font-size: 11px; font-weight: 700; color: #22d3ee; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px; }
+.tooltip-row { font-size: 10px; color: #cbd5e1; margin-bottom: 2px; display: flex; justify-content: space-between; gap: 10px; }
 .tooltip-label { color: #64748b; }
 
 /* Tags flotantes de selección */
@@ -100,6 +97,11 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
 .crono-dia { color: #f87171; } .crono-hora { color: #fbbf24; } .crono-min { color: #67e8f9; }
 @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } }
 .pulse-alert { animation: pulse-red 2s infinite; }
+
+/* MODAL ESTILOS */
+.modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
+@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+.modal-texto-completo { white-space: normal !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -134,7 +136,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
             </div>
         </div>
 
-        <!-- TARJETAS KPI RESTAURADAS -->
+        <!-- TARJETAS KPI -->
         <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5"></div>
 
         <div class="grid lg:grid-cols-[260px_1fr] gap-4">
@@ -171,30 +173,30 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                         <div id="alertasHoy" class="max-h-32 overflow-y-auto text-[10px]"><p class="text-cyan-200 text-center">Sin alertas</p></div>
                     </div>
 
-                    <!-- SECCIÓN FLOTA ACTUAL (BOTONES FLOTANTES) -->
+                    <!-- SECCIÓN FLOTA ACTUAL (BOTONES COMPACTOS) -->
                     <div class="bg-slate-900/50 rounded-xl p-3 border border-slate-700">
                         <div class="text-[10px] font-bold text-cyan-400 mb-3 flex justify-between items-center border-b border-slate-700 pb-2">
                             🚜 FLOTA ACTUAL
                             <span class="text-[9px] bg-cyan-900 px-2 py-0.5 rounded-full" id="totalFlotaCount">0</span>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-2 gap-2">
                             <!-- Columna Izquierda: Operativos -->
-                            <div class="flex flex-col gap-2">
+                            <div class="flex flex-col gap-1.5">
                                 <div class="text-[9px] font-bold text-emerald-400 uppercase tracking-wider text-center bg-emerald-900/20 py-1 rounded border border-emerald-500/20">
                                     ✅ Op. (<span id="countOp">0</span>)
                                 </div>
-                                <div id="listaOpsContainer" class="space-y-2 h-auto overflow-y-visible pr-1">
+                                <div id="listaOpsContainer" class="space-y-1.5 h-auto overflow-y-visible pr-1">
                                     <!-- Botones Ops -->
                                 </div>
                             </div>
 
                             <!-- Columna Derecha: Parados -->
-                            <div class="flex flex-col gap-2">
+                            <div class="flex flex-col gap-1.5">
                                 <div class="text-[9px] font-bold text-red-400 uppercase tracking-wider text-center bg-red-900/20 py-1 rounded border border-red-500/20">
                                     ⚠️ Pa. (<span id="countPa">0</span>)
                                 </div>
-                                <div id="listaPasContainer" class="space-y-2 h-auto overflow-y-visible pr-1">
+                                <div id="listaPasContainer" class="space-y-1.5 h-auto overflow-y-visible pr-1">
                                     <!-- Botones Pas -->
                                 </div>
                             </div>
@@ -216,7 +218,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                 </div>
 
-                <!-- PANEL TRAZABILIDAD (AHORA BARRAS VERTICALES) -->
+                <!-- PANEL TRAZABILIDAD (BARRAS VERTICALES CON ETIQUETAS) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
@@ -227,7 +229,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                         </div>
                     </div>
 
-                    <!-- Contenedor de Botones Flotantes (Selección Múltiple) -->
+                    <!-- Contenedor de Botones Flotantes -->
                     <div id="floatingTagsContainer" class="flex flex-wrap gap-2 mb-3 min-h-[30px]">
                         <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>
                     </div>
@@ -238,7 +240,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                 </div>
 
-                <!-- TABLA INFERIOR -->
+                <!-- TABLA INFERIOR (CON MODAL AL HACER CLIC) -->
                 <div class="glass-card p-4 min-w-0">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-cyan-400 text-xs">📋 FLOTA EN TIEMPO REAL</h3>
@@ -264,11 +266,30 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
     </div>
 </div>
 
+<!-- MODAL DETALLADO RESTAURADO -->
+<div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 rounded-2xl shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[92vh] flex flex-col overflow-hidden">
+        <div class="flex-shrink-0 border-b border-cyan-500/30 px-6 py-3 flex items-center justify-between bg-slate-900/95">
+            <button id="btnPrevEquipo" class="bg-slate-700 hover:bg-cyan-600 text-white w-9 h-9 rounded-lg flex-shrink-0">◀</button>
+            <div class="min-w-0 flex-1 text-center mx-2">
+                <h2 id="modalTitle" class="text-lg font-black text-cyan-400 truncate">📋 Detalle</h2>
+                <div id="modalEquipoCounter" class="text-[10px] text-slate-400">-</div>
+            </div>
+            <button id="btnNextEquipo" class="bg-cyan-600 hover:bg-cyan-500 text-white w-9 h-9 rounded-lg flex-shrink-0">▶</button>
+            <button id="btnCerrarModal" class="text-2xl text-cyan-300 hover:text-white ml-3 flex-shrink-0">&times;</button>
+        </div>
+        <div id="modalContent" class="flex-1 overflow-y-auto p-6"></div>
+        <div class="flex-shrink-0 border-t border-cyan-500/30 px-6 py-3 flex justify-end bg-slate-900/95">
+            <button id="btnCerrarModalFooter" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <script>
 const state = {
     sucursal: 'TODAS', mes: 'ACTUAL', 
     rawData: [], equipmentData: [], filteredData: [],
-    selectedEquipos: [] 
+    selectedEquipos: [], indiceModal: 0
 };
 
 const URLS = {
@@ -380,7 +401,6 @@ function actualizarTodo() {
     const ops = state.filteredData.filter(e => e.Estado === 'OPERATIVO');
     const pas = state.filteredData.filter(e => e.Estado !== 'OPERATIVO');
     
-    // KPIs Header (Restaurados)
     document.getElementById('totalEquipos').innerText = state.filteredData.length;
     document.getElementById('totalParados').innerText = pas.length;
     document.getElementById('countOp').innerText = ops.length;
@@ -391,22 +411,19 @@ function actualizarTodo() {
     pas.forEach(e => { const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); if(t) hsPerdidas += t.totalHs; });
     document.getElementById('totalHsPerdidas').innerText = Math.round(hsPerdidas) + 'h';
 
-    // Renderizar KPIs Tarjetas
     actualizarKPIsTarjetas(ops.length, pas.length, pas);
-
     renderizarBotonesPro(ops, pas);
     actualizarGraficosPrincipales(ops.length, pas.length, pas);
     actualizarTablaInferior();
     actualizarGraficoTrazabilidad();
 }
 
-// --- TARJETAS KPI RESTAURADAS ---
+// --- TARJETAS KPI ---
 function actualizarKPIsTarjetas(opCount, paCount, pasList) {
     const cont = document.getElementById('kpiContainer'); if (!cont) return;
     const total = opCount + paCount;
     const disp = total > 0 ? Math.round((opCount/total)*100) : 0;
     
-    // Calcular equipo crítico
     let critico = null, maxHs = 0;
     pasList.forEach(e => { 
         const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); 
@@ -443,14 +460,12 @@ function actualizarKPIsTarjetas(opCount, paCount, pasList) {
     `;
 }
 
-// --- RENDERIZADO DE BOTONES FLOTANTES CON TOOLTIPS ---
+// --- RENDERIZADO DE BOTONES COMPACTOS ---
 function renderizarBotonesPro(ops, pas) {
     const cOps = document.getElementById('listaOpsContainer');
     const cPas = document.getElementById('listaPasContainer');
     
-    cOps.innerHTML = ops.map(e => {
-        const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
-        return `
+    cOps.innerHTML = ops.map(e => `
         <div class="eq-btn eq-op ${state.selectedEquipos.includes(e.ID_Equipo) ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
             ${e.ID_Equipo}
             <div class="eq-tooltip">
@@ -458,10 +473,8 @@ function renderizarBotonesPro(ops, pas) {
                 <div class="tooltip-row"><span class="tooltip-label">Tipo:</span> <span>${e.Tipo_Equipo || '-'}</span></div>
                 <div class="tooltip-row"><span class="tooltip-label">Horómetro:</span> <span class="text-cyan-300 font-bold">${e.Lectura || '-'}h</span></div>
                 <div class="tooltip-row"><span class="tooltip-label">Estado:</span> <span class="text-emerald-400">✅ OPERATIVO</span></div>
-                <div class="tooltip-row"><span class="tooltip-label">Última carga:</span> <span>${e.Fecha_Carga || '-'}</span></div>
             </div>
-        </div>`;
-    }).join('');
+        </div>`).join('');
 
     cPas.innerHTML = pas.map(e => {
         const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
@@ -473,9 +486,7 @@ function renderizarBotonesPro(ops, pas) {
                 <div class="tooltip-title">${e.Equipo || 'Sin nombre'}</div>
                 <div class="tooltip-row"><span class="tooltip-label">Tipo:</span> <span>${e.Tipo_Equipo || '-'}</span></div>
                 <div class="tooltip-row"><span class="tooltip-label">Horómetro:</span> <span class="text-cyan-300 font-bold">${e.Lectura || '-'}h</span></div>
-                <div class="tooltip-row"><span class="tooltip-label">Estado:</span> <span class="text-red-400">⏸️ PARADO</span></div>
                 <div class="tooltip-row"><span class="tooltip-label">Tiempo parado:</span> <span class="text-amber-400 font-bold">${tiempoStr}</span></div>
-                <div class="tooltip-row"><span class="tooltip-label">Desde:</span> <span>${e.Fecha_Carga || '-'}</span></div>
             </div>
         </div>`;
     }).join('');
@@ -504,7 +515,7 @@ function renderizarTagsFlotantes() {
     }).join('');
 }
 
-// --- GRÁFICOS PRINCIPALES (DONA Y BARRAS HORIZONTALES) ---
+// --- GRÁFICOS PRINCIPALES ---
 function actualizarGraficosPrincipales(opCount, paCount, paradosList) {
     const ctxDona = document.getElementById('estadoChart');
     if (charts.dona) charts.dona.destroy();
@@ -525,7 +536,7 @@ function actualizarGraficosPrincipales(opCount, paCount, paradosList) {
     });
 }
 
-// --- TABLA INFERIOR ---
+// --- TABLA INFERIOR CON MODAL ---
 function actualizarTablaInferior() {
     const tb = document.getElementById('equipmentTableBody'); const cr = document.getElementById('contadorRegistros'); if (!tb) return;
     cr.innerText = state.filteredData.length + ' registros';
@@ -538,27 +549,144 @@ function actualizarTablaInferior() {
             const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
             if (ti && ti.totalHs > 0) { let h = '⏱️ '; if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `; h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`; celdaTiempo = `<span class="cronometro text-xs">${h}</span>`; }
         }
-        return `<tr class="${esParado ? 'pulse-alert' : ''}"><td class="font-bold text-cyan-300">${e.ID_Equipo}</td><td>${e.Equipo}</td><td class="text-slate-400">${e.Tipo_Equipo}</td><td>${e.sucursal}</td><td><span class="${badge}">${txt}</span></td><td>${celdaTiempo}</td><td>${e.Lectura}</td><td class="col-motivo">${e.Motivo_Parada||'-'}</td><td>${e.Reportante||'-'}</td></tr>`;
+        // Agregamos onclick para abrir el modal
+        return `<tr class="${esParado ? 'pulse-alert' : ''}" onclick="abrirModal(${i})"><td class="font-bold text-cyan-300">${e.ID_Equipo}</td><td>${e.Equipo}</td><td class="text-slate-400">${e.Tipo_Equipo}</td><td>${e.sucursal}</td><td><span class="${badge}">${txt}</span></td><td>${celdaTiempo}</td><td>${e.Lectura}</td><td class="col-motivo">${e.Motivo_Parada||'-'}</td><td>${e.Reportante||'-'}</td></tr>`;
     }).join('');
 }
 
-// --- GRÁFICO DE BARRAS VERTICALES (TRAZABILIDAD) ---
+// --- LÓGICA DEL MODAL ---
+function abrirModal(idx) {
+    if (idx < 0 || idx >= state.filteredData.length) return;
+    state.indiceModal = idx;
+    renderModal();
+    const m = document.getElementById('equipmentModal');
+    if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; }
+}
+
+function cerrarModal() {
+    const m = document.getElementById('equipmentModal');
+    if (m) { m.classList.add('hidden'); m.style.display = 'none'; }
+}
+
+function navModal(dir) {
+    const n = state.indiceModal + dir;
+    if (n < 0 || n >= state.filteredData.length) return;
+    state.indiceModal = n;
+    renderModal();
+}
+
+function renderModal() {
+    const e = state.filteredData[state.indiceModal]; if (!e) return;
+    const mt = document.getElementById('modalTitle'); const mc = document.getElementById('modalEquipoCounter'); 
+    const bp = document.getElementById('btnPrevEquipo'); const bn = document.getElementById('btnNextEquipo'); 
+    const cont = document.getElementById('modalContent');
+    
+    if (mt) mt.innerText = `📋 ${e.ID_Equipo} - ${e.Tipo_Equipo||'Sin tipo'}`;
+    if (mc) mc.innerText = `Equipo ${state.indiceModal+1} de ${state.filteredData.length}`;
+    if (bp) { bp.disabled = state.indiceModal === 0; bp.style.opacity = state.indiceModal === 0 ? '0.3' : '1'; }
+    if (bn) { bn.disabled = state.indiceModal === state.filteredData.length-1; bn.style.opacity = state.indiceModal === state.filteredData.length-1 ? '0.3' : '1'; }
+    if (!cont) return;
+    
+    const esParado = e.Estado !== 'OPERATIVO'; const ti = esParado ? calcTiempo(e.Fecha_Carga, e.Hora_Carga) : null;
+    let cronHTML = '';
+    if (esParado && e.Fecha_Carga) {
+        if (ti && ti.totalHs > 0 && ti.totalHs < 100000) { 
+            cronHTML = `<div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center"><div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div><div class="text-3xl font-black cronometro">${ti.dias>0?`<span class="crono-dia">${ti.dias}d</span> `:''}<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span></div><div class="text-[10px] text-slate-400 mt-2">Desde: ${e.Fecha_Carga} ${e.Hora_Carga||''}</div></div>`; 
+        } else { 
+            cronHTML = `<div class="bg-amber-950/30 border border-amber-500/50 rounded-xl p-4 text-center"><div class="text-xs text-amber-400"> 📅 ${e.Fecha_Carga||''} ${e.Hora_Carga||''}</div><div class="text-[10px] text-slate-400 mt-1">No se pudo calcular el tiempo</div></div>`; 
+        }
+    }
+    
+    // Historial simple (últimos registros del mismo equipo)
+    const hist = state.rawData.filter(x=>x.ID_Equipo===e.ID_Equipo).sort((a,b)=>parseFechaHora(b.Fecha_Carga,b.Hora_Carga)-parseFechaHora(a.Fecha_Carga,a.Hora_Carga)).slice(0, 5);
+    let histHTML = '';
+    if (hist.length > 0) {
+        histHTML = `<div class="mt-4 bg-slate-800/50 rounded-xl p-5 border border-cyan-500/30"><h3 class="font-bold text-cyan-400 text-base mb-4">📜 ÚLTIMOS REGISTROS</h3><div class="space-y-3">` +
+            hist.map(h => {
+                const esOp = h.Estado === 'OPERATIVO';
+                return `<div class="p-3 rounded-lg border ${esOp?'border-green-500/30 bg-green-950/10':'border-amber-500/30 bg-amber-950/10'}">
+                    <div class="flex justify-between items-center mb-2"><span class="font-bold text-sm ${esOp?'text-green-400':'text-amber-400'}">${esOp?'✅ OPERATIVO':'⏸️ PARADO'}</span><span class="text-xs text-slate-400">📅 ${h.Fecha_Carga} ${h.Hora_Carga||''}</span></div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div><span class="text-slate-500">Horómetro:</span> <span class="text-cyan-300 font-bold">${h.Lectura}h</span></div>
+                        <div><span class="text-slate-500">Reportante:</span> <span class="text-slate-300">${h.Reportante||'-'}</span></div>
+                    </div>
+                    ${h.Motivo_Parada?`<div class="mt-2 text-xs text-slate-300 modal-texto-completo"><span class="text-amber-400 font-bold">Motivo:</span> ${h.Motivo_Parada}</div>`:''}
+                </div>`;
+            }).join('') + '</div></div>';
+    }
+    
+    cont.innerHTML = `
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🔢 ID</div><div class="text-xl font-bold text-cyan-300">${e.ID_Equipo}</div></div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🏷️ Tipo</div><div class="text-sm font-bold text-white">${e.Tipo_Equipo||'-'}</div></div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🚜 Equipo</div><div class="text-base font-bold text-white">${e.Equipo}</div></div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🏢 Propiedad</div><div class="text-sm font-bold text-white">${e.Propiedad||'-'}</div></div>
+        </div>
+        ${cronHTML}
+        <div class="space-y-2 mt-4">
+            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-cyan-300">${e.sucursal}</span></div>
+            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="font-bold ${esParado?'text-amber-300':'text-green-300'}">${e.Estado}</span></div>
+            <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${e.Lectura||'-'}</span></div>
+            ${e.Motivo_Parada?`<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 font-bold uppercase tracking-wide mb-2">⚠️ Motivo</div><div class="text-[14px] text-slate-200 leading-relaxed modal-texto-completo">${e.Motivo_Parada}</div></div>`:''}
+            ${e.Observaciones?`<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-2">📝 Observaciones</div><div class="text-[14px] text-slate-200 leading-relaxed modal-texto-completo">${e.Observaciones}</div></div>`:''}
+        </div>
+        ${histHTML}
+    `;
+}
+
+// --- GRÁFICO DE BARRAS VERTICALES CON ETIQUETAS PERSONALIZADAS ---
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
 
-    // Filtrar datos según selección o mostrar todos
     let dataToShow = state.filteredData;
     if (state.selectedEquipos.length > 0) {
         dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
     }
 
-    // Ordenar por horómetro descendente para mejor visualización
+    // Ordenar por horómetro descendente
     dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
 
     const labels = dataToShow.map(e => e.ID_Equipo);
     const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
     const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
+    
+    // Plugin personalizado para dibujar etiquetas sobre las barras
+    const labelsPlugin = {
+        id: 'customLabels',
+        afterDatasetsDraw(chart) {
+            const { ctx, data, scales: { x, y } } = chart;
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            
+            data.datasets[0].data.forEach((value, index) => {
+                const xPos = x.getPixelForValue(index);
+                const yPos = y.getPixelForValue(value);
+                const equipo = dataToShow[index];
+                
+                // Emoji según tipo
+                let emoji = '⚙️';
+                const tipo = (equipo.Tipo_Equipo||'').toLowerCase();
+                if(tipo.includes('camion')) emoji = '🚛';
+                else if(tipo.includes('cargador')) emoji = '🚜';
+                else if(tipo.includes('topador')) emoji = '🚜';
+                else if(tipo.includes('perforadora')) emoji = '🔩';
+                else if(tipo.includes('motoniveladora')) emoji = '🛣️';
+                
+                // Dibujar Emoji + Interno
+                ctx.font = 'bold 12px Inter';
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillText(`${emoji} ${equipo.ID_Equipo}`, xPos, yPos - 25);
+                
+                // Dibujar Horómetro
+                ctx.font = 'bold 10px Inter';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText(`${value.toLocaleString('es-AR')}h`, xPos, yPos - 12);
+            });
+            ctx.restore();
+        }
+    };
 
     chartTrazabilidad = new Chart(ctx, {
         type: 'bar',
@@ -572,8 +700,10 @@ function actualizarGraficoTrazabilidad() {
                 barPercentage: 0.6
             }]
         },
+        plugins: [labelsPlugin],
         options: {
             responsive: true, maintainAspectRatio: false,
+            layout: { padding: { top: 40 } }, // Espacio extra arriba para las etiquetas
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -610,6 +740,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     document.getElementById('filterMes').addEventListener('change', (e) => { state.mes = e.target.value; aplicarFiltros(); });
+    
+    // Listeners del Modal
+    document.getElementById('btnPrevEquipo').addEventListener('click', () => navModal(-1));
+    document.getElementById('btnNextEquipo').addEventListener('click', () => navModal(1));
+    document.getElementById('btnCerrarModal').addEventListener('click', cerrarModal);
+    document.getElementById('btnCerrarModalFooter').addEventListener('click', cerrarModal);
+    document.addEventListener('keydown', (e) => {
+        const m = document.getElementById('equipmentModal');
+        if (m && !m.classList.contains('hidden')) {
+            if (e.key === 'Escape') cerrarModal();
+            if (e.key === 'ArrowLeft') navModal(-1);
+            if (e.key === 'ArrowRight') navModal(1);
+        }
+    });
+
     loadData(); setInterval(loadData, 60000);
 });
 </script>
