@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Minerar 2026 - Panel de Flota</title>
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js y Adaptador de Fechas -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 /* ESTILOS BASE */
@@ -13,7 +16,7 @@
 body { font-family: 'Inter', sans-serif; background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); color: #e2e8f0; font-size: clamp(11px, 2.5vw, 12px); min-height: 100vh; position: relative; overflow-x: hidden; }
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
 
-/* CONTENEDOR PRINCIPAL MÁS ANCHO */
+/* CONTENEDOR PRINCIPAL */
 .main-wrapper { max-width: 98%; margin: 0 auto; padding: 1rem; position: relative; z-index: 1; }
 
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: visible !important; min-width: 0; }
@@ -223,25 +226,25 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                 </div>
 
-                <!-- PANEL TRAZABILIDAD (AHORA BARRAS HORIZONTALES PARA MEJOR LEGIBILIDAD) -->
+                <!-- PANEL TRAZABILIDAD (AHORA LÍNEAS TEMPORALES) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
                             📈 TRAZABILIDAD DE RENDIMIENTO POR EQUIPO
                         </h3>
                         <div class="text-[10px] text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
-                            Comparativa de Horómetros Actuales
+                            Historial Temporal (Día/Mes vs Horómetro)
                         </div>
                     </div>
 
                     <!-- Contenedor de Botones Flotantes -->
                     <div id="floatingTagsContainer" class="flex flex-wrap gap-2 mb-3 min-h-[30px]">
-                        <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>
+                        <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para ver su historia...</span>
                     </div>
 
-                    <!-- Gráfico de Barras Horizontales (Más alto para acomodar 32 equipos) -->
-                    <div class="relative w-full h-[800px]">
-                        <canvas id="trazabilidadBarChart"></canvas>
+                    <!-- Gráfico de Líneas Temporales -->
+                    <div class="relative w-full h-[500px]">
+                        <canvas id="trazabilidadLineChart"></canvas>
                     </div>
                 </div>
 
@@ -582,7 +585,7 @@ function toggleSel(id) {
 function renderizarTagsFlotantes() {
     const c = document.getElementById('floatingTagsContainer');
     if (state.selectedEquipos.length === 0) {
-        c.innerHTML = '<span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>';
+        c.innerHTML = '<span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para ver su historia...</span>';
         return;
     }
     c.innerHTML = state.selectedEquipos.map(id => {
@@ -712,90 +715,108 @@ function renderModal() {
     `;
 }
 
-// --- GRÁFICO DE BARRAS HORIZONTALES (CORRECCIÓN 1: PARA EVITAR AMONTONAMIENTO) ---
+// --- GRÁFICO DE LÍNEAS TEMPORAL (CORRECCIÓN FINAL: TRAYECTORIA REAL) ---
 function actualizarGraficoTrazabilidad() {
-    const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
+    const ctx = document.getElementById('trazabilidadLineChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
 
+    // Determinar qué datos mostrar (selección manual o todos los filtrados)
     let dataToShow = state.filteredData;
     if (state.selectedEquipos.length > 0) {
         dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
     }
 
-    // Ordenar por horómetro descendente para mejor visualización
-    dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
-
-    const labels = dataToShow.map(e => e.ID_Equipo);
-    const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
-    const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
+    // Agrupar datos históricos por equipo desde state.rawData (para ver la trayectoria completa)
+    const historialPorEquipo = {};
     
-    // Plugin personalizado para dibujar etiquetas al final de las barras horizontales
-    const labelsPlugin = {
-        id: 'customLabels',
-        afterDatasetsDraw(chart) {
-            const { ctx, data, scales: { x, y } } = chart;
-            ctx.save();
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-            
-            data.datasets[0].data.forEach((value, index) => {
-                const xPos = x.getPixelForValue(value);
-                const yPos = y.getPixelForValue(index);
-                const equipo = dataToShow[index];
-                
-                let emoji = '⚙️';
-                const tipo = (equipo.Tipo_Equipo||'').toLowerCase();
-                if(tipo.includes('camion')) emoji = '🚛';
-                else if(tipo.includes('cargador')) emoji = '🚜';
-                else if(tipo.includes('topador')) emoji = '🚜';
-                else if(tipo.includes('perforadora')) emoji = '🔩';
-                else if(tipo.includes('motoniveladora')) emoji = '🛣️';
-                
-                // Dibujar Emoji + Interno + Horómetro al lado de la barra
-                ctx.font = 'bold 11px Inter';
-                ctx.fillStyle = '#e2e8f0';
-                ctx.fillText(`${emoji} ${equipo.ID_Equipo} (${value.toLocaleString('es-AR')}h)`, xPos + 8, yPos);
-            });
-            ctx.restore();
+    // Si hay selección, usamos solo esos equipos. Si no, tomamos los primeros 10-15 para no saturar
+    const equiposAgraficar = state.selectedEquipos.length > 0 
+        ? state.selectedEquipos 
+        : dataToShow.slice(0, 15).map(e => e.ID_Equipo);
+
+    equiposAgraficar.forEach(id => {
+        // Obtener TODO el historial de este equipo (no solo el último registro)
+        const registros = state.rawData.filter(r => r.ID_Equipo === id);
+        
+        // Ordenar cronológicamente
+        registros.sort((a,b) => parseFechaHora(a.Fecha_Carga, a.Hora_Carga) - parseFechaHora(b.Fecha_Carga, b.Hora_Carga));
+        
+        // Crear puntos de datos {x: fecha, y: horometro}
+        const puntos = registros.map(r => ({
+            x: parseFechaHora(r.Fecha_Carga, r.Hora_Carga),
+            y: parseFloat(r.Lectura) || 0
+        })).filter(p => p.x > 0); // Filtrar fechas inválidas
+        
+        if (puntos.length > 0) {
+            historialPorEquipo[id] = puntos;
         }
-    };
+    });
+
+    // Crear datasets para Chart.js
+    const datasets = Object.keys(historialPorEquipo).map((id, index) => {
+        const equipoInfo = state.equipmentData.find(e => e.ID_Equipo === id);
+        const esParado = equipoInfo && equipoInfo.Estado !== 'OPERATIVO';
+        
+        // Colores distintivos
+        const colores = ['#06b6d4', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6'];
+        const color = colores[index % colores.length];
+
+        return {
+            label: `${id}`,
+            data: historialPorEquipo[id],
+            borderColor: color,
+            backgroundColor: color + '20', // Transparente para relleno si se activa
+            borderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+            tension: 0.3, // Suavizado de línea
+            fill: false,
+            spanGaps: true // Conectar puntos aunque falten días intermedios
+        };
+    });
 
     chartTrazabilidad = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Horómetro Actual',
-                data: values,
-                backgroundColor: colors,
-                borderRadius: 6,
-                barPercentage: 0.7
-            }]
-        },
-        plugins: [labelsPlugin],
+        type: 'line',
+        data: { datasets: datasets },
         options: {
-            indexAxis: 'y', // CAMBIO CLAVE: Barras horizontales
             responsive: true, maintainAspectRatio: false,
-            layout: { padding: { right: 150 } }, // Espacio extra a la derecha para las etiquetas
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: false },
+                legend: { 
+                    position: 'top', 
+                    labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8 } 
+                },
                 tooltip: {
                     backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0',
                     callbacks: {
-                        title: (items) => items[0].label,
-                        label: (item) => `Horómetro: ${item.parsed.x.toLocaleString('es-AR')} hs`
+                        title: (items) => {
+                            const date = new Date(items[0].parsed.x);
+                            return `📅 ${date.toLocaleDateString('es-AR')}`;
+                        },
+                        label: (item) => {
+                            return `${item.dataset.label}: ${item.parsed.y.toLocaleString('es-AR')} hs`;
+                        }
                     }
                 }
             },
             scales: {
                 x: { 
-                    beginAtZero: true,
-                    grid: { color: 'rgba(148,163,184,0.1)' }, 
-                    ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } 
+                    type: 'time', // Eje X temporal
+                    time: {
+                        unit: 'day', // Unidad base
+                        displayFormats: {
+                            day: 'dd/MM',
+                            week: 'dd/MM',
+                            month: 'MMM yy'
+                        }
+                    },
+                    grid: { color: 'rgba(148,163,184,0.1)' },
+                    ticks: { color: '#94a3b8', maxRotation: 45, minRotation: 45 }
                 },
                 y: { 
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8', font: { size: 11, weight: 'bold' } }
+                    beginAtZero: false, 
+                    grid: { color: 'rgba(148,163,184,0.1)' }, 
+                    ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } 
                 }
             }
         }
