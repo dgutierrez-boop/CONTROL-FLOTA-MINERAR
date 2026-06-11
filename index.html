@@ -32,6 +32,7 @@ body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; heigh
 .sucursal-btn { padding: 8px 20px; border-radius: 20px; font-weight: 700; font-size: 12px; transition: all 0.2s ease; cursor: pointer; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(6, 182, 212, 0.4); color: #67e8f9; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .sucursal-btn.active { background: rgba(6, 182, 212, 0.3); border-color: #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
 .sucursal-btn img { height: 16px; width: auto; }
+.sucursal-btn.empty { opacity: 0.5; filter: grayscale(100%); border-style: dashed; }
 
 select { 
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
@@ -296,8 +297,9 @@ const state = {
     selectedEquipos: [], indiceModal: 0
 };
 
+// URLs de las hojas de Google Sheets
 const URLS = {
-    'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1740570339&single=true&output=csv',
+    'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1740570339&single=true&output=csv',
     'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=645868350&single=true&output=csv',
     'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1964233948&single=true&output=csv'
 };
@@ -349,17 +351,22 @@ function parseCSVCompleto(text) {
 function parseCSV(text, sucursalOrigen) {
     const rows = parseCSVCompleto(text); if (rows.length < 2) return [];
     const headers = rows[0].map(h => h.replace(/"/g, '').trim()); const data = [];
+    
+    // Detectar si la hoja está vacía o es solo encabezados
+    if (rows.length <= 1) return [];
+
     for (let i = 1; i < rows.length; i++) {
-        const vals = rows[i]; if (!vals || vals.length === 0) continue;
+        const vals = rows[i]; if (!vals || vals.length === 0 || !vals[0]) continue;
         const get = (names) => { for (const n of names) { const idx = headers.findIndex(h => h.toLowerCase().replace(/\s/g,'').includes(n.toLowerCase().replace(/\s/g,''))); if (idx !== -1 && vals[idx] !== undefined) return String(vals[idx]).trim(); } return ''; };
         
-        // CORRECCIÓN 2: Asignar sucursal basada en el origen de la carga y detectar propiedad
         const rawTipo = get(['TipoEquipo','Tipo']) || vals[2] || '';
         const rawEquipo = get(['Equipo']) || vals[1] || '';
         const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
         
-        let propiedadDetectada = 'PROPIO'; // Por defecto
-        if (combinedText.includes('alq') || combinedText.includes('rent') || combinedText.includes('tercer')) {
+        // CORRECCIÓN: Lógica mejorada para detectar propiedad
+        let propiedadDetectada = 'PROPIO'; 
+        const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat'];
+        if (keywordsAlquilado.some(kw => combinedText.includes(kw))) {
             propiedadDetectada = 'ALQUILADO';
         }
 
@@ -367,15 +374,19 @@ function parseCSV(text, sucursalOrigen) {
             ID_Equipo: get(['IDEquipo','ID']) || vals[0] || '', 
             Equipo: rawEquipo, 
             Tipo_Equipo: rawTipo, 
-            Propiedad: propiedadDetectada, // Usamos la detectada
+            Propiedad: propiedadDetectada, 
             Estado: get(['Estado']) || vals[4] || '', 
             Lectura: get(['Lectura']) || vals[6] || '', 
             Fecha_Carga: get(['FechaCarga','Fecha']) || vals[9] || '', 
             Hora_Carga: get(['HoraCarga','Hora']) || vals[10] || '', 
             Motivo_Parada: get(['MotivoParada','Motivo']) || vals[7] || '',
             Reportante: get(['Reportante']) || vals[8] || '',
-            sucursal: sucursalOrigen // Usamos estrictamente la sucursal de donde vino el CSV
+            sucursal: sucursalOrigen 
         };
+        
+        // Debug en consola para verificar detección
+        console.log(`Equipo ${mapped.ID_Equipo}: Propiedad=${mapped.Propiedad}, Sucursal=${mapped.sucursal}`);
+
         if (!mapped.ID_Equipo || mapped.ID_Equipo.length < 2) continue;
         if (mapped.Estado.toUpperCase().includes('FUERA')) mapped.Estado = 'FUERA_DE_SERVICIO'; 
         else if (mapped.Estado.toUpperCase() !== 'OPERATIVO') mapped.Estado = 'OPERATIVO';
@@ -387,11 +398,19 @@ function parseCSV(text, sucursalOrigen) {
 // --- CARGA DE DATOS ---
 async function loadData() {
     let all = [];
-    // Cargar datos pasando el nombre de la sucursal como segundo argumento
+    let sucursalesConDatos = new Set();
+    
     for (const [s, u] of Object.entries(URLS)) { 
-        try { const r = await fetch(u + '&t=' + Date.now()); const t = await r.text(); all = all.concat(parseCSV(t, s)); } 
+        try { 
+            const r = await fetch(u + '&t=' + Date.now()); 
+            const t = await r.text(); 
+            const parsed = parseCSV(t, s);
+            if (parsed.length > 0) sucursalesConDatos.add(s);
+            all = all.concat(parsed);
+        } 
         catch(e) { console.error('Error ' + s, e); } 
     }
+    
     state.rawData = all;
     const cons = {};
     all.forEach(e => { 
@@ -402,12 +421,31 @@ async function loadData() {
     });
     state.equipmentData = Object.values(cons);
     
+    // Si solo hay datos en una sucursal, seleccionarla por defecto
+    if (sucursalesConDatos.size === 1 && state.sucursal === 'TODAS') {
+        const unicaSuc = Array.from(sucursalesConDatos)[0];
+        state.sucursal = unicaSuc;
+        document.querySelectorAll('.sucursal-btn').forEach(b => b.classList.remove('active'));
+        const btnId = unicaSuc === 'MALAGUEÑO' ? 'btnMalagueno' : unicaSuc === 'BARKER' ? 'btnBarker' : 'btnPampita';
+        document.getElementById(btnId).classList.add('active');
+    }
+    
+    // Marcar botones vacíos
+    document.querySelectorAll('.sucursal-btn').forEach(btn => {
+        const suc = btn.getAttribute('data-suc');
+        if (suc !== 'TODAS' && !sucursalesConDatos.has(suc)) {
+            btn.classList.add('empty');
+        } else {
+            btn.classList.remove('empty');
+        }
+    });
+
     aplicarFiltros();
     actualizarFiltroEquipos();
 }
 
 function aplicarFiltros() {
-    // CORRECCIÓN 1 & 2: Filtrado estricto
+    // Filtrado estricto por sucursal primero
     let base = state.sucursal === 'TODAS' ? state.equipmentData : state.equipmentData.filter(e => e.sucursal === state.sucursal);
     
     if (state.mes !== 'ACTUAL') {
@@ -415,7 +453,7 @@ function aplicarFiltros() {
         base = base.filter(e => { const f = parseFechaHora(e.Fecha_Carga, e.Hora_Carga); if(!f) return false; const d=new Date(f); return d.getFullYear()===y && (d.getMonth()+1)===m; });
     }
     
-    // Filtrado por Propiedad (ahora funcionará porque asignamos la propiedad al cargar)
+    // CORRECCIÓN: Aplicar filtro de propiedad sobre los datos ya filtrados por sucursal
     base = base.filter(e => {
         const mp = state.propiedad === 'TODAS' || e.Propiedad === state.propiedad;
         const me = state.equipo === 'TODOS' || e.ID_Equipo === state.equipo;
