@@ -131,12 +131,12 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
     <div class="glass-card p-5 mb-5">
         <!-- SUCURSALES -->
         <div class="text-center mb-4">
-            <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
+            <h2 class="text-sm font-bold text-cyan-300 mb-3">🏭 SELECCIONAR SUCURSAL</h2>
             <div class="flex flex-wrap items-center justify-center gap-2">
                 <button id="btnTodas" class="sucursal-btn active" data-suc="TODAS"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🏭 TODAS</button>
-                <button id="btnMalagueno" class="sucursal-btn" data-suc="MALAGUEÑO"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">📍 MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn" data-suc="BARKER"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🐺 BARKER</button>
-                <button id="btnPampita" class="sucursal-btn" data-suc="LA_PAMPITA"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🌸 LA PAMPITA</button>
+                <button id="btnMalagueno" class="sucursal-btn" data-suc="MALAGUEÑO"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn" data-suc="BARKER"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> BARKER</button>
+                <button id="btnPampita" class="sucursal-btn" data-suc="LA_PAMPITA"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> LA PAMPITA</button>
             </div>
         </div>
 
@@ -346,23 +346,35 @@ function parseCSVCompleto(text) {
     return rows;
 }
 
-function parseCSV(text, sucursal) {
+function parseCSV(text, sucursalOrigen) {
     const rows = parseCSVCompleto(text); if (rows.length < 2) return [];
     const headers = rows[0].map(h => h.replace(/"/g, '').trim()); const data = [];
     for (let i = 1; i < rows.length; i++) {
         const vals = rows[i]; if (!vals || vals.length === 0) continue;
         const get = (names) => { for (const n of names) { const idx = headers.findIndex(h => h.toLowerCase().replace(/\s/g,'').includes(n.toLowerCase().replace(/\s/g,''))); if (idx !== -1 && vals[idx] !== undefined) return String(vals[idx]).trim(); } return ''; };
+        
+        // CORRECCIÓN 2: Asignar sucursal basada en el origen de la carga y detectar propiedad
+        const rawTipo = get(['TipoEquipo','Tipo']) || vals[2] || '';
+        const rawEquipo = get(['Equipo']) || vals[1] || '';
+        const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
+        
+        let propiedadDetectada = 'PROPIO'; // Por defecto
+        if (combinedText.includes('alq') || combinedText.includes('rent') || combinedText.includes('tercer')) {
+            propiedadDetectada = 'ALQUILADO';
+        }
+
         const mapped = { 
             ID_Equipo: get(['IDEquipo','ID']) || vals[0] || '', 
-            Equipo: get(['Equipo']) || vals[1] || '', 
-            Tipo_Equipo: get(['TipoEquipo','Tipo']) || vals[2] || '', 
+            Equipo: rawEquipo, 
+            Tipo_Equipo: rawTipo, 
+            Propiedad: propiedadDetectada, // Usamos la detectada
             Estado: get(['Estado']) || vals[4] || '', 
             Lectura: get(['Lectura']) || vals[6] || '', 
             Fecha_Carga: get(['FechaCarga','Fecha']) || vals[9] || '', 
             Hora_Carga: get(['HoraCarga','Hora']) || vals[10] || '', 
             Motivo_Parada: get(['MotivoParada','Motivo']) || vals[7] || '',
             Reportante: get(['Reportante']) || vals[8] || '',
-            sucursal: sucursal 
+            sucursal: sucursalOrigen // Usamos estrictamente la sucursal de donde vino el CSV
         };
         if (!mapped.ID_Equipo || mapped.ID_Equipo.length < 2) continue;
         if (mapped.Estado.toUpperCase().includes('FUERA')) mapped.Estado = 'FUERA_DE_SERVICIO'; 
@@ -375,6 +387,7 @@ function parseCSV(text, sucursal) {
 // --- CARGA DE DATOS ---
 async function loadData() {
     let all = [];
+    // Cargar datos pasando el nombre de la sucursal como segundo argumento
     for (const [s, u] of Object.entries(URLS)) { 
         try { const r = await fetch(u + '&t=' + Date.now()); const t = await r.text(); all = all.concat(parseCSV(t, s)); } 
         catch(e) { console.error('Error ' + s, e); } 
@@ -389,13 +402,12 @@ async function loadData() {
     });
     state.equipmentData = Object.values(cons);
     
-    // CORRECCIÓN 1 & 2: Aplicar filtros y actualizar UI solo después de tener datos
     aplicarFiltros();
-    actualizarFiltroEquipos(); // Llenar el select de equipos ahora que tenemos datos
+    actualizarFiltroEquipos();
 }
 
 function aplicarFiltros() {
-    // CORRECCIÓN 2: Filtrado estricto por sucursal
+    // CORRECCIÓN 1 & 2: Filtrado estricto
     let base = state.sucursal === 'TODAS' ? state.equipmentData : state.equipmentData.filter(e => e.sucursal === state.sucursal);
     
     if (state.mes !== 'ACTUAL') {
@@ -403,7 +415,7 @@ function aplicarFiltros() {
         base = base.filter(e => { const f = parseFechaHora(e.Fecha_Carga, e.Hora_Carga); if(!f) return false; const d=new Date(f); return d.getFullYear()===y && (d.getMonth()+1)===m; });
     }
     
-    // Filtros adicionales
+    // Filtrado por Propiedad (ahora funcionará porque asignamos la propiedad al cargar)
     base = base.filter(e => {
         const mp = state.propiedad === 'TODAS' || e.Propiedad === state.propiedad;
         const me = state.equipo === 'TODOS' || e.ID_Equipo === state.equipo;
@@ -742,12 +754,10 @@ function actualizarGraficoTrazabilidad() {
     });
 }
 
-// --- ACTUALIZAR SELECT DE EQUIPOS (CORRECCIÓN 1) ---
+// --- ACTUALIZAR SELECT DE EQUIPOS ---
 function actualizarFiltroEquipos() {
     const sel = document.getElementById('filterEquipo'); if (!sel) return;
     const val = sel.value;
-    
-    // Usar filteredData para que dependa de la sucursal seleccionada
     const eqs = state.filteredData; 
     const unicos = {}; 
     eqs.forEach(e => { if (!unicos[e.ID_Equipo]) unicos[e.ID_Equipo] = e; });
@@ -774,9 +784,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.sucursal-btn').forEach(b=>b.classList.remove('active'));
             e.currentTarget.classList.add('active');
             state.sucursal = e.currentTarget.getAttribute('data-suc');
-            state.selectedEquipos = []; // Limpiar selecciones al cambiar sucursal
+            state.selectedEquipos = []; 
             aplicarFiltros();
-            actualizarFiltroEquipos(); // Actualizar lista de equipos para la nueva sucursal
+            actualizarFiltroEquipos();
         });
     });
     
@@ -800,7 +810,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Cargar datos iniciales
     loadData(); 
     setInterval(loadData, 60000);
 });
