@@ -6,7 +6,6 @@
 <title>Minerar 2026 - Panel de Flota</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 /* ESTILOS BASE */
@@ -17,9 +16,15 @@ body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; heigh
 .header-container { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.4); padding: 16px 24px; margin-bottom: 20px; }
 .logo-shield { width: 48px; height: 48px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); border: 2px solid #06b6d4; flex-shrink: 0; }
 .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
+
+/* TARJETAS KPI RESTAURADAS */
 .kpi-cyan { border-left: 4px solid #06b6d4; background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); }
 .kpi-amber { border-left: 4px solid #f59e0b; background: linear-gradient(115deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); }
+.kpi-purple { border-left: 4px solid #a855f7; background: linear-gradient(115deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05)); }
 .kpi-red { border-left: 4px solid #ef4444; background: linear-gradient(115deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05)); }
+.kpi-green { border-left: 4px solid #10b981; background: linear-gradient(115deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05)); }
+.kpi-subtitulo { font-size: 10px; opacity: 0.85; margin-top: 2px; }
+
 .sucursal-btn { padding: 8px 20px; border-radius: 20px; font-weight: 700; font-size: 12px; transition: all 0.2s ease; cursor: pointer; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(6, 182, 212, 0.4); color: #67e8f9; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .sucursal-btn.active { background: rgba(6, 182, 212, 0.3); border-color: #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
 .sucursal-btn img { height: 16px; width: auto; }
@@ -36,7 +41,7 @@ select {
 ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
 ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 4px; }
 
-/* NUEVOS BOTONES FLOTANTES MINIMALISTAS */
+/* BOTONES FLOTANTES MINIMALISTAS */
 .eq-btn {
     display: flex; align-items: center; justify-content: center;
     width: 100%; height: 48px; border-radius: 10px; font-weight: 800; font-size: 16px;
@@ -48,21 +53,19 @@ select {
 .eq-btn:hover { transform: translateY(-3px) scale(1.02); filter: brightness(1.2); z-index: 10; }
 .eq-btn:active { transform: translateY(0) scale(0.98); }
 
-/* Colores Vivos y Degradados */
 .eq-op { background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 .eq-op.selected { border: 2px solid #ffffff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); background: linear-gradient(135deg, #047857, #059669); }
 
 .eq-pa { background: linear-gradient(135deg, #b91c1c, #ef4444); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 .eq-pa.selected { border: 2px solid #ffffff; box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); background: linear-gradient(135deg, #991b1b, #b91c1c); }
 
-/* TOOLTIP FLOTANTE PERSONALIZADO */
+/* TOOLTIP FLOTANTE */
 .eq-tooltip {
     visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
     background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
     border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px; padding: 10px 14px;
     width: max-content; max-width: 220px; z-index: 50; pointer-events: none;
-    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transition: all 0.2s ease;
-    text-align: left;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transition: all 0.2s ease; text-align: left;
 }
 .eq-btn:hover .eq-tooltip { visibility: visible; opacity: 1; bottom: 120%; }
 .eq-tooltip::after {
@@ -131,7 +134,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
             </div>
         </div>
 
-        <!-- KPIs SUPERIORES -->
+        <!-- TARJETAS KPI RESTAURADAS -->
         <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5"></div>
 
         <div class="grid lg:grid-cols-[260px_1fr] gap-4">
@@ -213,14 +216,14 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                 </div>
 
-                <!-- PANEL TRAZABILIDAD INTERACTIVA -->
+                <!-- PANEL TRAZABILIDAD (AHORA BARRAS VERTICALES) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
                             📈 TRAZABILIDAD DE RENDIMIENTO POR EQUIPO
                         </h3>
                         <div class="text-[10px] text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
-                            Zoom automático: Semanal (default) / Histórico (selección)
+                            Comparativa de Horómetros Actuales
                         </div>
                     </div>
 
@@ -229,9 +232,9 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                         <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>
                     </div>
 
-                    <!-- Gráfico Alto -->
-                    <div class="relative w-full h-[500px]">
-                        <canvas id="trazabilidadLineChart"></canvas>
+                    <!-- Gráfico de Barras Verticales -->
+                    <div class="relative w-full h-[400px]">
+                        <canvas id="trazabilidadBarChart"></canvas>
                     </div>
                 </div>
 
@@ -377,6 +380,7 @@ function actualizarTodo() {
     const ops = state.filteredData.filter(e => e.Estado === 'OPERATIVO');
     const pas = state.filteredData.filter(e => e.Estado !== 'OPERATIVO');
     
+    // KPIs Header (Restaurados)
     document.getElementById('totalEquipos').innerText = state.filteredData.length;
     document.getElementById('totalParados').innerText = pas.length;
     document.getElementById('countOp').innerText = ops.length;
@@ -387,10 +391,56 @@ function actualizarTodo() {
     pas.forEach(e => { const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); if(t) hsPerdidas += t.totalHs; });
     document.getElementById('totalHsPerdidas').innerText = Math.round(hsPerdidas) + 'h';
 
+    // Renderizar KPIs Tarjetas
+    actualizarKPIsTarjetas(ops.length, pas.length, pas);
+
     renderizarBotonesPro(ops, pas);
     actualizarGraficosPrincipales(ops.length, pas.length, pas);
     actualizarTablaInferior();
     actualizarGraficoTrazabilidad();
+}
+
+// --- TARJETAS KPI RESTAURADAS ---
+function actualizarKPIsTarjetas(opCount, paCount, pasList) {
+    const cont = document.getElementById('kpiContainer'); if (!cont) return;
+    const total = opCount + paCount;
+    const disp = total > 0 ? Math.round((opCount/total)*100) : 0;
+    
+    // Calcular equipo crítico
+    let critico = null, maxHs = 0;
+    pasList.forEach(e => { 
+        const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); 
+        if(t && t.totalHs > maxHs) { maxHs = t.totalHs; critico = e; } 
+    });
+    const promParada = paCount > 0 ? Math.round((document.getElementById('totalHsPerdidas').innerText.replace('h','') / paCount)) : 0;
+
+    cont.innerHTML = `
+        <div class="glass-card p-4 kpi-green">
+            <div class="text-xs font-bold text-green-400 mb-1">✅ DISPONIBILIDAD</div>
+            <div class="text-3xl font-black text-green-300">${disp}%</div>
+            <div class="kpi-subtitulo text-green-200">${opCount} de ${total} equipos</div>
+        </div>
+        <div class="glass-card p-4 kpi-cyan">
+            <div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div>
+            <div class="text-3xl font-black text-cyan-300">${opCount}</div>
+            <div class="kpi-subtitulo text-cyan-200">De ${total} · ${paCount} parados</div>
+        </div>
+        <div class="glass-card p-4 kpi-amber">
+            <div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div>
+            <div class="text-3xl font-black text-amber-300">${document.getElementById('totalHsPerdidas').innerText}</div>
+            <div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div>
+        </div>
+        <div class="glass-card p-4 kpi-red">
+            <div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div>
+            <div class="text-xl font-black text-red-300 truncate">${critico ? critico.ID_Equipo : '-'}</div>
+            <div class="kpi-subtitulo text-red-200">${critico ? Math.floor(maxHs/24)+'d '+Math.floor(maxHs%24)+'h parado' : 'Sin paradas'}</div>
+        </div>
+        <div class="glass-card p-4 kpi-purple">
+            <div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div>
+            <div class="text-3xl font-black text-purple-300">${promParada}h</div>
+            <div class="kpi-subtitulo text-purple-200">Por equipo parado</div>
+        </div>
+    `;
 }
 
 // --- RENDERIZADO DE BOTONES FLOTANTES CON TOOLTIPS ---
@@ -400,7 +450,6 @@ function renderizarBotonesPro(ops, pas) {
     
     cOps.innerHTML = ops.map(e => {
         const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
-        const tiempoStr = ti ? `${ti.dias}d ${ti.horas}h` : '0d 0h';
         return `
         <div class="eq-btn eq-op ${state.selectedEquipos.includes(e.ID_Equipo) ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
             ${e.ID_Equipo}
@@ -455,7 +504,7 @@ function renderizarTagsFlotantes() {
     }).join('');
 }
 
-// --- GRÁFICOS PRINCIPALES ---
+// --- GRÁFICOS PRINCIPALES (DONA Y BARRAS HORIZONTALES) ---
 function actualizarGraficosPrincipales(opCount, paCount, paradosList) {
     const ctxDona = document.getElementById('estadoChart');
     if (charts.dona) charts.dona.destroy();
@@ -493,47 +542,58 @@ function actualizarTablaInferior() {
     }).join('');
 }
 
-// --- GRÁFICO TRAZABILIDAD ---
+// --- GRÁFICO DE BARRAS VERTICALES (TRAZABILIDAD) ---
 function actualizarGraficoTrazabilidad() {
-    const ctx = document.getElementById('trazabilidadLineChart'); if (!ctx) return;
+    const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
 
-    const equiposMap = {};
-    state.rawData.forEach(reg => { 
-        const id = reg.ID_Equipo; const t = parseFechaHora(reg.Fecha_Carga, reg.Hora_Carga); if (!t) return;
-        if (!equiposMap[id]) equiposMap[id] = { id, tipo: reg.Tipo_Equipo||'', pts: [] };
-        equiposMap[id].pts.push({ x: t, y: parseFloat(reg.Lectura)||0, est: reg.Estado });
-    });
-
-    const datasets = Object.values(equiposMap).map(eq => {
-        eq.pts.sort((a,b) => a.x - b.x);
-        const isSel = state.selectedEquipos.includes(eq.id);
-        const isParado = eq.pts[eq.pts.length-1]?.est !== 'OPERATIVO';
-        const color = isParado ? '#ef4444' : '#10b981';
-        return {
-            label: eq.id, data: eq.pts.map(p=>({x:p.x, y:p.y})),
-            borderColor: color, borderWidth: isSel ? 4 : 1.5, pointRadius: isSel ? 5 : 1, pointHoverRadius: 6,
-            tension: 0.3, fill: false, spanGaps: true,
-            hidden: state.selectedEquipos.length > 0 && !isSel, order: isSel ? 0 : 1
-        };
-    });
-
-    let minT, maxT; const now = Date.now();
+    // Filtrar datos según selección o mostrar todos
+    let dataToShow = state.filteredData;
     if (state.selectedEquipos.length > 0) {
-        let sMin = Infinity, sMax = -Infinity;
-        state.selectedEquipos.forEach(id => { if(equiposMap[id]) equiposMap[id].pts.forEach(p => { if(p.x<sMin)sMin=p.x; if(p.x>sMax)sMax=p.x; }); });
-        if (sMin !== Infinity) { minT = sMin - (7 * 86400000); maxT = sMax + (7 * 86400000); }
-        else { minT = now - (28 * 86400000); maxT = now; }
-    } else { minT = now - (28 * 86400000); maxT = now; }
+        dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
+    }
+
+    // Ordenar por horómetro descendente para mejor visualización
+    dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
+
+    const labels = dataToShow.map(e => e.ID_Equipo);
+    const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
+    const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
 
     chartTrazabilidad = new Chart(ctx, {
-        type: 'line', data: { datasets },
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Horómetro Actual',
+                data: values,
+                backgroundColor: colors,
+                borderRadius: 6,
+                barPercentage: 0.6
+            }]
+        },
         options: {
-            responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-            plugins: { legend: { display: false }, tooltip: { backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0', callbacks: { title: c => new Date(c[0].parsed.x).toLocaleDateString('es-AR'), label: c => `${c.dataset.label}: ${c.parsed.y.toLocaleString('es-AR')} hs` } } },
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0',
+                    callbacks: {
+                        title: (items) => items[0].label,
+                        label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs`
+                    }
+                }
+            },
             scales: {
-                x: { type: 'time', time: { unit: 'week', displayFormats: { week: 'dd/MM' } }, min: minT, max: maxT, grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: '#94a3b8' } },
-                y: { beginAtZero: false, grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } }
+                x: { 
+                    ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45, minRotation: 45 }, 
+                    grid: { display: false } 
+                },
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(148,163,184,0.1)' }, 
+                    ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } 
+                }
             }
         }
     });
