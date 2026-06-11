@@ -14,7 +14,7 @@ body { font-family: 'Inter', sans-serif; background: radial-gradient(ellipse at 
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
 
 /* CONTENEDOR PRINCIPAL MÁS ANCHO */
-.main-wrapper { max-width: 95%; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 1; }
+.main-wrapper { max-width: 98%; margin: 0 auto; padding: 1rem; position: relative; z-index: 1; }
 
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: visible !important; min-width: 0; }
 .header-container { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.4); padding: 16px 24px; margin-bottom: 20px; }
@@ -361,7 +361,7 @@ function parseCSV(text, sucursalOrigen) {
         
         const rawTipo = get(['TipoEquipo','Tipo']) || vals[2] || '';
         const rawEquipo = get(['Equipo']) || vals[1] || '';
-        // CORRECCIÓN 3: Búsqueda case-insensitive y más amplia para propiedad
+        // CORRECCIÓN 1: Búsqueda case-insensitive y más amplia para propiedad
         const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
         
         let propiedadDetectada = 'PROPIO'; 
