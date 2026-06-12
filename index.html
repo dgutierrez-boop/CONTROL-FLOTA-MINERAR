@@ -14,18 +14,18 @@ body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; heigh
 
 /* CONTENEDOR RESPONSIVE - MÁS ESPACIO LATERAL */
 .main-wrapper { 
-    max-width: 1600px; 
+    max-width: 1800px; 
     margin: 0 auto; 
-    padding: 1.5rem 2rem; 
+    padding: 1.5rem 3rem; 
     position: relative; 
     z-index: 1; 
 }
 
-@media (max-width: 1400px) {
-    .main-wrapper { max-width: 1200px; padding: 1rem; }
+@media (max-width: 1600px) {
+    .main-wrapper { max-width: 1400px; padding: 1.5rem 2rem; }
 }
-@media (max-width: 1024px) {
-    .main-wrapper { max-width: 100%; padding: 0.75rem; }
+@media (max-width: 1200px) {
+    .main-wrapper { max-width: 100%; padding: 1rem; }
 }
 
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: visible !important; min-width: 0; }
@@ -572,7 +572,7 @@ function renderModal() {
 }
 
 // ============================================
-// GRÁFICO INTELIGENTE: BARRAS VERTICALES DELGADAS
+// GRÁFICO INTELIGENTE: CORREGIDO
 // ============================================
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
@@ -602,14 +602,22 @@ function actualizarGraficoTrazabilidad() {
         
         registrosHistoricos.sort((a, b) => a.fecha - b.fecha);
         
+        // CORRECCIÓN: Usar el rango completo de datos de los equipos seleccionados
+        // en lugar de limitar a 4 semanas
         let fechaMin, fechaMax;
         if (state.mes !== 'ACTUAL') {
             const [y, m] = state.mes.split('-').map(Number);
             fechaMin = new Date(y, m - 1, 1).getTime();
             fechaMax = new Date(y, m, 0, 23, 59, 59).getTime();
         } else {
-            fechaMax = Date.now();
-            fechaMin = fechaMax - (28 * 24 * 60 * 60 * 1000);
+            // Usar el rango completo de los datos históricos de los equipos seleccionados
+            if (registrosHistoricos.length > 0) {
+                fechaMin = registrosHistoricos[0].fecha; // Fecha más antigua
+                fechaMax = Date.now(); // Hasta hoy
+            } else {
+                fechaMax = Date.now();
+                fechaMin = fechaMax - (28 * 24 * 60 * 60 * 1000);
+            }
         }
         
         const registrosFiltrados = registrosHistoricos.filter(r => r.fecha >= fechaMin && r.fecha <= fechaMax);
@@ -641,6 +649,7 @@ function actualizarGraficoTrazabilidad() {
         const values = registrosFiltrados.map(r => r.lectura);
         const colors = registrosFiltrados.map(r => r.estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
         
+        // Plugin para dibujar etiquetas personalizadas (SOLO ARRIBA, no abajo)
         const labelsPlugin = {
             id: 'customLabels',
             afterDatasetsDraw(chart) {
@@ -673,12 +682,7 @@ function actualizarGraficoTrazabilidad() {
                     ctx.fillStyle = '#94a3b8';
                     ctx.fillText(`${value.toLocaleString('es-AR')}h`, xPos, yPos - 10);
                     
-                    // FECHA ABAJO (ya está en el label, pero la hacemos más visible)
-                    ctx.textBaseline = 'top';
-                    ctx.font = 'bold 10px Inter';
-                    ctx.fillStyle = '#67e8f9';
-                    const fechaStr = formatFecha(registro.fecha);
-                    ctx.fillText(fechaStr, xPos, y.getPixelForValue(0) + 5);
+                    // NO dibujar fecha abajo (ya está en el eje X)
                 });
                 
                 ctx.restore();
@@ -694,14 +698,14 @@ function actualizarGraficoTrazabilidad() {
                     data: values,
                     backgroundColor: colors,
                     borderRadius: 4,
-                    barPercentage: 0.5, // COLUMNAS MÁS DELGADAS
+                    barPercentage: 0.5,
                     categoryPercentage: 0.7
                 }]
             },
             plugins: [labelsPlugin],
             options: {
                 responsive: true, maintainAspectRatio: false,
-                layout: { padding: { top: 40, bottom: 30 } },
+                layout: { padding: { top: 40, bottom: 10 } },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
@@ -779,14 +783,6 @@ function actualizarGraficoTrazabilidad() {
                     ctx.font = 'bold 9px Inter';
                     ctx.fillStyle = '#94a3b8';
                     ctx.fillText(`${value.toLocaleString('es-AR')}h`, xPos, yPos - 10);
-                    
-                    // ABAJO: Dejar vacío o mostrar solo ID si hay pocos equipos
-                    if (dataToShow.length <= 10) {
-                        ctx.textBaseline = 'top';
-                        ctx.font = 'bold 10px Inter';
-                        ctx.fillStyle = '#67e8f9';
-                        ctx.fillText(equipo.ID_Equipo, xPos, y.getPixelForValue(0) + 5);
-                    }
                 });
                 
                 ctx.restore();
@@ -802,14 +798,14 @@ function actualizarGraficoTrazabilidad() {
                     data: values,
                     backgroundColor: colors,
                     borderRadius: 4,
-                    barPercentage: 0.5, // COLUMNAS MÁS DELGADAS
+                    barPercentage: 0.5,
                     categoryPercentage: 0.7
                 }]
             },
             plugins: [labelsPlugin],
             options: {
                 responsive: true, maintainAspectRatio: false,
-                layout: { padding: { top: 40, bottom: 20 } },
+                layout: { padding: { top: 40, bottom: 10 } },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
@@ -823,11 +819,7 @@ function actualizarGraficoTrazabilidad() {
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: { 
-                            display: dataToShow.length > 10, // Ocultar si hay muchos
-                            color: '#67e8f9',
-                            font: { size: 9 }
-                        }
+                        ticks: { display: false }
                     },
                     y: {
                         beginAtZero: true,
