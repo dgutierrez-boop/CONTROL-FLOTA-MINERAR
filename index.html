@@ -13,7 +13,7 @@ body {
     font-family: 'Inter', sans-serif; 
     background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); 
     color: #e2e8f0; 
-    font-size: 13px;
+    font-size: 14px; /* Aumentado para mejor legibilidad */
     min-height: 100vh; 
     position: relative; 
     overflow-x: auto; 
@@ -40,14 +40,17 @@ body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; heigh
 .sucursal-btn img { height: 18px; width: auto; }
 select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 30px !important; background-color: #0f172a; border: 1px solid #334155; color: #e2e8f0; border-radius: 12px; padding: 8px 12px; font-size: 13px; }
 .table-scroll { max-height: 450px; overflow-x: auto; overflow-y: auto; border-radius: 16px; width: 100%; }
-table { width: 100%; border-collapse: collapse; min-width: 900px; }
-table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 14px 12px; font-size: 12px; text-align: left; white-space: nowrap; }
-table tbody td { padding: 12px 10px; font-size: 12px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); vertical-align: middle; }
+table { width: 100%; border-collapse: collapse; min-width: 800px; }
+table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 14px 12px; font-size: 13px; text-align: left; white-space: nowrap; }
+table tbody td { padding: 12px 10px; font-size: 13px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); vertical-align: middle; font-weight: 500; }
 table tbody td.col-motivo { min-width: 320px; max-width: 500px; white-space: normal; overflow: visible; cursor: help; font-size: 12px; line-height: 1.4; }
 tr { cursor: pointer; transition: background-color 0.2s ease; }
 tr:hover { background-color: rgba(6, 182, 212, 0.1); }
 .status-operativo { background: rgba(6,182,212,0.2); color: #22d3ee; border: 1px solid #06b6d4; padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .status-parado { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid #f59e0b; padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+/* NUEVA CLASE: texto rojo para equipos parados en la tabla */
+.equipo-parado-texto { color: #f87171 !important; font-weight: 800 !important; text-shadow: 0 0 4px rgba(239, 68, 68, 0.3); }
+.equipo-operativo-texto { color: #e2e8f0 !important; font-weight: 600; }
 .cronometro { font-family: 'Courier New', monospace; font-weight: 900; letter-spacing: 0.5px; }
 .eq-btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 42px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); position: relative; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.5); letter-spacing: 0.5px; }
 .eq-op { background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
@@ -184,9 +187,19 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     <div class="table-scroll">
                         <table>
                             <thead>
-                                <tr><th>ID</th><th>EQUIPO</th><th>TIPO</th><th>SUCURSAL</th><th>ESTADO</th><th>⏱️ TIEMPO</th><th>LECTURA</th><th>MOTIVO</th><th>REPORTANTE</th></tr>
+                                <tr>
+                                    <th>EQUIPO</th>
+                                    <th>TIPO</th>
+                                    <th>SUCURSAL</th>
+                                    <th>ESTADO</th>
+                                    <th>⏱️ TIEMPO</th>
+                                    <th>LECTURA</th>
+                                    <th>MOTIVO</th>
+                                    <th>REPORTANTE</th>
+                                </tr>
                             </thead>
-                            <tbody id="equipmentTableBody"><tr><td colspan="9" class="text-center text-cyan-300 p-5">🔄 Cargando...</td></tr>
+                            <tbody id="equipmentTableBody">
+                                <tr><td colspan="8" class="text-center text-cyan-300 p-5">🔄 Cargando...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -495,20 +508,53 @@ function actualizarGraficosPrincipales(opCount, paCount, paradosList) {
     });
 }
 
+// ACTUALIZACIÓN DE TABLA: SIN columna ID, y con números de equipos PARADOS en ROJO
 function actualizarTablaInferior() {
-    const tb = document.getElementById('equipmentTableBody'); const cr = document.getElementById('contadorRegistros'); if (!tb) return;
+    const tb = document.getElementById('equipmentTableBody'); 
+    const cr = document.getElementById('contadorRegistros'); 
+    if (!tb) return;
+    
     let dataToShow = state.filteredData;
-    if (state.selectedEquipos.length > 0) dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
+    if (state.selectedEquipos.length > 0) {
+        dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
+    }
     cr.innerText = dataToShow.length + ' registros';
-    if (dataToShow.length === 0) { tb.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-5"> Sin datos para la selección actual</td></tr>'; return; }
+    
+    if (dataToShow.length === 0) { 
+        tb.innerHTML = '<tr><td colspan="8" class="text-center text-cyan-300 p-5"> Sin datos para la selección actual</td></tr>'; 
+        return; 
+    }
+    
     tb.innerHTML = dataToShow.map((e) => {
-        const esParado = e.Estado !== 'OPERATIVO'; const badge = esParado ? 'status-parado' : 'status-operativo'; const txt = esParado ? '⏸️ Parado' : '✅ Operativo';
-        let celdaTiempo = '<span class="text-slate-500 text-xs">-</span>';
+        const esParado = e.Estado !== 'OPERATIVO';
+        const badge = esParado ? 'status-parado' : 'status-operativo';
+        const txt = esParado ? '⏸️ Parado' : '✅ Operativo';
+        
+        // Celda de tiempo de parada
+        let celdaTiempo = '<span class="text-slate-400 text-xs">-</span>';
         if (esParado && e.Fecha_Carga) {
             const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
-            if (ti && ti.totalHs > 0) { let h = '⏱️ '; if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `; h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`; celdaTiempo = `<span class="cronometro text-sm">${h}</span>`; }
+            if (ti && ti.totalHs > 0) { 
+                let h = '⏱️ '; 
+                if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `; 
+                h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`; 
+                celdaTiempo = `<span class="cronometro text-sm">${h}</span>`; 
+            }
         }
-        return `<tr class="${esParado ? 'pulse-alert' : ''}" onclick="abrirModalPorId('${e.ID_Equipo}')"><td class="font-bold text-cyan-300">${e.ID_Equipo}</td><td>${e.Equipo}</td><td class="text-slate-400">${e.Tipo_Equipo}</td><td>${e.sucursal}</td><td><span class="${badge}">${txt}</span></td><td>${celdaTiempo}</td><td>${e.Lectura}</td><td class="col-motivo">${e.Motivo_Parada||'-'}</td><td>${e.Reportante||'-'}</td></tr>`;
+        
+        // Clase para el número de equipo: ROJO si está parado
+        const equipoClass = esParado ? 'equipo-parado-texto' : 'equipo-operativo-texto';
+        
+        return `<tr class="${esParado ? 'pulse-alert' : ''}" onclick="abrirModalPorId('${e.ID_Equipo}')">
+                    <td class="font-bold ${equipoClass}">${e.Equipo || e.ID_Equipo}</td>
+                    <td class="text-slate-300 font-medium">${e.Tipo_Equipo || '-'}</td>
+                    <td class="text-slate-300">${e.sucursal || '-'}</td>
+                    <td><span class="${badge}">${txt}</span></td>
+                    <td class="font-mono">${celdaTiempo}</td>
+                    <td class="text-amber-300 font-bold">${e.Lectura || '-'}</td>
+                    <td class="col-motivo text-slate-300">${e.Motivo_Parada || '-'}</td>
+                    <td class="text-slate-300">${e.Reportante || '-'}</td>
+                </tr>`;
     }).join('');
 }
 
@@ -567,24 +613,18 @@ function renderModal() {
     `;
 }
 
-// ============================================================
-// NUEVA FUNCIÓN: GRÁFICO SIEMPRE CON FECHAS CUANDO HAY EQUIPOS SELECCIONADOS
-// ============================================================
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
     const infoDiv = document.getElementById('graficoInfo');
     
-    // MODO HISTÓRICO: Si hay equipos seleccionados, mostrar historial con FECHAS
     if (state.selectedEquipos.length > 0) {
-        // Mostrar mensaje según el período
         if (state.mes !== 'ACTUAL') {
             infoDiv.innerText = `📅 Historial de ${state.selectedEquipos.length} equipo(s) - Período: ${state.mes.replace('-', ' de ')}`;
         } else {
             infoDiv.innerText = `📅 Historial COMPLETO de ${state.selectedEquipos.length} equipo(s) - Todas las fechas disponibles`;
         }
         
-        // Recolectar TODOS los registros históricos de los equipos seleccionados (sin filtro de mes)
         const registrosHistoricos = [];
         state.selectedEquipos.forEach(id => {
             const registros = state.rawData.filter(r => r.ID_Equipo === id);
@@ -602,10 +642,8 @@ function actualizarGraficoTrazabilidad() {
             });
         });
         
-        // Ordenar por fecha (más antigua a más reciente para ver evolución)
         registrosHistoricos.sort((a, b) => a.fecha - b.fecha);
         
-        // Si hay un mes específico seleccionado, filtrar por ese mes
         let registrosFiltrados = registrosHistoricos;
         if (state.mes !== 'ACTUAL') {
             const [year, month] = state.mes.split('-').map(Number);
@@ -635,7 +673,6 @@ function actualizarGraficoTrazabilidad() {
             return;
         }
         
-        // CREAR ETIQUETAS CON FECHA (día/mes) para el eje X
         const labels = registrosFiltrados.map(r => {
             const d = new Date(r.fecha);
             return `${d.getDate()}/${d.getMonth()+1}`;
@@ -644,7 +681,6 @@ function actualizarGraficoTrazabilidad() {
         const values = registrosFiltrados.map(r => r.lectura);
         const colors = registrosFiltrados.map(r => r.estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
         
-        // Plugin para mostrar ID del equipo ENCIMA de cada barra
         const labelsPlugin = {
             id: 'customLabels',
             afterDatasetsDraw(chart) {
@@ -663,13 +699,10 @@ function actualizarGraficoTrazabilidad() {
                     else if(tipo.includes('perforadora')) emoji = '🔩';
                     else if(tipo.includes('motoniveladora')) emoji = '🛣️';
                     
-                    // Mostrar ID del equipo arriba de la barra
                     ctx.font = 'bold 10px Inter';
                     ctx.fillStyle = '#e2e8f0';
                     ctx.textAlign = 'center';
                     ctx.fillText(`${emoji} ${registro.id}`, xPos, yPos - 22);
-                    
-                    // Mostrar valor del horómetro
                     ctx.font = 'bold 9px Inter';
                     ctx.fillStyle = '#94a3b8';
                     ctx.fillText(`${value.toLocaleString('es-AR')}h`, xPos, yPos - 10);
@@ -680,86 +713,22 @@ function actualizarGraficoTrazabilidad() {
         
         chartTrazabilidad = new Chart(ctx, {
             type: 'bar',
-            data: {
-                labels: labels,  // ← FECHAS en el eje X
-                datasets: [{
-                    label: 'Horómetro (hs)',
-                    data: values,
-                    backgroundColor: colors,
-                    borderRadius: 6,
-                    barPercentage: 0.7,
-                    categoryPercentage: 0.85
-                }]
-            },
+            data: { labels: labels, datasets: [{ label: 'Horómetro (hs)', data: values, backgroundColor: colors, borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.85 }] },
             plugins: [labelsPlugin],
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                layout: { padding: { top: 45, bottom: 20 } },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(15,23,42,0.95)',
-                        titleColor: '#06b6d4',
-                        bodyColor: '#e2e8f0',
-                        callbacks: {
-                            title: (items) => {
-                                const idx = items[0].dataIndex;
-                                const reg = registrosFiltrados[idx];
-                                return `${reg.id} - ${formatFechaLarga(reg.fecha)}`;
-                            },
-                            label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs`
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: {
-                            color: '#67e8f9',
-                            font: { size: 10, weight: 'bold' },
-                            autoSkip: true,
-                            maxRotation: 45,
-                            minRotation: 45
-                        },
-                        title: {
-                            display: true,
-                            text: '📅 Fecha (día/mes)',
-                            color: '#94a3b8',
-                            font: { size: 11 }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(148,163,184,0.1)' },
-                        ticks: {
-                            color: '#94a3b8',
-                            callback: function(value) {
-                                return value.toLocaleString('es-AR') + ' h';
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Horómetro (horas)',
-                            color: '#94a3b8',
-                            font: { size: 11 }
-                        }
-                    }
-                }
+                responsive: true, maintainAspectRatio: false, layout: { padding: { top: 45, bottom: 20 } },
+                plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.95)', titleColor: '#06b6d4', bodyColor: '#e2e8f0', callbacks: { title: (items) => { const idx = items[0].dataIndex; const reg = registrosFiltrados[idx]; return `${reg.id} - ${formatFechaLarga(reg.fecha)}`; }, label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs` } } },
+                scales: { x: { grid: { display: false }, ticks: { color: '#67e8f9', font: { size: 10, weight: 'bold' }, autoSkip: true, maxRotation: 45, minRotation: 45 }, title: { display: true, text: '📅 Fecha (día/mes)', color: '#94a3b8', font: { size: 11 } } }, y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: '#94a3b8', callback: function(value) { return value.toLocaleString('es-AR') + ' h'; } }, title: { display: true, text: 'Horómetro (horas)', color: '#94a3b8', font: { size: 11 } } } }
             }
         });
     }
-    // MODO SIN SELECCIÓN: Mostrar horómetros actuales (vista general)
     else {
         infoDiv.innerText = '📊 Horómetros actuales de la flota (Selecciona equipos para ver historial con fechas)';
-        
         let dataToShow = [...state.filteredData];
         dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
-        
         const labels = dataToShow.map(e => e.ID_Equipo);
         const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
         const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
-        
         const labelsPlugin = {
             id: 'customLabels',
             afterDatasetsDraw(chart) {
@@ -776,7 +745,6 @@ function actualizarGraficoTrazabilidad() {
                     else if(tipo.includes('topador')) emoji = '🚜';
                     else if(tipo.includes('perforadora')) emoji = '🔩';
                     else if(tipo.includes('motoniveladora')) emoji = '🛣️';
-                    
                     ctx.font = 'bold 11px Inter';
                     ctx.fillStyle = '#e2e8f0';
                     ctx.textAlign = 'center';
@@ -788,71 +756,11 @@ function actualizarGraficoTrazabilidad() {
                 ctx.restore();
             }
         };
-        
         chartTrazabilidad = new Chart(ctx, {
             type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Horómetro Actual',
-                    data: values,
-                    backgroundColor: colors,
-                    borderRadius: 6,
-                    barPercentage: 0.7,
-                    categoryPercentage: 0.85
-                }]
-            },
+            data: { labels: labels, datasets: [{ label: 'Horómetro Actual', data: values, backgroundColor: colors, borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.85 }] },
             plugins: [labelsPlugin],
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                layout: { padding: { top: 35, bottom: 15 } },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(15,23,42,0.95)',
-                        titleColor: '#06b6d4',
-                        bodyColor: '#e2e8f0',
-                        callbacks: {
-                            title: (items) => items[0].label,
-                            label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs`
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: {
-                            color: '#67e8f9',
-                            font: { size: 10, weight: 'bold' },
-                            autoSkip: true,
-                            maxRotation: 35,
-                            minRotation: 35
-                        },
-                        title: {
-                            display: true,
-                            text: '🚜 Número de Equipo',
-                            color: '#94a3b8',
-                            font: { size: 11 }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(148,163,184,0.1)' },
-                        ticks: {
-                            color: '#94a3b8',
-                            callback: function(value) {
-                                return value.toLocaleString('es-AR') + ' h';
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Horómetro (horas)',
-                            color: '#94a3b8',
-                            font: { size: 11 }
-                        }
-                    }
-                }
+            options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 35, bottom: 15 } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15,23,42,0.95)', titleColor: '#06b6d4', bodyColor: '#e2e8f0', callbacks: { title: (items) => items[0].label, label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs` } } }, scales: { x: { grid: { display: false }, ticks: { color: '#67e8f9', font: { size: 10, weight: 'bold' }, autoSkip: true, maxRotation: 35, minRotation: 35 }, title: { display: true, text: '🚜 Número de Equipo', color: '#94a3b8', font: { size: 11 } } }, y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: '#94a3b8', callback: function(value) { return value.toLocaleString('es-AR') + ' h'; } }, title: { display: true, text: 'Horómetro (horas)', color: '#94a3b8', font: { size: 11 } } } }
             }
         });
     }
