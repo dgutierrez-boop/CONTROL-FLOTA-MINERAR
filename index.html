@@ -8,87 +8,45 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ESTILOS BASE */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Inter', sans-serif; background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); color: #e2e8f0; font-size: clamp(11px, 2.5vw, 12px); min-height: 100vh; position: relative; overflow-x: hidden; }
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
-
-/* CONTENEDOR PRINCIPAL ENSANCHADO PERO CON MÁRGENES */
-.main-wrapper { max-width: 1800px; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 1; }
-
+.main-wrapper { max-width: 98%; margin: 0 auto; padding: 1rem; position: relative; z-index: 1; }
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: visible !important; min-width: 0; }
 .header-container { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.4); padding: 16px 24px; margin-bottom: 20px; }
 .logo-shield { width: 48px; height: 48px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); border: 2px solid #06b6d4; flex-shrink: 0; }
 .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
-
-/* TARJETAS KPI */
 .kpi-cyan { border-left: 4px solid #06b6d4; background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); }
 .kpi-amber { border-left: 4px solid #f59e0b; background: linear-gradient(115deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); }
 .kpi-purple { border-left: 4px solid #a855f7; background: linear-gradient(115deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05)); }
 .kpi-red { border-left: 4px solid #ef4444; background: linear-gradient(115deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05)); }
 .kpi-green { border-left: 4px solid #10b981; background: linear-gradient(115deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05)); }
 .kpi-subtitulo { font-size: 10px; opacity: 0.85; margin-top: 2px; }
-
 .sucursal-btn { padding: 8px 20px; border-radius: 20px; font-weight: 700; font-size: 12px; transition: all 0.2s ease; cursor: pointer; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(6, 182, 212, 0.4); color: #67e8f9; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .sucursal-btn.active { background: rgba(6, 182, 212, 0.3); border-color: #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
 .sucursal-btn img { height: 16px; width: auto; }
 .sucursal-btn.empty { opacity: 0.5; filter: grayscale(100%); border-style: dashed; }
-
-select { 
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
-    background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; 
-    padding-right: 30px !important; background-color: #0f172a; border: 1px solid #1e293b; color: #e2e8f0;
-}
-
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; padding-right: 30px !important; background-color: #0f172a; border: 1px solid #1e293b; color: #e2e8f0; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
 ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 4px; }
-
-/* BOTONES FLOTANTES COMPACTOS */
-.eq-btn {
-    display: flex; align-items: center; justify-content: center;
-    width: 100%; height: 36px; border-radius: 8px; font-weight: 800; font-size: 13px;
-    cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255,255,255,0.1); position: relative;
-    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.5); letter-spacing: 0.5px;
-}
+.eq-btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 36px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); position: relative; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.5); letter-spacing: 0.5px; }
 .eq-btn:hover { transform: translateY(-2px) scale(1.02); filter: brightness(1.2); z-index: 10; }
 .eq-btn:active { transform: translateY(0) scale(0.98); }
-
 .eq-op { background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 .eq-op.selected { border: 2px solid #ffffff; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); background: linear-gradient(135deg, #047857, #059669); }
-
 .eq-pa { background: linear-gradient(135deg, #b91c1c, #ef4444); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 .eq-pa.selected { border: 2px solid #ffffff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); background: linear-gradient(135deg, #991b1b, #b91c1c); }
-
-/* TOOLTIP FLOTANTE */
-.eq-tooltip {
-    visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
-    border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px; padding: 8px 12px;
-    width: max-content; max-width: 200px; z-index: 50; pointer-events: none;
-    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transition: all 0.2s ease; text-align: left;
-}
+.eq-tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px; padding: 8px 12px; width: max-content; max-width: 200px; z-index: 50; pointer-events: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transition: all 0.2s ease; text-align: left; }
 .eq-btn:hover .eq-tooltip { visibility: visible; opacity: 1; bottom: 120%; }
-.eq-tooltip::after {
-    content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px;
-    border-width: 6px; border-style: solid; border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
-}
+.eq-tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px; border-width: 6px; border-style: solid; border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent; }
 .tooltip-title { font-size: 11px; font-weight: 700; color: #22d3ee; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px; }
 .tooltip-row { font-size: 10px; color: #cbd5e1; margin-bottom: 2px; display: flex; justify-content: space-between; gap: 10px; }
 .tooltip-label { color: #64748b; }
-
-/* Tags flotantes de selección */
-.floating-tag {
-    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; 
-    font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; 
-    background: rgba(30, 41, 59, 0.9); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1);
-}
+.floating-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; background: rgba(30, 41, 59, 0.9); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); }
 .floating-tag:hover { background: rgba(51, 65, 85, 1); }
 .floating-tag .remove-btn { width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 10px; }
 .floating-tag .remove-btn:hover { background: #ef4444; }
-
-/* Estilos Tabla Inferior */
 .table-scroll { max-height: 400px; overflow-x: auto; overflow-y: auto; border-radius: 12px; width: 100%; }
 table { width: 100%; border-collapse: collapse; min-width: 900px; }
 table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 10px; font-size: 11px; text-align: left; white-space: nowrap; }
@@ -102,8 +60,6 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
 .crono-dia { color: #f87171; } .crono-hora { color: #fbbf24; } .crono-min { color: #67e8f9; }
 @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } }
 .pulse-alert { animation: pulse-red 2s infinite; }
-
-/* MODAL ESTILOS */
 .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
 @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
 .modal-texto-completo { white-space: normal !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.5; }
@@ -111,8 +67,6 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
 </head>
 <body>
 <div class="main-wrapper">
-
-    <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3 min-w-0">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
@@ -130,7 +84,6 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
     </div>
 
     <div class="glass-card p-5 mb-5">
-        <!-- SUCURSALES -->
         <div class="text-center mb-4">
             <h2 class="text-sm font-bold text-cyan-300 mb-3">📍 SELECCIONAR SUCURSAL</h2>
             <div class="flex flex-wrap items-center justify-center gap-2">
@@ -141,13 +94,11 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
             </div>
         </div>
 
-        <!-- TARJETAS KPI -->
         <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5"></div>
 
         <div class="grid lg:grid-cols-[260px_1fr] gap-4">
             <aside>
                 <div class="glass-card p-4 h-full">
-                    <!-- FILTROS -->
                     <h3 class="font-bold mb-3 text-cyan-400 text-xs">📋 FILTROS</h3>
                     <label class="text-[10px] font-bold text-amber-300 mb-1 block">📅 PERÍODO / MES</label>
                     <select id="filterMes" class="w-full mb-3 rounded-lg p-2 text-xs font-semibold border border-amber-500/30">
@@ -156,54 +107,39 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                         <option value="2026-03">📅 Marzo 2026</option><option value="2026-04">📅 Abril 2026</option>
                         <option value="2026-05">📅 Mayo 2026</option><option value="2026-06">📅 Junio 2026</option>
                     </select>
-                    
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🏢 PROPIEDAD</label>
                     <select id="filterPropiedad" class="w-full mb-3 rounded-lg p-2 text-xs font-semibold border border-cyan-600/30">
                         <option value="TODAS">Todas</option><option value="PROPIO">Propio</option><option value="ALQUILADO">Alquilado</option>
                     </select>
-                    
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 EQUIPO (N° Interno)</label>
                     <select id="filterEquipo" class="w-full mb-3 rounded-lg p-2 text-xs font-semibold border border-cyan-600/30">
                         <option value="TODOS">🔎 Todos los equipos</option>
                     </select>
-                    
                     <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🔍 ESTADO</label>
                     <select id="filterEstado" class="w-full mb-4 rounded-lg p-2 text-xs font-semibold border border-cyan-600/30">
                         <option value="TODOS">Todos</option><option value="OPERATIVO">✅ Operativo</option><option value="PARADO">⏸️ Parado</option>
                     </select>
-                    
-                    <!-- ALERTAS HOY -->
                     <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30 mb-4">
                         <div class="text-[10px] font-bold text-cyan-400 mb-2">🚨 ALERTAS HOY</div>
                         <div id="alertasHoy" class="max-h-32 overflow-y-auto text-[10px]"><p class="text-cyan-200 text-center">Sin alertas</p></div>
                     </div>
-
-                    <!-- SECCIÓN FLOTA ACTUAL (BOTONES COMPACTOS) -->
                     <div class="bg-slate-900/50 rounded-xl p-3 border border-slate-700">
                         <div class="text-[10px] font-bold text-cyan-400 mb-3 flex justify-between items-center border-b border-slate-700 pb-2">
                             🚜 FLOTA ACTUAL
                             <span class="text-[9px] bg-cyan-900 px-2 py-0.5 rounded-full" id="totalFlotaCount">0</span>
                         </div>
-                        
                         <div class="grid grid-cols-2 gap-2">
-                            <!-- Columna Izquierda: Operativos -->
                             <div class="flex flex-col gap-1.5">
                                 <div class="text-[9px] font-bold text-emerald-400 uppercase tracking-wider text-center bg-emerald-900/20 py-1 rounded border border-emerald-500/20">
                                     ✅ Op. (<span id="countOp">0</span>)
                                 </div>
-                                <div id="listaOpsContainer" class="space-y-1.5 h-auto overflow-y-visible pr-1">
-                                    <!-- Botones Ops -->
-                                </div>
+                                <div id="listaOpsContainer" class="space-y-1.5 h-auto overflow-y-visible pr-1"></div>
                             </div>
-
-                            <!-- Columna Derecha: Parados -->
                             <div class="flex flex-col gap-1.5">
                                 <div class="text-[9px] font-bold text-red-400 uppercase tracking-wider text-center bg-red-900/20 py-1 rounded border border-red-500/20">
                                     ⚠️ Pa. (<span id="countPa">0</span>)
                                 </div>
-                                <div id="listaPasContainer" class="space-y-1.5 h-auto overflow-y-visible pr-1">
-                                    <!-- Botones Pas -->
-                                </div>
+                                <div id="listaPasContainer" class="space-y-1.5 h-auto overflow-y-visible pr-1"></div>
                             </div>
                         </div>
                     </div>
@@ -211,7 +147,6 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
             </aside>
 
             <main class="min-w-0">
-                <!-- GRÁFICOS PRINCIPALES -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div class="glass-card p-4 min-w-0">
                         <h3 class="font-bold text-cyan-400 text-xs mb-2">📊 ESTADO DE FLOTA</h3>
@@ -223,29 +158,23 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                 </div>
 
-                <!-- PANEL TRAZABILIDAD (AHORA BARRAS HORIZONTALES PARA MEJOR LEGIBILIDAD) -->
                 <div class="glass-card p-4 min-w-0 mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-cyan-400 text-sm flex items-center gap-2">
                             📈 TRAZABILIDAD DE RENDIMIENTO POR EQUIPO
                         </h3>
-                        <div class="text-[10px] text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
-                            Comparativa de Horómetros Actuales
+                        <div id="graficoInfo" class="text-[10px] text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+                            Horómetros Actuales
                         </div>
                     </div>
-
-                    <!-- Contenedor de Botones Flotantes -->
                     <div id="floatingTagsContainer" class="flex flex-wrap gap-2 mb-3 min-h-[30px]">
-                        <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>
+                        <span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para ver su historial...</span>
                     </div>
-
-                    <!-- Gráfico de Barras Horizontales (Más alto para acomodar 32 equipos) -->
-                    <div class="relative w-full h-[800px]">
+                    <div class="relative w-full h-[600px]">
                         <canvas id="trazabilidadBarChart"></canvas>
                     </div>
                 </div>
 
-                <!-- TABLA INFERIOR (CON MODAL AL HACER CLIC) -->
                 <div class="glass-card p-4 min-w-0">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-cyan-400 text-xs">📋 FLOTA EN TIEMPO REAL</h3>
@@ -253,25 +182,16 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
                     </div>
                     <div class="table-scroll">
                         <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th><th>EQUIPO</th><th>TIPO</th><th>SUCURSAL</th>
-                                    <th>ESTADO</th><th>⏱️ TIEMPO</th><th>LECTURA</th><th>MOTIVO</th><th>REPORTANTE</th>
-                                </tr>
-                            </thead>
-                            <tbody id="equipmentTableBody">
-                                <tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr>
-                            </tbody>
+                            <thead><tr><th>ID</th><th>EQUIPO</th><th>TIPO</th><th>SUCURSAL</th><th>ESTADO</th><th>⏱️ TIEMPO</th><th>LECTURA</th><th>MOTIVO</th><th>REPORTANTE</th></tr></thead>
+                            <tbody id="equipmentTableBody"><tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
-
             </main>
         </div>
     </div>
 </div>
 
-<!-- MODAL DETALLADO RESTAURADO -->
 <div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-slate-900 rounded-2xl shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[92vh] flex flex-col overflow-hidden">
         <div class="flex-shrink-0 border-b border-cyan-500/30 px-6 py-3 flex items-center justify-between bg-slate-900/95">
@@ -297,7 +217,6 @@ const state = {
     selectedEquipos: [], indiceModal: 0
 };
 
-// URLs de las hojas de Google Sheets
 const URLS = {
     'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1740570339&single=true&output=csv',
     'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=645868350&single=true&output=csv',
@@ -305,15 +224,13 @@ const URLS = {
 };
 
 let chartTrazabilidad = null;
-let charts = {}; 
+let charts = {};
 
-// --- UTILIDADES ---
 function parseFechaHora(fechaStr, horaStr) {
     try {
         if (!fechaStr) return 0;
         let fecha = String(fechaStr).trim(); let hora = String(horaStr || '00:00').trim();
         if (fecha.includes(' ') && !fecha.includes('T')) { const p = fecha.split(' '); fecha = p[0]; if (p[1]) hora = p[1]; }
-        
         if (fecha.match(/^\d{4}-\d{2}-\d{2}$/)) {
             let hNorm = '00:00:00';
             if (hora.includes(':')) { const p = hora.split(':'); hNorm = `${String(p[0]||'0').padStart(2,'0')}:${String(p[1]||'0').padStart(2,'0')}:${String(p[2]||'0').padStart(2,'0')}`; }
@@ -331,10 +248,24 @@ function parseFechaHora(fechaStr, horaStr) {
     } catch(e) { return 0; }
 }
 
-function calcTiempo(fechaStr, horaStr) { 
-    const fp = parseFechaHora(fechaStr, horaStr); if (!fp) return null; 
-    const diff = new Date().getTime() - fp; if (diff < 0) return null; 
-    return { dias: Math.floor(diff / 86400000), horas: Math.floor((diff % 86400000) / 3600000), minutos: Math.floor((diff % 3600000) / 60000), totalHs: diff / 3600000 }; 
+function formatFecha(timestamp) {
+    if (!timestamp) return '';
+    const d = new Date(timestamp);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    return `${day}/${month}`;
+}
+
+function formatFechaLarga(timestamp) {
+    if (!timestamp) return '';
+    const d = new Date(timestamp);
+    return d.toLocaleDateString('es-AR');
+}
+
+function calcTiempo(fechaStr, horaStr) {
+    const fp = parseFechaHora(fechaStr, horaStr); if (!fp) return null;
+    const diff = new Date().getTime() - fp; if (diff < 0) return null;
+    return { dias: Math.floor(diff / 86400000), horas: Math.floor((diff % 86400000) / 3600000), minutos: Math.floor((diff % 3600000) / 60000), totalHs: diff / 3600000 };
 }
 
 function parseCSVCompleto(text) {
@@ -351,78 +282,57 @@ function parseCSVCompleto(text) {
 function parseCSV(text, sucursalOrigen) {
     const rows = parseCSVCompleto(text); if (rows.length < 2) return [];
     const headers = rows[0].map(h => h.replace(/"/g, '').trim()); const data = [];
-    
-    // Detectar si la hoja está vacía o es solo encabezados
     if (rows.length <= 1) return [];
-
     for (let i = 1; i < rows.length; i++) {
         const vals = rows[i]; if (!vals || vals.length === 0 || !vals[0]) continue;
         const get = (names) => { for (const n of names) { const idx = headers.findIndex(h => h.toLowerCase().replace(/\s/g,'').includes(n.toLowerCase().replace(/\s/g,''))); if (idx !== -1 && vals[idx] !== undefined) return String(vals[idx]).trim(); } return ''; };
-        
         const rawTipo = get(['TipoEquipo','Tipo']) || vals[2] || '';
         const rawEquipo = get(['Equipo']) || vals[1] || '';
-        const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
-        
-        // CORRECCIÓN 1: Lógica mejorada y más flexible para detectar propiedad
-        let propiedadDetectada = 'PROPIO'; 
-        // Buscamos varias variantes comunes de "alquilado"
-        const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat', 'leasing', 'hertz'];
-        if (keywordsAlquilado.some(kw => combinedText.includes(kw))) {
-            propiedadDetectada = 'ALQUILADO';
+        let propiedadDetectada = get(['Propiedad', 'Ownership', 'Type']);
+        if (!propiedadDetectada || propiedadDetectada === '') {
+            const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
+            const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat', 'leasing', 'hertz', 'outsourcing', 'prestado'];
+            propiedadDetectada = keywordsAlquilado.some(kw => combinedText.includes(kw)) ? 'ALQUILADO' : 'PROPIO';
+        } else {
+            propiedadDetectada = propiedadDetectada.toUpperCase().includes('ALQ') || propiedadDetectada.toUpperCase().includes('RENT') ? 'ALQUILADO' : 'PROPIO';
         }
-
-        const mapped = { 
-            ID_Equipo: get(['IDEquipo','ID']) || vals[0] || '', 
-            Equipo: rawEquipo, 
-            Tipo_Equipo: rawTipo, 
-            Propiedad: propiedadDetectada, 
-            Estado: get(['Estado']) || vals[4] || '', 
-            Lectura: get(['Lectura']) || vals[6] || '', 
-            Fecha_Carga: get(['FechaCarga','Fecha']) || vals[9] || '', 
-            Hora_Carga: get(['HoraCarga','Hora']) || vals[10] || '', 
-            Motivo_Parada: get(['MotivoParada','Motivo']) || vals[7] || '',
-            Reportante: get(['Reportante']) || vals[8] || '',
-            sucursal: sucursalOrigen 
+        const mapped = {
+            ID_Equipo: get(['IDEquipo','ID']) || vals[0] || '',
+            Equipo: rawEquipo, Tipo_Equipo: rawTipo, Propiedad: propiedadDetectada,
+            Estado: get(['Estado']) || vals[4] || '', Lectura: get(['Lectura']) || vals[6] || '',
+            Fecha_Carga: get(['FechaCarga','Fecha']) || vals[9] || '', Hora_Carga: get(['HoraCarga','Hora']) || vals[10] || '',
+            Motivo_Parada: get(['MotivoParada','Motivo']) || vals[7] || '', Reportante: get(['Reportante']) || vals[8] || '',
+            sucursal: sucursalOrigen
         };
-        
-        // Debug en consola para verificar detección
-        console.log(`Equipo ${mapped.ID_Equipo}: Propiedad=${mapped.Propiedad}, Sucursal=${mapped.sucursal}`);
-
         if (!mapped.ID_Equipo || mapped.ID_Equipo.length < 2) continue;
-        if (mapped.Estado.toUpperCase().includes('FUERA')) mapped.Estado = 'FUERA_DE_SERVICIO'; 
+        if (mapped.Estado.toUpperCase().includes('FUERA')) mapped.Estado = 'FUERA_DE_SERVICIO';
         else if (mapped.Estado.toUpperCase() !== 'OPERATIVO') mapped.Estado = 'OPERATIVO';
         data.push(mapped);
     }
     return data;
 }
 
-// --- CARGA DE DATOS ---
 async function loadData() {
     let all = [];
     let sucursalesConDatos = new Set();
-    
-    for (const [s, u] of Object.entries(URLS)) { 
-        try { 
-            const r = await fetch(u + '&t=' + Date.now()); 
-            const t = await r.text(); 
+    for (const [s, u] of Object.entries(URLS)) {
+        try {
+            const r = await fetch(u + '&t=' + Date.now());
+            const t = await r.text();
             const parsed = parseCSV(t, s);
             if (parsed.length > 0) sucursalesConDatos.add(s);
             all = all.concat(parsed);
-        } 
-        catch(e) { console.error('Error ' + s, e); } 
+        } catch(e) { console.error('Error ' + s, e); }
     }
-    
     state.rawData = all;
     const cons = {};
-    all.forEach(e => { 
-        const k = e.ID_Equipo + '_' + e.sucursal; 
-        const fa = parseFechaHora(e.Fecha_Carga, e.Hora_Carga); 
-        const fe = cons[k] ? parseFechaHora(cons[k].Fecha_Carga, cons[k].Hora_Carga) : 0; 
-        if (!cons[k] || fa >= fe) cons[k] = e; 
+    all.forEach(e => {
+        const k = e.ID_Equipo + '_' + e.sucursal;
+        const fa = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
+        const fe = cons[k] ? parseFechaHora(cons[k].Fecha_Carga, cons[k].Hora_Carga) : 0;
+        if (!cons[k] || fa >= fe) cons[k] = e;
     });
     state.equipmentData = Object.values(cons);
-    
-    // Si solo hay datos en una sucursal, seleccionarla por defecto
     if (sucursalesConDatos.size === 1 && state.sucursal === 'TODAS') {
         const unicaSuc = Array.from(sucursalesConDatos)[0];
         state.sucursal = unicaSuc;
@@ -430,40 +340,29 @@ async function loadData() {
         const btnId = unicaSuc === 'MALAGUEÑO' ? 'btnMalagueno' : unicaSuc === 'BARKER' ? 'btnBarker' : 'btnPampita';
         document.getElementById(btnId).classList.add('active');
     }
-    
-    // Marcar botones vacíos
     document.querySelectorAll('.sucursal-btn').forEach(btn => {
         const suc = btn.getAttribute('data-suc');
-        if (suc !== 'TODAS' && !sucursalesConDatos.has(suc)) {
-            btn.classList.add('empty');
-        } else {
-            btn.classList.remove('empty');
-        }
+        if (suc !== 'TODAS' && !sucursalesConDatos.has(suc)) btn.classList.add('empty');
+        else btn.classList.remove('empty');
     });
-
     aplicarFiltros();
     actualizarFiltroEquipos();
 }
 
 function aplicarFiltros() {
-    // Filtrado estricto por sucursal primero
     let base = state.sucursal === 'TODAS' ? state.equipmentData : state.equipmentData.filter(e => e.sucursal === state.sucursal);
-    
     if (state.mes !== 'ACTUAL') {
         const [y, m] = state.mes.split('-').map(Number);
         base = base.filter(e => { const f = parseFechaHora(e.Fecha_Carga, e.Hora_Carga); if(!f) return false; const d=new Date(f); return d.getFullYear()===y && (d.getMonth()+1)===m; });
     }
-    
-    // CORRECCIÓN: Aplicar filtro de propiedad sobre los datos ya filtrados por sucursal
     base = base.filter(e => {
         const mp = state.propiedad === 'TODAS' || e.Propiedad === state.propiedad;
         const me = state.equipo === 'TODOS' || e.ID_Equipo === state.equipo;
         let me2 = true;
-        if (state.estado === 'OPERATIVO') me2 = e.Estado === 'OPERATIVO'; 
+        if (state.estado === 'OPERATIVO') me2 = e.Estado === 'OPERATIVO';
         else if (state.estado === 'PARADO') me2 = e.Estado !== 'OPERATIVO';
         return mp && me && me2;
     });
-
     state.filteredData = base.sort((a,b) => a.ID_Equipo.localeCompare(b.ID_Equipo, undefined, {numeric:true}));
     actualizarTodo();
 }
@@ -471,17 +370,14 @@ function aplicarFiltros() {
 function actualizarTodo() {
     const ops = state.filteredData.filter(e => e.Estado === 'OPERATIVO');
     const pas = state.filteredData.filter(e => e.Estado !== 'OPERATIVO');
-    
     document.getElementById('totalEquipos').innerText = state.filteredData.length;
     document.getElementById('totalParados').innerText = pas.length;
     document.getElementById('countOp').innerText = ops.length;
     document.getElementById('countPa').innerText = pas.length;
     document.getElementById('totalFlotaCount').innerText = state.filteredData.length;
-
     let hsPerdidas = 0;
     pas.forEach(e => { const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); if(t) hsPerdidas += t.totalHs; });
     document.getElementById('totalHsPerdidas').innerText = Math.round(hsPerdidas) + 'h';
-
     actualizarKPIsTarjetas(ops.length, pas.length, pas);
     renderizarBotonesPro(ops, pas);
     actualizarGraficosPrincipales(ops.length, pas.length, pas);
@@ -489,53 +385,25 @@ function actualizarTodo() {
     actualizarGraficoTrazabilidad();
 }
 
-// --- TARJETAS KPI ---
 function actualizarKPIsTarjetas(opCount, paCount, pasList) {
     const cont = document.getElementById('kpiContainer'); if (!cont) return;
     const total = opCount + paCount;
     const disp = total > 0 ? Math.round((opCount/total)*100) : 0;
-    
     let critico = null, maxHs = 0;
-    pasList.forEach(e => { 
-        const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); 
-        if(t && t.totalHs > maxHs) { maxHs = t.totalHs; critico = e; } 
-    });
+    pasList.forEach(e => { const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); if(t && t.totalHs > maxHs) { maxHs = t.totalHs; critico = e; } });
     const promParada = paCount > 0 ? Math.round((document.getElementById('totalHsPerdidas').innerText.replace('h','') / paCount)) : 0;
-
     cont.innerHTML = `
-        <div class="glass-card p-4 kpi-green">
-            <div class="text-xs font-bold text-green-400 mb-1">✅ DISPONIBILIDAD</div>
-            <div class="text-3xl font-black text-green-300">${disp}%</div>
-            <div class="kpi-subtitulo text-green-200">${opCount} de ${total} equipos</div>
-        </div>
-        <div class="glass-card p-4 kpi-cyan">
-            <div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div>
-            <div class="text-3xl font-black text-cyan-300">${opCount}</div>
-            <div class="kpi-subtitulo text-cyan-200">De ${total} · ${paCount} parados</div>
-        </div>
-        <div class="glass-card p-4 kpi-amber">
-            <div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div>
-            <div class="text-3xl font-black text-amber-300">${document.getElementById('totalHsPerdidas').innerText}</div>
-            <div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div>
-        </div>
-        <div class="glass-card p-4 kpi-red">
-            <div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div>
-            <div class="text-xl font-black text-red-300 truncate">${critico ? critico.ID_Equipo : '-'}</div>
-            <div class="kpi-subtitulo text-red-200">${critico ? Math.floor(maxHs/24)+'d '+Math.floor(maxHs%24)+'h parado' : 'Sin paradas'}</div>
-        </div>
-        <div class="glass-card p-4 kpi-purple">
-            <div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div>
-            <div class="text-3xl font-black text-purple-300">${promParada}h</div>
-            <div class="kpi-subtitulo text-purple-200">Por equipo parado</div>
-        </div>
+        <div class="glass-card p-4 kpi-green"><div class="text-xs font-bold text-green-400 mb-1">✅ DISPONIBILIDAD</div><div class="text-3xl font-black text-green-300">${disp}%</div><div class="kpi-subtitulo text-green-200">${opCount} de ${total} equipos</div></div>
+        <div class="glass-card p-4 kpi-cyan"><div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div><div class="text-3xl font-black text-cyan-300">${opCount}</div><div class="kpi-subtitulo text-cyan-200">De ${total} · ${paCount} parados</div></div>
+        <div class="glass-card p-4 kpi-amber"><div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div><div class="text-3xl font-black text-amber-300">${document.getElementById('totalHsPerdidas').innerText}</div><div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div></div>
+        <div class="glass-card p-4 kpi-red"><div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div><div class="text-xl font-black text-red-300 truncate">${critico ? critico.ID_Equipo : '-'}</div><div class="kpi-subtitulo text-red-200">${critico ? Math.floor(maxHs/24)+'d '+Math.floor(maxHs%24)+'h parado' : 'Sin paradas'}</div></div>
+        <div class="glass-card p-4 kpi-purple"><div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div><div class="text-3xl font-black text-purple-300">${promParada}h</div><div class="kpi-subtitulo text-purple-200">Por equipo parado</div></div>
     `;
 }
 
-// --- RENDERIZADO DE BOTONES COMPACTOS ---
 function renderizarBotonesPro(ops, pas) {
     const cOps = document.getElementById('listaOpsContainer');
     const cPas = document.getElementById('listaPasContainer');
-    
     cOps.innerHTML = ops.map(e => `
         <div class="eq-btn eq-op ${state.selectedEquipos.includes(e.ID_Equipo) ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
             ${e.ID_Equipo}
@@ -546,7 +414,6 @@ function renderizarBotonesPro(ops, pas) {
                 <div class="tooltip-row"><span class="tooltip-label">Estado:</span> <span class="text-emerald-400">✅ OPERATIVO</span></div>
             </div>
         </div>`).join('');
-
     cPas.innerHTML = pas.map(e => {
         const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
         const tiempoStr = ti ? `${ti.dias}d ${ti.horas}h` : '0d 0h';
@@ -567,36 +434,31 @@ function toggleSel(id) {
     const idx = state.selectedEquipos.indexOf(id);
     if (idx > -1) state.selectedEquipos.splice(idx, 1);
     else state.selectedEquipos.push(id);
-    
     const ops = state.filteredData.filter(e => e.Estado === 'OPERATIVO');
     const pas = state.filteredData.filter(e => e.Estado !== 'OPERATIVO');
     renderizarBotonesPro(ops, pas);
     renderizarTagsFlotantes();
     actualizarGraficoTrazabilidad();
+    actualizarTablaInferior();
 }
 
 function renderizarTagsFlotantes() {
     const c = document.getElementById('floatingTagsContainer');
     if (state.selectedEquipos.length === 0) {
-        c.innerHTML = '<span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para comparar...</span>';
+        c.innerHTML = '<span class="text-[10px] text-slate-500 italic self-center">Seleccioná equipos para ver su historial...</span>';
         return;
     }
-    c.innerHTML = state.selectedEquipos.map(id => {
-        return `<div class="floating-tag" onclick="toggleSel('${id}')">${id} <span class="remove-btn">×</span></div>`;
-    }).join('');
+    c.innerHTML = state.selectedEquipos.map(id => `<div class="floating-tag" onclick="toggleSel('${id}')">${id} <span class="remove-btn">×</span></div>`).join('');
 }
 
-// --- GRÁFICOS PRINCIPALES ---
 function actualizarGraficosPrincipales(opCount, paCount, paradosList) {
     const ctxDona = document.getElementById('estadoChart');
     if (charts.dona) charts.dona.destroy();
-    
     charts.dona = new Chart(ctxDona, {
         type: 'doughnut',
         data: { labels: ['Operativo', 'Parado'], datasets: [{ data: [opCount, paCount], backgroundColor: ['#06b6d4', '#f59e0b'], borderWidth: 0, hoverOffset: 4 }] },
         options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } } } }
     });
-
     const ctxBarras = document.getElementById('topParadosChart');
     if (charts.barras) charts.barras.destroy();
     const top5 = paradosList.map(e => ({ ...e, hs: calcTiempo(e.Fecha_Carga, e.Hora_Carga)?.totalHs || 0 })).sort((a,b) => b.hs - a.hs).slice(0, 5);
@@ -607,28 +469,26 @@ function actualizarGraficosPrincipales(opCount, paCount, paradosList) {
     });
 }
 
-// --- TABLA INFERIOR CON MODAL ---
 function actualizarTablaInferior() {
     const tb = document.getElementById('equipmentTableBody'); const cr = document.getElementById('contadorRegistros'); if (!tb) return;
-    cr.innerText = state.filteredData.length + ' registros';
-    if (state.filteredData.length === 0) { tb.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4"> Sin datos para la selección actual</td></tr>'; return; }
-    
-    // CORRECCIÓN 2: Usar el ID del equipo en lugar del índice para abrir el modal correctamente
-    tb.innerHTML = state.filteredData.map((e) => {
+    let dataToShow = state.filteredData;
+    if (state.selectedEquipos.length > 0) {
+        dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
+    }
+    cr.innerText = dataToShow.length + ' registros';
+    if (dataToShow.length === 0) { tb.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4"> Sin datos para la selección actual</td></tr>'; return; }
+    tb.innerHTML = dataToShow.map((e) => {
         const esParado = e.Estado !== 'OPERATIVO'; const badge = esParado ? 'status-parado' : 'status-operativo'; const txt = esParado ? '⏸️ Parado' : '✅ Operativo';
         let celdaTiempo = '<span class="text-slate-500 text-xs">-</span>';
         if (esParado && e.Fecha_Carga) {
             const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
             if (ti && ti.totalHs > 0) { let h = '⏱️ '; if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `; h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`; celdaTiempo = `<span class="cronometro text-xs">${h}</span>`; }
         }
-        // Pasamos el ID del equipo como argumento string para evitar problemas de índice
         return `<tr class="${esParado ? 'pulse-alert' : ''}" onclick="abrirModalPorId('${e.ID_Equipo}')"><td class="font-bold text-cyan-300">${e.ID_Equipo}</td><td>${e.Equipo}</td><td class="text-slate-400">${e.Tipo_Equipo}</td><td>${e.sucursal}</td><td><span class="${badge}">${txt}</span></td><td>${celdaTiempo}</td><td>${e.Lectura}</td><td class="col-motivo">${e.Motivo_Parada||'-'}</td><td>${e.Reportante||'-'}</td></tr>`;
     }).join('');
 }
 
-// --- LÓGICA DEL MODAL CORREGIDA ---
 function abrirModalPorId(idEquipo) {
-    // Buscar el índice correcto dentro de los datos filtrados actuales
     const idx = state.filteredData.findIndex(e => e.ID_Equipo === idEquipo);
     if (idx !== -1) {
         state.indiceModal = idx;
@@ -638,40 +498,28 @@ function abrirModalPorId(idEquipo) {
     }
 }
 
-function cerrarModal() {
-    const m = document.getElementById('equipmentModal');
-    if (m) { m.classList.add('hidden'); m.style.display = 'none'; }
-}
-
-function navModal(dir) {
-    const n = state.indiceModal + dir;
-    if (n < 0 || n >= state.filteredData.length) return;
-    state.indiceModal = n;
-    renderModal();
-}
+function cerrarModal() { const m = document.getElementById('equipmentModal'); if (m) { m.classList.add('hidden'); m.style.display = 'none'; } }
+function navModal(dir) { const n = state.indiceModal + dir; if (n < 0 || n >= state.filteredData.length) return; state.indiceModal = n; renderModal(); }
 
 function renderModal() {
     const e = state.filteredData[state.indiceModal]; if (!e) return;
-    const mt = document.getElementById('modalTitle'); const mc = document.getElementById('modalEquipoCounter'); 
-    const bp = document.getElementById('btnPrevEquipo'); const bn = document.getElementById('btnNextEquipo'); 
+    const mt = document.getElementById('modalTitle'); const mc = document.getElementById('modalEquipoCounter');
+    const bp = document.getElementById('btnPrevEquipo'); const bn = document.getElementById('btnNextEquipo');
     const cont = document.getElementById('modalContent');
-    
     if (mt) mt.innerText = `📋 ${e.ID_Equipo} - ${e.Tipo_Equipo||'Sin tipo'}`;
     if (mc) mc.innerText = `Equipo ${state.indiceModal+1} de ${state.filteredData.length}`;
     if (bp) { bp.disabled = state.indiceModal === 0; bp.style.opacity = state.indiceModal === 0 ? '0.3' : '1'; }
     if (bn) { bn.disabled = state.indiceModal === state.filteredData.length-1; bn.style.opacity = state.indiceModal === state.filteredData.length-1 ? '0.3' : '1'; }
     if (!cont) return;
-    
     const esParado = e.Estado !== 'OPERATIVO'; const ti = esParado ? calcTiempo(e.Fecha_Carga, e.Hora_Carga) : null;
     let cronHTML = '';
     if (esParado && e.Fecha_Carga) {
-        if (ti && ti.totalHs > 0 && ti.totalHs < 100000) { 
-            cronHTML = `<div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center"><div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div><div class="text-3xl font-black cronometro">${ti.dias>0?`<span class="crono-dia">${ti.dias}d</span> `:''}<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span></div><div class="text-[10px] text-slate-400 mt-2">Desde: ${e.Fecha_Carga} ${e.Hora_Carga||''}</div></div>`; 
-        } else { 
-            cronHTML = `<div class="bg-amber-950/30 border border-amber-500/50 rounded-xl p-4 text-center"><div class="text-xs text-amber-400"> 📅 ${e.Fecha_Carga||''} ${e.Hora_Carga||''}</div><div class="text-[10px] text-slate-400 mt-1">No se pudo calcular el tiempo</div></div>`; 
+        if (ti && ti.totalHs > 0 && ti.totalHs < 100000) {
+            cronHTML = `<div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center"><div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div><div class="text-3xl font-black cronometro">${ti.dias>0?`<span class="crono-dia">${ti.dias}d</span> `:''}<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span></div><div class="text-[10px] text-slate-400 mt-2">Desde: ${e.Fecha_Carga} ${e.Hora_Carga||''}</div></div>`;
+        } else {
+            cronHTML = `<div class="bg-amber-950/30 border border-amber-500/50 rounded-xl p-4 text-center"><div class="text-xs text-amber-400"> 📅 ${e.Fecha_Carga||''} ${e.Hora_Carga||''}</div><div class="text-[10px] text-slate-400 mt-1">No se pudo calcular el tiempo</div></div>`;
         }
     }
-    
     const hist = state.rawData.filter(x=>x.ID_Equipo===e.ID_Equipo).sort((a,b)=>parseFechaHora(b.Fecha_Carga,b.Hora_Carga)-parseFechaHora(a.Fecha_Carga,a.Hora_Carga)).slice(0, 5);
     let histHTML = '';
     if (hist.length > 0) {
@@ -688,7 +536,6 @@ function renderModal() {
                 </div>`;
             }).join('') + '</div></div>';
     }
-    
     cont.innerHTML = `
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🔢 ID</div><div class="text-xl font-bold text-cyan-300">${e.ID_Equipo}</div></div>
@@ -708,112 +555,296 @@ function renderModal() {
     `;
 }
 
-// --- GRÁFICO DE BARRAS HORIZONTALES (CORRECCIÓN 3: PARA EVITAR AMONTONAMIENTO) ---
+// ============================================
+// GRÁFICO INTELIGENTE: BARRAS VERTICALES
+// - Sin selección: Muestra horómetro actual de cada equipo
+// - Con selección: Muestra historial temporal con FECHAS en eje X
+// ============================================
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
     if (chartTrazabilidad) chartTrazabilidad.destroy();
 
-    let dataToShow = state.filteredData;
-    if (state.selectedEquipos.length > 0) {
-        dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
-    }
-
-    // Ordenar por horómetro descendente para mejor visualización horizontal
-    dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
-
-    const labels = dataToShow.map(e => e.ID_Equipo);
-    const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
-    const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
+    const infoDiv = document.getElementById('graficoInfo');
     
-    // Plugin personalizado para dibujar etiquetas al final de las barras horizontales
-    const labelsPlugin = {
-        id: 'customLabelsHorizontal',
-        afterDatasetsDraw(chart) {
-            const { ctx, data, scales: { x, y } } = chart;
-            ctx.save();
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-            
-            data.datasets[0].data.forEach((value, index) => {
-                const xPos = x.getPixelForValue(value);
-                const yPos = y.getPixelForValue(index);
-                const equipo = dataToShow[index];
-                
-                let emoji = '⚙️';
-                const tipo = (equipo.Tipo_Equipo||'').toLowerCase();
-                if(tipo.includes('camion')) emoji = '🚛';
-                else if(tipo.includes('cargador')) emoji = '🚜';
-                else if(tipo.includes('topador')) emoji = '🚜';
-                else if(tipo.includes('perforadora')) emoji = '🔩';
-                else if(tipo.includes('motoniveladora')) emoji = '🛣️';
-                
-                // Dibujar Emoji + Interno + Horómetro al lado de la barra
-                ctx.font = 'bold 11px Inter';
-                ctx.fillStyle = '#e2e8f0';
-                ctx.fillText(`${emoji} ${equipo.ID_Equipo} (${value.toLocaleString('es-AR')}h)`, xPos + 8, yPos);
+    // MODO 1: HAY EQUIPOS SELECCIONADOS → Mostrar historial temporal
+    if (state.selectedEquipos.length > 0) {
+        infoDiv.innerText = `Historial de ${state.selectedEquipos.length} equipo(s) seleccionado(s)`;
+        
+        // Recopilar todos los registros históricos de los equipos seleccionados
+        const registrosHistoricos = [];
+        state.selectedEquipos.forEach(id => {
+            const registros = state.rawData.filter(r => r.ID_Equipo === id);
+            registros.forEach(r => {
+                const fecha = parseFechaHora(r.Fecha_Carga, r.Hora_Carga);
+                if (fecha > 0) {
+                    registrosHistoricos.push({
+                        id: r.ID_Equipo,
+                        fecha: fecha,
+                        lectura: parseFloat(r.Lectura) || 0,
+                        estado: r.Estado
+                    });
+                }
             });
-            ctx.restore();
+        });
+        
+        // Ordenar por fecha
+        registrosHistoricos.sort((a, b) => a.fecha - b.fecha);
+        
+        // Si hay filtro de mes, aplicar rango completo del mes
+        // Si no, mostrar solo últimas 4 semanas por defecto
+        let fechaMin, fechaMax;
+        if (state.mes !== 'ACTUAL') {
+            const [y, m] = state.mes.split('-').map(Number);
+            fechaMin = new Date(y, m - 1, 1).getTime();
+            fechaMax = new Date(y, m, 0, 23, 59, 59).getTime();
+        } else {
+            // Últimas 4 semanas por defecto
+            fechaMax = Date.now();
+            fechaMin = fechaMax - (28 * 24 * 60 * 60 * 1000);
         }
-    };
-
-    chartTrazabilidad = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Horómetro Actual',
-                data: values,
-                backgroundColor: colors,
-                borderRadius: 6,
-                barPercentage: 0.7
-            }]
-        },
-        plugins: [labelsPlugin],
-        options: {
-            indexAxis: 'y', // CAMBIO CLAVE: Barras horizontales
-            responsive: true, maintainAspectRatio: false,
-            layout: { padding: { right: 150 } }, // Espacio extra a la derecha para las etiquetas
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0',
-                    callbacks: {
-                        title: (items) => items[0].label,
-                        label: (item) => `Horómetro: ${item.parsed.x.toLocaleString('es-AR')} hs`
+        
+        // Filtrar registros dentro del rango
+        const registrosFiltrados = registrosHistoricos.filter(r => r.fecha >= fechaMin && r.fecha <= fechaMax);
+        
+        if (registrosFiltrados.length === 0) {
+            // Si no hay datos en el rango, mostrar mensaje
+            const labelsPlugin = {
+                id: 'emptyMessage',
+                afterDraw(chart) {
+                    const { ctx, chartArea: { left, top, width, height } } = chart;
+                    ctx.save();
+                    ctx.font = 'bold 16px Inter';
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Sin datos en el período seleccionado', left + width / 2, top + height / 2);
+                    ctx.restore();
+                }
+            };
+            
+            chartTrazabilidad = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                plugins: [labelsPlugin],
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+            return;
+        }
+        
+        // Crear etiquetas y datos
+        const labels = registrosFiltrados.map(r => {
+            const fechaStr = formatFecha(r.fecha);
+            return `${r.id}\n${fechaStr}`;
+        });
+        const values = registrosFiltrados.map(r => r.lectura);
+        const colors = registrosFiltrados.map(r => r.estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
+        
+        // Plugin para dibujar etiquetas personalizadas
+        const labelsPlugin = {
+            id: 'customLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx, data, scales: { x, y } } = chart;
+                ctx.save();
+                
+                data.datasets[0].data.forEach((value, index) => {
+                    const xPos = x.getPixelForValue(index);
+                    const yPos = y.getPixelForValue(value);
+                    const registro = registrosFiltrados[index];
+                    
+                    // Emoji según tipo de equipo
+                    const equipoInfo = state.equipmentData.find(e => e.ID_Equipo === registro.id);
+                    const tipo = (equipoInfo?.Tipo_Equipo || '').toLowerCase();
+                    let emoji = '⚙️';
+                    if(tipo.includes('camion')) emoji = '🚛';
+                    else if(tipo.includes('cargador')) emoji = '🚜';
+                    else if(tipo.includes('topador')) emoji = '🚜';
+                    else if(tipo.includes('perforadora')) emoji = '🔩';
+                    else if(tipo.includes('motoniveladora')) emoji = '🛣️';
+                    
+                    // Dibujar ID del equipo ARRIBA
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.font = 'bold 11px Inter';
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.fillText(`${emoji} ${registro.id}`, xPos, yPos - 22);
+                    
+                    // Dibujar valor del horómetro
+                    ctx.font = 'bold 9px Inter';
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.fillText(`${value.toLocaleString('es-AR')}h`, xPos, yPos - 10);
+                    
+                    // Dibujar FECHA ABAJO (en el eje X)
+                    ctx.textBaseline = 'top';
+                    ctx.font = 'bold 9px Inter';
+                    ctx.fillStyle = '#67e8f9';
+                    const fechaStr = formatFecha(registro.fecha);
+                    ctx.fillText(fechaStr, xPos, y.getPixelForValue(0) + 5);
+                });
+                
+                ctx.restore();
+            }
+        };
+        
+        chartTrazabilidad = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Horómetro',
+                    data: values,
+                    backgroundColor: colors,
+                    borderRadius: 4,
+                    barPercentage: 0.7
+                }]
+            },
+            plugins: [labelsPlugin],
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                layout: { padding: { top: 40, bottom: 30 } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0',
+                        callbacks: {
+                            title: (items) => {
+                                const idx = items[0].dataIndex;
+                                const reg = registrosFiltrados[idx];
+                                return `${reg.id} - ${formatFechaLarga(reg.fecha)}`;
+                            },
+                            label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { display: false } // Ocultamos las ticks por defecto, las dibujamos nosotros
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(148,163,184,0.1)' },
+                        ticks: {
+                            color: '#94a3b8',
+                            callback: function(value) {
+                                return value.toLocaleString('es-AR') + ' h';
+                            }
+                        }
                     }
                 }
+            }
+        });
+    }
+    // MODO 2: SIN SELECCIÓN → Mostrar horómetro actual de cada equipo
+    else {
+        infoDiv.innerText = 'Horómetros Actuales (Ordenado por Uso)';
+        
+        let dataToShow = [...state.filteredData];
+        dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
+        
+        const labels = dataToShow.map(e => e.ID_Equipo);
+        const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
+        const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
+        
+        const labelsPlugin = {
+            id: 'customLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx, data, scales: { x, y } } = chart;
+                ctx.save();
+                
+                data.datasets[0].data.forEach((value, index) => {
+                    const xPos = x.getPixelForValue(index);
+                    const yPos = y.getPixelForValue(value);
+                    const equipo = dataToShow[index];
+                    
+                    let emoji = '⚙️';
+                    const tipo = (equipo.Tipo_Equipo||'').toLowerCase();
+                    if(tipo.includes('camion')) emoji = '🚛';
+                    else if(tipo.includes('cargador')) emoji = '🚜';
+                    else if(tipo.includes('topador')) emoji = '🚜';
+                    else if(tipo.includes('perforadora')) emoji = '🔩';
+                    else if(tipo.includes('motoniveladora')) emoji = '🛣️';
+                    
+                    // ID ARRIBA
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.font = 'bold 11px Inter';
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.fillText(`${emoji} ${equipo.ID_Equipo}`, xPos, yPos - 22);
+                    
+                    // Valor del horómetro
+                    ctx.font = 'bold 9px Inter';
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.fillText(`${value.toLocaleString('es-AR')}h`, xPos, yPos - 10);
+                    
+                    // ID ABAJO también
+                    ctx.textBaseline = 'top';
+                    ctx.font = 'bold 10px Inter';
+                    ctx.fillStyle = '#67e8f9';
+                    ctx.fillText(equipo.ID_Equipo, xPos, y.getPixelForValue(0) + 5);
+                });
+                
+                ctx.restore();
+            }
+        };
+        
+        chartTrazabilidad = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Horómetro Actual',
+                    data: values,
+                    backgroundColor: colors,
+                    borderRadius: 4,
+                    barPercentage: 0.8
+                }]
             },
-            scales: {
-                x: { 
-                    beginAtZero: true,
-                    grid: { color: 'rgba(148,163,184,0.1)' }, 
-                    ticks: { color: '#94a3b8', callback: v => (v/1000).toFixed(1)+'k' } 
+            plugins: [labelsPlugin],
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                layout: { padding: { top: 40, bottom: 30 } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor:'rgba(15,23,42,0.95)', titleColor:'#06b6d4', bodyColor:'#e2e8f0',
+                        callbacks: {
+                            title: (items) => items[0].label,
+                            label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs`
+                        }
+                    }
                 },
-                y: { 
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8', font: { size: 11, weight: 'bold' } }
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(148,163,184,0.1)' },
+                        ticks: {
+                            color: '#94a3b8',
+                            callback: function(value) {
+                                return value.toLocaleString('es-AR') + ' h';
+                            }
+                        }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 }
 
-// --- ACTUALIZAR SELECT DE EQUIPOS ---
 function actualizarFiltroEquipos() {
     const sel = document.getElementById('filterEquipo'); if (!sel) return;
     const val = sel.value;
-    const eqs = state.filteredData; 
-    const unicos = {}; 
+    const eqs = state.filteredData;
+    const unicos = {};
     eqs.forEach(e => { if (!unicos[e.ID_Equipo]) unicos[e.ID_Equipo] = e; });
-    
-    const lista = Object.values(unicos).sort((a,b) => { 
-        const na = parseInt(a.ID_Equipo.replace(/\D/g,''))||0, nb = parseInt(b.ID_Equipo.replace(/\D/g,''))||0; 
-        return na - nb; 
+    const lista = Object.values(unicos).sort((a,b) => {
+        const na = parseInt(a.ID_Equipo.replace(/\D/g,''))||0, nb = parseInt(b.ID_Equipo.replace(/\D/g,''))||0;
+        return na - nb;
     });
-    
-    sel.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>' + 
+    sel.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>' +
         lista.map(e => `<option value="${e.ID_Equipo}">🔧 ${e.ID_Equipo} | ${e.Tipo_Equipo||'Otros'}</option>`).join('');
-        
     if (val && val !== 'TODOS' && lista.some(e=>e.ID_Equipo===val)) sel.value = val;
     else sel.value = 'TODOS';
 }
@@ -822,25 +853,20 @@ function safeSet(id, val) { const el=document.getElementById(id); if(el) el.inne
 function forceRefreshData() { loadData(); }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Listeners de sucursales
     document.querySelectorAll('.sucursal-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.sucursal-btn').forEach(b=>b.classList.remove('active'));
             e.currentTarget.classList.add('active');
             state.sucursal = e.currentTarget.getAttribute('data-suc');
-            state.selectedEquipos = []; 
+            state.selectedEquipos = [];
             aplicarFiltros();
             actualizarFiltroEquipos();
         });
     });
-    
-    // Listeners de filtros
     document.getElementById('filterMes').addEventListener('change', (e) => { state.mes = e.target.value; aplicarFiltros(); });
     document.getElementById('filterPropiedad').addEventListener('change', (e) => { state.propiedad = e.target.value; aplicarFiltros(); });
     document.getElementById('filterEquipo').addEventListener('change', (e) => { state.equipo = e.target.value; aplicarFiltros(); });
     document.getElementById('filterEstado').addEventListener('change', (e) => { state.estado = e.target.value; aplicarFiltros(); });
-    
-    // Listeners del Modal
     document.getElementById('btnPrevEquipo').addEventListener('click', () => navModal(-1));
     document.getElementById('btnNextEquipo').addEventListener('click', () => navModal(1));
     document.getElementById('btnCerrarModal').addEventListener('click', cerrarModal);
@@ -853,8 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'ArrowRight') navModal(1);
         }
     });
-
-    loadData(); 
+    loadData();
     setInterval(loadData, 60000);
 });
 </script>
