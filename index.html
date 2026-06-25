@@ -67,7 +67,7 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
 .equipo-operativo-texto { color: #e2e8f0 !important; font-weight: 600; }
 .cronometro { font-family: 'Courier New', monospace; font-weight: 900; letter-spacing: 0.5px; }
 
-/* BOTONES DE EQUIPOS COMPACTOS (NUEVO ESTILO) */
+/* BOTONES DE EQUIPOS COMPACTOS CON CHECK */
 .eq-btn { 
     display: flex; align-items: center; justify-content: center; 
     width: 100%; height: 32px; /* Altura reducida */
@@ -75,11 +75,20 @@ tr:hover { background-color: rgba(6, 182, 212, 0.1); }
     cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
     border: 1px solid rgba(255,255,255,0.1); position: relative; 
     box-shadow: 0 2px 4px -1px rgba(0,0,0,0.5); letter-spacing: 0.5px; 
+    gap: 6px; /* Espacio entre check y número */
 }
 .eq-op { background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-.eq-op.selected { border: 2px solid #ffffff; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); background: linear-gradient(135deg, #047857, #059669); transform: scale(1.02); }
 .eq-pa { background: linear-gradient(135deg, #b91c1c, #ef4444); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-.eq-pa.selected { border: 2px solid #ffffff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); background: linear-gradient(135deg, #991b1b, #b91c1c); transform: scale(1.02); }
+
+/* ESTADO SELECCIONADO */
+.eq-btn.selected { 
+    border: 2px solid #ffffff; 
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); 
+    transform: scale(1.02); 
+    font-weight: 900;
+}
+.eq-op.selected { background: linear-gradient(135deg, #047857, #059669); }
+.eq-pa.selected { background: linear-gradient(135deg, #991b1b, #b91c1c); }
 
 /* Tooltips */
 .eq-tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 12px; padding: 8px 12px; width: max-content; max-width: 220px; z-index: 50; pointer-events: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transition: all 0.2s ease; text-align: left; }
@@ -473,30 +482,36 @@ function actualizarKPIsTarjetas(opCount, paCount, pasList) {
     `;
 }
 
-// RENDERIZADO DE BOTONES COMPACTOS
+// RENDERIZADO DE BOTONES COMPACTOS CON CHECK
 function renderizarBotonesPro(ops, pas) {
     const cOps = document.getElementById('listaOpsContainer');
     const cPas = document.getElementById('listaPasContainer');
     
     // Renderizado compacto para Operativos
-    cOps.innerHTML = ops.map(e => `
-        <div class="eq-btn eq-op ${state.selectedEquipos.includes(e.ID_Equipo) ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
-            ${e.ID_Equipo}
+    cOps.innerHTML = ops.map(e => {
+        const isSelected = state.selectedEquipos.includes(e.ID_Equipo);
+        return `
+        <div class="eq-btn eq-op ${isSelected ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
+            ${isSelected ? '<span style="font-size:14px; line-height:1;">✓</span>' : ''}
+            <span>${e.ID_Equipo}</span>
             <div class="eq-tooltip">
                 <div class="tooltip-title">${e.Equipo || 'Sin nombre'}</div>
                 <div class="tooltip-row"><span class="tooltip-label">Tipo:</span> <span>${e.Tipo_Equipo || '-'}</span></div>
                 <div class="tooltip-row"><span class="tooltip-label">Horómetro:</span> <span class="text-cyan-300 font-bold">${e.Lectura || '-'}h</span></div>
                 <div class="tooltip-row"><span class="tooltip-label">Estado:</span> <span class="text-emerald-400">✅ OPERATIVO</span></div>
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
         
     // Renderizado compacto para Parados
     cPas.innerHTML = pas.map(e => {
         const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
         const tiempoStr = ti ? `${ti.dias}d ${ti.horas}h` : '0d 0h';
+        const isSelected = state.selectedEquipos.includes(e.ID_Equipo);
         return `
-        <div class="eq-btn eq-pa ${state.selectedEquipos.includes(e.ID_Equipo) ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
-            ${e.ID_Equipo}
+        <div class="eq-btn eq-pa ${isSelected ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
+            ${isSelected ? '<span style="font-size:14px; line-height:1;">✓</span>' : ''}
+            <span>${e.ID_Equipo}</span>
             <div class="eq-tooltip">
                 <div class="tooltip-title">${e.Equipo || 'Sin nombre'}</div>
                 <div class="tooltip-row"><span class="tooltip-label">Tipo:</span> <span>${e.Tipo_Equipo || '-'}</span></div>
@@ -598,7 +613,7 @@ function actualizarTablaInferior() {
         if (esParado && e.Fecha_Carga) {
             const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
             if (ti && ti.totalHs > 0) { 
-                let h = '⏱️ '; 
+                let h = '️ '; 
                 if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `; 
                 h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`; 
                 celdaTiempo = `<span class="cronometro text-sm">${h}</span>`; 
@@ -676,7 +691,7 @@ function renderModal() {
 }
 
 // ============================================================
-// GRÁFICO PRINCIPAL: COMPARATIVA DE BARRAS (Más útil que líneas)
+// GRÁFICO PRINCIPAL: COMPARATIVA DE BARRAS
 // ============================================================
 function actualizarGraficoTrazabilidad() {
     const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
