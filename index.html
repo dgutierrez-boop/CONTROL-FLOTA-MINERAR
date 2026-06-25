@@ -5,148 +5,247 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Minerar 2026 - Panel de Flota</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+/* Estilos Base y Reset */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Inter', sans-serif; background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); color: #e2e8f0; font-size: clamp(11px, 2.5vw, 12px); min-height: 100vh; position: relative; overflow-x: hidden; }
+body { 
+    font-family: 'Inter', sans-serif; 
+    background: radial-gradient(ellipse at 20% 30%, #0a1628, #020617); 
+    color: #e2e8f0; 
+    font-size: 14px; 
+    min-height: 100vh; 
+    position: relative; 
+    overflow-x: auto; 
+}
+/* Fondo de cuadrícula sutil */
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
-.glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: hidden; min-width: 0; }
-.glass-card:hover { border-color: rgba(6, 182, 212, 0.6); box-shadow: 0 8px 30px rgba(6, 182, 212, 0.15); }
-.header-container { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-radius: 16px; border: 1px solid rgba(6, 182, 212, 0.4); padding: 16px 24px; margin-bottom: 20px; }
-.logo-shield { width: 48px; height: 48px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); border: 2px solid #06b6d4; flex-shrink: 0; }
+
+.main-wrapper { max-width: 1800px; margin: 0 auto; padding: 1.5rem 4rem; position: relative; z-index: 1; }
+@media (max-width: 1600px) { .main-wrapper { max-width: 1400px; padding: 1.5rem 3rem; } }
+@media (max-width: 1200px) { .main-wrapper { max-width: 100%; padding: 1rem 2rem; } }
+@media (max-width: 768px) { .main-wrapper { padding: 0.75rem 1rem; } }
+
+/* Tarjetas de Cristal */
+.glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-radius: 20px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: all 0.3s ease; overflow: visible !important; min-width: 0; }
+.header-container { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-radius: 20px; border: 1px solid rgba(6, 182, 212, 0.4); padding: 20px 28px; margin-bottom: 24px; }
+.logo-shield { width: 52px; height: 52px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); border: 2px solid #06b6d4; flex-shrink: 0; }
 .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
+
+/* KPIs */
 .kpi-cyan { border-left: 4px solid #06b6d4; background: linear-gradient(115deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); }
 .kpi-amber { border-left: 4px solid #f59e0b; background: linear-gradient(115deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); }
 .kpi-purple { border-left: 4px solid #a855f7; background: linear-gradient(115deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05)); }
 .kpi-red { border-left: 4px solid #ef4444; background: linear-gradient(115deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05)); }
 .kpi-green { border-left: 4px solid #10b981; background: linear-gradient(115deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05)); }
-.kpi-blue { border-left: 4px solid #3b82f6; background: linear-gradient(115deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05)); }
-.sucursal-btn { padding: 8px 20px; border-radius: 20px; font-weight: 700; font-size: 12px; transition: all 0.2s ease; cursor: pointer; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(6, 182, 212, 0.4); color: #67e8f9; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
-.sucursal-btn:hover { background: rgba(6, 182, 212, 0.2); border-color: #06b6d4; }
+.kpi-subtitulo { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+
+/* Botones Sucursal */
+.sucursal-btn { padding: 8px 20px; border-radius: 30px; font-weight: 700; font-size: 13px; transition: all 0.2s ease; cursor: pointer; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(6, 182, 212, 0.4); color: #67e8f9; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
 .sucursal-btn.active { background: rgba(6, 182, 212, 0.3); border-color: #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
-.sucursal-btn img { height: 16px; width: auto; }
-.status-operativo { background: rgba(6,182,212,0.2); color: #22d3ee; border: 1px solid #06b6d4; padding: 4px 12px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
-.status-parado { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid #f59e0b; padding: 4px 12px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
-.cronometro { font-family: 'Courier New', monospace; font-weight: 900; letter-spacing: 0.5px; }
-.crono-dia { color: #f87171; }
-.crono-hora { color: #fbbf24; }
-.crono-min { color: #67e8f9; }
-.chart-container { position: relative; height: 280px; width: 100%; margin-top: 12px; }
-.table-scroll { max-height: 400px; overflow-x: auto; overflow-y: auto; border-radius: 12px; width: 100%; }
-table { width: 100%; border-collapse: collapse; min-width: 900px; }
-table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 10px; font-size: 11px; text-align: left; white-space: nowrap; }
-table tbody td { padding: 8px 10px; font-size: 11px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); }
-table tbody td.col-motivo { min-width: 320px; max-width: 500px; white-space: normal; overflow: visible; cursor: help; font-size: 11px; line-height: 1.4; }
+.sucursal-btn img { height: 18px; width: auto; }
+
+/* Selects Personalizados */
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 30px !important; background-color: #0f172a; border: 1px solid #334155; color: #e2e8f0; border-radius: 12px; padding: 8px 12px; font-size: 13px; }
+
+/* Tablas */
+.table-scroll { max-height: 450px; overflow-x: auto; overflow-y: auto; border-radius: 16px; width: 100%; }
+table { width: 100%; border-collapse: collapse; min-width: 800px; }
+table thead th { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); z-index: 10; color: #22d3ee; font-weight: 700; padding: 14px 12px; font-size: 13px; text-align: left; white-space: nowrap; }
+table tbody td { padding: 12px 10px; font-size: 13px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); vertical-align: middle; font-weight: 500; }
+table tbody td.col-motivo { min-width: 320px; max-width: 500px; white-space: normal; overflow: visible; cursor: help; font-size: 12px; line-height: 1.4; }
 tr { cursor: pointer; transition: background-color 0.2s ease; }
 tr:hover { background-color: rgba(6, 182, 212, 0.1); }
-.modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
-@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
-.alert-item { background: rgba(15, 23, 42, 0.6); border-left: 3px solid #06b6d4; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; cursor: pointer; transition: background 0.2s; }
-.alert-item:hover { background: rgba(6, 182, 212, 0.15); }
+
+/* Badges de Estado */
+.status-operativo { background: rgba(6,182,212,0.2); color: #22d3ee; border: 1px solid #06b6d4; padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.status-parado { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid #f59e0b; padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+
+/* Textos Especiales */
+.equipo-parado-texto { color: #f87171 !important; font-weight: 800 !important; text-shadow: 0 0 4px rgba(239, 68, 68, 0.3); }
+.equipo-operativo-texto { color: #e2e8f0 !important; font-weight: 600; }
+.cronometro { font-family: 'Courier New', monospace; font-weight: 900; letter-spacing: 0.5px; }
+
+/* BOTONES DE EQUIPOS COMPACTOS (NUEVO ESTILO) */
+.eq-btn { 
+    display: flex; align-items: center; justify-content: center; 
+    width: 100%; height: 32px; /* Altura reducida */
+    border-radius: 8px; font-weight: 700; font-size: 12px; /* Texto más pequeño */
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+    border: 1px solid rgba(255,255,255,0.1); position: relative; 
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.5); letter-spacing: 0.5px; 
+}
+.eq-op { background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.eq-op.selected { border: 2px solid #ffffff; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); background: linear-gradient(135deg, #047857, #059669); transform: scale(1.02); }
+.eq-pa { background: linear-gradient(135deg, #b91c1c, #ef4444); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.eq-pa.selected { border: 2px solid #ffffff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); background: linear-gradient(135deg, #991b1b, #b91c1c); transform: scale(1.02); }
+
+/* Tooltips */
+.eq-tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 12px; padding: 8px 12px; width: max-content; max-width: 220px; z-index: 50; pointer-events: none; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transition: all 0.2s ease; text-align: left; }
+.eq-btn:hover .eq-tooltip { visibility: visible; opacity: 1; bottom: 125%; }
+
+/* Tags Flotantes */
+.floating-tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; background: rgba(30, 41, 59, 0.9); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); }
+.floating-tag .remove-btn { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+.floating-tag .remove-btn:hover { background: #ef4444; }
+
+/* Animaciones */
 @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } }
 .pulse-alert { animation: pulse-red 2s infinite; }
-.kpi-subtitulo { font-size: 10px; opacity: 0.85; margin-top: 2px; }
-.kpi-valor { transition: all 0.3s ease; }
-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2306b6d4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; padding-right: 30px !important; }
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
-::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 4px; }
-.banner-historico { background: linear-gradient(90deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05)); border: 1px solid rgba(245,158,11,0.4); border-radius: 12px; padding: 8px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
-.banner-historico .mes-label { font-weight: 700; color: #fbbf24; }
-.banner-historico button { background: rgba(245,158,11,0.3); color: #fbbf24; border: 1px solid rgba(245,158,11,0.5); padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+.modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
+@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
 .modal-texto-completo { white-space: normal !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.5; }
 </style>
 </head>
 <body>
-<div class="main-wrapper w-full mx-auto p-4" style="position:relative;z-index:1;">
-
+<div class="main-wrapper">
+    <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3 min-w-0">
+        <div class="flex items-center gap-4 min-w-0">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
             <div class="min-w-0">
-                <h1 class="text-xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent truncate">PANEL FLOTA MINERA 2026</h1>
-                <p class="text-xs text-cyan-300">Control de Horómetros · Monitoreo en Vivo</p>
+                <h1 class="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent truncate">PANEL FLOTA MINERA 2026</h1>
+                <p class="text-sm text-cyan-300">Control de Horómetros · Monitoreo en Vivo</p>
             </div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
-            <div class="glass-card px-4 py-2 text-center kpi-cyan"><div class="text-[9px] font-bold text-cyan-400">EQUIPOS</div><div id="totalEquipos" class="text-2xl font-black text-cyan-300">0</div></div>
-            <div class="glass-card px-4 py-2 text-center kpi-amber"><div class="text-[9px] font-bold text-amber-400">PARADOS</div><div id="totalParados" class="text-2xl font-black text-amber-300">0</div></div>
-            <div class="glass-card px-4 py-2 text-center kpi-red"><div class="text-[9px] font-bold text-red-400">️ HS PERDIDAS</div><div id="totalHsPerdidas" class="text-2xl font-black text-red-300">0h</div></div>
-            <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-xs font-bold"> Actualizar</button>
+            <div class="glass-card px-5 py-2 text-center kpi-cyan"><div class="text-xs font-bold text-cyan-400">EQUIPOS</div><div id="totalEquipos" class="text-3xl font-black text-cyan-300">0</div></div>
+            <div class="glass-card px-5 py-2 text-center kpi-amber"><div class="text-xs font-bold text-amber-400">PARADOS</div><div id="totalParados" class="text-3xl font-black text-amber-300">0</div></div>
+            <div class="glass-card px-5 py-2 text-center kpi-red"><div class="text-xs font-bold text-red-400">⏱️ HS PERDIDAS</div><div id="totalHsPerdidas" class="text-3xl font-black text-red-300">0h</div></div>
+            <button onclick="forceRefreshData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-bold transition"> Actualizar</button>
         </div>
     </div>
 
-    <div class="glass-card p-5 mb-5">
-        <div class="text-center mb-4">
-            <h2 class="text-sm font-bold text-cyan-300 mb-3">🏭 SELECCIONAR SUCURSAL</h2>
-            <div class="flex flex-wrap items-center justify-center gap-2">
-                <button id="btnTodas" class="sucursal-btn active"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🏭 TODAS</button>
-                <button id="btnMalagueno" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> BARKER</button>
-                <button id="btnPampita" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> LA PAMPITA</button>
+    <!-- SELECCIÓN SUCURSAL -->
+    <div class="glass-card p-6 mb-6">
+        <div class="text-center mb-5">
+            <h2 class="text-base font-bold text-cyan-300 mb-4">🏭 SELECCIONAR SUCURSAL</h2>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <button id="btnTodas" class="sucursal-btn active" data-suc="TODAS"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">🏭 TODAS</button>
+                <button id="btnMalagueno" class="sucursal-btn" data-suc="MALAGUEÑO"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn" data-suc="BARKER"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> BARKER</button>
+                <button id="btnPampita" class="sucursal-btn" data-suc="LA_PAMPITA"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif"> LA PAMPITA</button>
             </div>
         </div>
 
-        <div id="bannerHistorico" class="banner-historico" style="display:none;">
-            <div>📅 Viendo datos del mes: <span id="labelMesHistorico" class="mes-label">-</span></div>
-            <button id="btnVolverActual">✕ Volver a tiempo real</button>
-        </div>
+        <!-- KPIs TARJETAS -->
+        <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-5 mb-6"></div>
 
-        <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5"></div>
-
-        <div class="grid lg:grid-cols-[240px_1fr] gap-4">
+        <div class="grid lg:grid-cols-[280px_1fr] gap-6">
+            <!-- SIDEBAR / FILTROS -->
             <aside>
-                <div class="glass-card p-4">
-                    <h3 class="font-bold mb-3 text-cyan-400 text-xs"> FILTROS</h3>
-                    <label class="text-[10px] font-bold text-amber-300 mb-1 block">📅 PERÍODO / MES</label>
-                    <select id="filterMes" class="w-full mb-3 bg-slate-800 border border-amber-500/60 rounded-lg p-2 text-xs text-amber-100 font-semibold">
+                <div class="glass-card p-5 h-full">
+                    <h3 class="font-bold mb-4 text-cyan-400 text-sm">📋 FILTROS AVANZADOS</h3>
+                    
+                    <!-- Filtros Dropdown -->
+                    <label class="text-xs font-bold text-amber-300 mb-2 block"> PERÍODO / MES</label>
+                    <select id="filterMes" class="w-full mb-4 rounded-xl p-2 text-sm font-semibold border border-amber-500/30">
                         <option value="ACTUAL">📍 Tiempo real (actual)</option>
                         <option value="2026-01">📅 Enero 2026</option><option value="2026-02">📅 Febrero 2026</option>
                         <option value="2026-03">📅 Marzo 2026</option><option value="2026-04">📅 Abril 2026</option>
                         <option value="2026-05"> Mayo 2026</option><option value="2026-06">📅 Junio 2026</option>
-                        <option value="2026-07"> Julio 2026</option><option value="2026-08"> Agosto 2026</option>
-                        <option value="2026-09">📅 Septiembre 2026</option><option value="2026-10"> Octubre 2026</option>
-                        <option value="2026-11">📅 Noviembre 2026</option><option value="2026-12">📅 Diciembre 2026</option>
                     </select>
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🏢 PROPIEDAD</label>
-                    <select id="filterPropiedad" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100">
+                    <label class="text-xs font-bold text-cyan-300 mb-2 block">🏢 PROPIEDAD</label>
+                    <select id="filterPropiedad" class="w-full mb-4 rounded-xl p-2 text-sm font-semibold border border-cyan-600/30">
                         <option value="TODAS">Todas</option><option value="PROPIO">Propio</option><option value="ALQUILADO">Alquilado</option>
                     </select>
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🚜 EQUIPO (N° Interno)</label>
-                    <select id="filterEquipo" class="w-full mb-3 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100">
-                        <option value="TODOS"> Todos los equipos</option>
+                    <label class="text-xs font-bold text-cyan-300 mb-2 block">🚜 EQUIPO (N° Interno)</label>
+                    <select id="filterEquipo" class="w-full mb-4 rounded-xl p-2 text-sm font-semibold border border-cyan-600/30">
+                        <option value="TODOS">🔎 Todos los equipos</option>
                     </select>
-                    <label class="text-[10px] font-bold text-cyan-300 mb-1 block">🔍 ESTADO</label>
-                    <select id="filterEstado" class="w-full mb-4 bg-slate-800 border border-cyan-600 rounded-lg p-2 text-xs text-cyan-100">
+                    <label class="text-xs font-bold text-cyan-300 mb-2 block">🔍 ESTADO</label>
+                    <select id="filterEstado" class="w-full mb-5 rounded-xl p-2 text-sm font-semibold border border-cyan-600/30">
                         <option value="TODOS">Todos</option><option value="OPERATIVO">✅ Operativo</option><option value="PARADO">⏸️ Parado</option>
                     </select>
-                    <div class="bg-cyan-950/30 rounded-lg p-3 border border-cyan-600/30">
-                        <div class="text-[10px] font-bold text-cyan-400 mb-2">🚨 ALERTAS HOY</div>
-                        <div id="alertasHoy" class="max-h-40 overflow-y-auto text-[10px]"><p class="text-cyan-200 text-center">Sin alertas</p></div>
+
+                    <!-- Alertas -->
+                    <div class="bg-cyan-950/30 rounded-xl p-4 border border-cyan-600/30 mb-5">
+                        <div class="text-xs font-bold text-cyan-400 mb-2">🚨 ALERTAS HOY</div>
+                        <div id="alertasHoy" class="max-h-32 overflow-y-auto text-xs"><p class="text-cyan-200 text-center">Sin alertas</p></div>
+                    </div>
+
+                    <!-- LISTA DE FLOTA (BOTONES COMPACTOS) -->
+                    <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700">
+                        <div class="text-sm font-bold text-cyan-400 mb-3 flex justify-between items-center border-b border-slate-700 pb-2">
+                            🚜 FLOTA ACTIVA
+                            <span class="text-xs bg-cyan-900 px-3 py-1 rounded-full" id="totalFlotaCount">0</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Columna Operativos -->
+                            <div class="flex flex-col gap-2">
+                                <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider text-center bg-emerald-900/20 py-2 rounded-lg border border-emerald-500/20">
+                                    ✅ Op. (<span id="countOp">0</span>)
+                                </div>
+                                <div id="listaOpsContainer" class="space-y-2 h-auto overflow-y-visible pr-1"></div>
+                            </div>
+                            <!-- Columna Parados -->
+                            <div class="flex flex-col gap-2">
+                                <div class="text-xs font-bold text-red-400 uppercase tracking-wider text-center bg-red-900/20 py-2 rounded-lg border border-red-500/20">
+                                    ⚠️ Pa. (<span id="countPa">0</span>)
+                                </div>
+                                <div id="listaPasContainer" class="space-y-2 h-auto overflow-y-visible pr-1"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </aside>
 
+            <!-- MAIN CONTENT -->
             <main class="min-w-0">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div class="glass-card p-4 min-w-0"><h3 class="font-bold text-cyan-400 text-xs mb-2">📊 ESTADO DE FLOTA</h3><div class="chart-container"><canvas id="estadoChart"></canvas></div></div>
-                    <div class="glass-card p-4 min-w-0"><h3 class="font-bold text-red-400 text-xs mb-2">🚨 TOP 5 EQUIPOS MÁS PARADOS</h3><div class="chart-container"><canvas id="topParadosChart"></canvas></div></div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div class="glass-card p-4 min-w-0"><h3 class="font-bold text-amber-400 text-xs mb-2"> MOTIVOS DE PARADA</h3><div class="chart-container"><canvas id="motivosChart"></canvas></div></div>
-                    <div class="glass-card p-4 min-w-0"><h3 class="font-bold text-purple-400 text-xs mb-2">📈 TRAZABILIDAD DE RENDIMIENTO</h3><div class="chart-container"><canvas id="trazabilidadChart"></canvas></div></div>
+                <!-- Gráficos Superiores -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div class="glass-card p-5 min-w-0">
+                        <h3 class="font-bold text-cyan-400 text-base mb-3">📊 ESTADO DE FLOTA</h3>
+                        <div class="chart-container h-[280px]"><canvas id="estadoChart"></canvas></div>
+                    </div>
+                    <div class="glass-card p-5 min-w-0">
+                        <h3 class="font-bold text-red-400 text-base mb-3">🚨 TOP 5 EQUIPOS MÁS PARADOS</h3>
+                        <div class="chart-container h-[280px]"><canvas id="topParadosChart"></canvas></div>
+                    </div>
                 </div>
 
-                <div class="glass-card p-4 min-w-0">
+                <!-- Gráfico Principal (Comparativo) -->
+                <div class="glass-card p-5 min-w-0 mb-5">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-cyan-400 text-xs"> FLOTA EN TIEMPO REAL</h3>
-                        <span id="contadorRegistros" class="text-[10px] text-cyan-300">0 registros</span>
+                        <h3 class="font-bold text-cyan-400 text-lg flex items-center gap-2">
+                            📈 COMPARATIVA DE HORÓMETROS
+                        </h3>
+                        <div id="graficoInfo" class="text-xs text-slate-400 bg-slate-800 px-4 py-2 rounded-full border border-slate-700">
+                            Selecciona equipos para comparar
+                        </div>
+                    </div>
+                    <div id="floatingTagsContainer" class="flex flex-wrap gap-2 mb-4 min-h-[40px]">
+                        <span class="text-xs text-slate-500 italic self-center">Seleccioná equipos para ver su comparación...</span>
+                    </div>
+                    <div class="relative w-full h-[550px]">
+                        <canvas id="trazabilidadBarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tabla Inferior -->
+                <div class="glass-card p-5 min-w-0">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-cyan-400 text-base">📋 FLOTA EN TIEMPO REAL</h3>
+                        <span id="contadorRegistros" class="text-xs text-cyan-300 bg-slate-800 px-3 py-1 rounded-full">0 registros</span>
                     </div>
                     <div class="table-scroll">
                         <table>
-                            <thead><tr><th>ID</th><th>EQUIPO</th><th>TIPO</th><th>SUCURSAL</th><th>ESTADO</th><th>️ TIEMPO</th><th>LECTURA</th><th>MOTIVO</th><th>REPORTANTE</th></tr></thead>
-                            <tbody id="equipmentTableBody"><tr><td colspan="9" class="text-center text-cyan-300 p-4">🔄 Cargando...</td></tr></tbody>
+                            <thead>
+                                <tr>
+                                    <th>EQUIPO</th>
+                                    <th>TIPO</th>
+                                    <th>SUCURSAL</th>
+                                    <th>ESTADO</th>
+                                    <th>⏱️ TIEMPO</th>
+                                    <th>LECTURA</th>
+                                    <th>MOTIVO</th>
+                                    <th>REPORTANTE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipmentTableBody">
+                                <tr><td colspan="8" class="text-center text-cyan-300 p-5">🔄 Cargando...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -155,13 +254,14 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
     </div>
 </div>
 
+<!-- MODAL DETALLE -->
 <div id="equipmentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-slate-900 rounded-2xl shadow-2xl border-2 border-cyan-500/50 w-full max-w-3xl modal-bounce max-h-[92vh] flex flex-col overflow-hidden">
         <div class="flex-shrink-0 border-b border-cyan-500/30 px-6 py-3 flex items-center justify-between bg-slate-900/95">
             <button id="btnPrevEquipo" class="bg-slate-700 hover:bg-cyan-600 text-white w-9 h-9 rounded-lg flex-shrink-0">◀</button>
             <div class="min-w-0 flex-1 text-center mx-2">
-                <h2 id="modalTitle" class="text-lg font-black text-cyan-400 truncate">📋 Detalle</h2>
-                <div id="modalEquipoCounter" class="text-[10px] text-slate-400">-</div>
+                <h2 id="modalTitle" class="text-lg font-black text-cyan-400 truncate"> Detalle</h2>
+                <div id="modalEquipoCounter" class="text-xs text-slate-400">-</div>
             </div>
             <button id="btnNextEquipo" class="bg-cyan-600 hover:bg-cyan-500 text-white w-9 h-9 rounded-lg flex-shrink-0">▶</button>
             <button id="btnCerrarModal" class="text-2xl text-cyan-300 hover:text-white ml-3 flex-shrink-0">&times;</button>
@@ -175,126 +275,113 @@ select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
 <script>
 const state = {
-    sucursal: 'TODAS', equipo: 'TODOS', mes: 'ACTUAL', estado: 'TODOS', propiedad: 'TODAS',
-    rawData: [], equipmentData: [], filteredData: [], alertas: [],
-    knownAlertIds: new Set(), isFirstLoad: true,
-    historialActual: [], indiceHistorial: 0, indiceModal: 0
+    sucursal: 'TODAS', mes: 'ACTUAL', propiedad: 'TODAS', equipo: 'TODOS', estado: 'TODOS',
+    rawData: [], equipmentData: [], filteredData: [],
+    selectedEquipos: [], indiceModal: 0
 };
 
+// Paleta de colores vibrantes para las líneas del nuevo gráfico
+const LINE_COLORS = [
+    '#06b6d4', // Cyan
+    '#f59e0b', // Amber/Naranja
+    '#10b981', // Green
+    '#a855f7', // Purple
+    '#ef4444', // Red
+    '#3b82f6', // Blue
+    '#ec4899', // Pink
+    '#8b5cf6', // Violet
+    '#14b8a6', // Teal
+    '#f97316'  // Orange
+];
+
 const URLS = {
-    'MALAGUENO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1740570339&single=true&output=csv',
+    'MALAGUEÑO': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1740570339&single=true&output=csv',
     'BARKER': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=645868350&single=true&output=csv',
     'LA_PAMPITA': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRekgbjI96zEJj2BQdGZ2ybRI_BqjvYgacBrFe2evrgk7Ojlo-dDT9GI8ZDgJXJU95FYwv7TreINqd/pub?gid=1964233948&single=true&output=csv'
 };
 
-const MESES = {'2026-01':'Enero','2026-02':'Febrero','2026-03':'Marzo','2026-04':'Abril','2026-05':'Mayo','2026-06':'Junio','2026-07':'Julio','2026-08':'Agosto','2026-09':'Septiembre','2026-10':'Octubre','2026-11':'Noviembre','2026-12':'Diciembre'};
-const charts = {};
-
-function parseCSVCompleto(text) {
-    const rows = [];
-    let currentRow = [];
-    let currentField = '';
-    let inQuotes = false;
-    for (let i = 0; i < text.length; i++) {
-        const c = text[i];
-        const n = text[i+1];
-        if (inQuotes) {
-            if (c === '"' && n === '"') { currentField += '"'; i++; }
-            else if (c === '"') { inQuotes = false; }
-            else { currentField += c; }
-        } else {
-            if (c === '"') { inQuotes = true; }
-            else if (c === ',') { currentRow.push(currentField.trim()); currentField = ''; }
-            else if (c === '\n' || (c === '\r' && n === '\n')) {
-                currentRow.push(currentField.trim());
-                if (currentRow.length > 1 || currentRow[0] !== '') rows.push(currentRow);
-                currentRow = []; currentField = '';
-                if (c === '\r') i++;
-            }
-            else { currentField += c; }
-        }
-    }
-    if (currentField || currentRow.length > 0) {
-        currentRow.push(currentField.trim());
-        rows.push(currentRow);
-    }
-    return rows;
-}
+let chartTrazabilidad = null;
+let charts = {};
 
 function parseFechaHora(fechaStr, horaStr) {
     try {
         if (!fechaStr) return 0;
-        let fecha = String(fechaStr).trim();
-        let hora = String(horaStr || '00:00').trim();
-        if (fecha.includes(' ') && !fecha.includes('T')) {
-            const p = fecha.split(' ');
-            fecha = p[0];
-            if (p[1] && p[1].includes(':')) hora = p[1];
-        }
+        let fecha = String(fechaStr).trim(); let hora = String(horaStr || '00:00').trim();
+        if (fecha.includes(' ') && !fecha.includes('T')) { const p = fecha.split(' '); fecha = p[0]; if (p[1]) hora = p[1]; }
         if (fecha.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            let horaNorm = '00:00:00';
-            if (hora.includes(':')) {
-                const partes = hora.split(':');
-                const hh = String(partes[0]||'0').padStart(2,'0');
-                const mm = String(partes[1]||'0').padStart(2,'0');
-                const ss = String(partes[2]||'0').padStart(2,'0');
-                horaNorm = `${hh}:${mm}:${ss}`;
-            }
-            const d = new Date(fecha + 'T' + horaNorm);
-            if (!isNaN(d.getTime())) return d.getTime();
+            let hNorm = '00:00:00';
+            if (hora.includes(':')) { const p = hora.split(':'); hNorm = `${String(p[0]||'0').padStart(2,'0')}:${String(p[1]||'0').padStart(2,'0')}:${String(p[2]||'0').padStart(2,'0')}`; }
+            const d = new Date(fecha + 'T' + hNorm); if (!isNaN(d.getTime())) return d.getTime();
         }
         if (fecha.includes('/')) {
-            const p = fecha.split('/');
-            if (p.length === 3) {
+            const p = fecha.split('/'); if (p.length === 3) {
                 let day = parseInt(p[0]), month = parseInt(p[1]) - 1, year = parseInt(p[2]);
-                if (day === 0 || isNaN(day)) day = 1;
                 if (year < 100) year += 2000;
-                let h = 0, m = 0;
-                if (hora && hora.includes(':')) { const hp = hora.split(':'); h = parseInt(hp[0])||0; m = parseInt(hp[1])||0; }
-                const d = new Date(year, month, day, h, m, 0);
-                if (!isNaN(d.getTime())) return d.getTime();
+                let h=0, m=0; if (hora && hora.includes(':')) { const hp=hora.split(':'); h=parseInt(hp[0])||0; m=parseInt(hp[1])||0; }
+                return new Date(year, month, day, h, m).getTime();
             }
         }
         return 0;
     } catch(e) { return 0; }
 }
 
-function esIdValido(id) {
-    if (!id) return false;
-    const c = String(id).trim();
-    return /^[A-Za-z0-9\-]+$/.test(c) && c.length >= 2;
+function formatFecha(timestamp) {
+    if (!timestamp) return '';
+    const d = new Date(timestamp);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    return `${day}/${month}`;
 }
 
-function parseCSV(text, sucursal) {
-    const rows = parseCSVCompleto(text);
-    if (rows.length < 2) return [];
-    const headers = rows[0].map(h => h.replace(/"/g, '').trim());
-    const data = [];
+function formatFechaLarga(timestamp) {
+    if (!timestamp) return '';
+    const d = new Date(timestamp);
+    return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+}
+
+function calcTiempo(fechaStr, horaStr) {
+    const fp = parseFechaHora(fechaStr, horaStr); if (!fp) return null;
+    const diff = new Date().getTime() - fp; if (diff < 0) return null;
+    return { dias: Math.floor(diff / 86400000), horas: Math.floor((diff % 86400000) / 3600000), minutos: Math.floor((diff % 3600000) / 60000), totalHs: diff / 3600000 };
+}
+
+function parseCSVCompleto(text) {
+    const rows = []; let curRow = []; let curField = ''; let inQ = false;
+    for (let i = 0; i < text.length; i++) {
+        const c = text[i]; const n = text[i+1];
+        if (inQ) { if (c === '"' && n === '"') { curField += '"'; i++; } else if (c === '"') { inQ = false; } else { curField += c; } }
+        else { if (c === '"') { inQ = true; } else if (c === ',') { curRow.push(curField.trim()); curField = ''; } else if (c === '\n' || (c === '\r' && n === '\n')) { curRow.push(curField.trim()); if (curRow.length > 1 || curRow[0] !== '') rows.push(curRow); curRow = []; curField = ''; if (c === '\r') i++; } else { curField += c; } }
+    }
+    if (curField || curRow.length > 0) { curRow.push(curField.trim()); rows.push(curRow); }
+    return rows;
+}
+
+function parseCSV(text, sucursalOrigen) {
+    const rows = parseCSVCompleto(text); if (rows.length < 2) return [];
+    const headers = rows[0].map(h => h.replace(/"/g, '').trim()); const data = [];
+    if (rows.length <= 1) return [];
     for (let i = 1; i < rows.length; i++) {
-        const vals = rows[i];
-        if (vals.length === 0) continue;
-        const get = (nombres) => {
-            for (const n of nombres) {
-                const idx = headers.findIndex(h => h.toLowerCase().replace(/\s+/g,'').includes(n.toLowerCase().replace(/\s+/g,'')));
-                if (idx !== -1 && vals[idx] !== undefined) return String(vals[idx]).trim();
-            }
-            return '';
-        };
+        const vals = rows[i]; if (!vals || vals.length === 0 || !vals[0]) continue;
+        const get = (names) => { for (const n of names) { const idx = headers.findIndex(h => h.toLowerCase().replace(/\s/g,'').includes(n.toLowerCase().replace(/\s/g,''))); if (idx !== -1 && vals[idx] !== undefined) return String(vals[idx]).trim(); } return ''; };
+        const rawTipo = get(['TipoEquipo','Tipo']) || vals[2] || '';
+        const rawEquipo = get(['Equipo']) || vals[1] || '';
+        let propiedadDetectada = get(['Propiedad', 'Ownership', 'Type']);
+        if (!propiedadDetectada || propiedadDetectada === '') {
+            const combinedText = (rawTipo + ' ' + rawEquipo).toLowerCase();
+            const keywordsAlquilado = ['alq', 'rent', 'tercer', 'ext', 'servicio', 'contrat', 'leasing', 'hertz', 'outsourcing', 'prestado'];
+            propiedadDetectada = keywordsAlquilado.some(kw => combinedText.includes(kw)) ? 'ALQUILADO' : 'PROPIO';
+        } else {
+            propiedadDetectada = propiedadDetectada.toUpperCase().includes('ALQ') || propiedadDetectada.toUpperCase().includes('RENT') ? 'ALQUILADO' : 'PROPIO';
+        }
         const mapped = {
             ID_Equipo: get(['IDEquipo','ID']) || vals[0] || '',
-            Equipo: get(['Equipo']) || vals[1] || '',
-            Tipo_Equipo: get(['TipoEquipo','Tipo']) || vals[2] || '',
-            Propiedad: (get(['Propiedad']) || vals[3] || '').toUpperCase(),
-            Estado: get(['Estado']) || vals[4] || '',
-            Lectura: get(['Lectura']) || vals[6] || '',
-            Motivo_Parada: get(['MotivoParada','Motivo']) || vals[7] || '',
-            Reportante: get(['Reportante']) || vals[8] || '',
-            Fecha_Carga: get(['FechaCarga','Fecha']) || vals[9] || '',
-            Hora_Carga: get(['HoraCarga','Hora']) || vals[10] || '',
-            Observaciones: get(['Observaciones']) || vals[11] || '',
-            sucursal: sucursal
+            Equipo: rawEquipo, Tipo_Equipo: rawTipo, Propiedad: propiedadDetectada,
+            Estado: get(['Estado']) || vals[4] || '', Lectura: get(['Lectura']) || vals[6] || '',
+            Fecha_Carga: get(['FechaCarga','Fecha']) || vals[9] || '', Hora_Carga: get(['HoraCarga','Hora']) || vals[10] || '',
+            Motivo_Parada: get(['MotivoParada','Motivo']) || vals[7] || '', Reportante: get(['Reportante']) || vals[8] || '',
+            sucursal: sucursalOrigen
         };
-        if (!esIdValido(mapped.ID_Equipo)) continue;
+        if (!mapped.ID_Equipo || mapped.ID_Equipo.length < 2) continue;
         if (mapped.Estado.toUpperCase().includes('FUERA')) mapped.Estado = 'FUERA_DE_SERVICIO';
         else if (mapped.Estado.toUpperCase() !== 'OPERATIVO') mapped.Estado = 'OPERATIVO';
         data.push(mapped);
@@ -303,500 +390,278 @@ function parseCSV(text, sucursal) {
 }
 
 async function loadData() {
-    try {
-        let all = [];
-        for (const [s, u] of Object.entries(URLS)) {
-            try {
-                const r = await fetch(u + '&t=' + Date.now());
-                const t = await r.text();
-                all = all.concat(parseCSV(t, s));
-            } catch(e) { console.error('Error ' + s + ':', e); }
-        }
-        state.rawData = all;
-        const cons = {};
-        all.forEach(e => {
-            const k = e.ID_Equipo + '_' + e.sucursal;
-            const fa = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
-            const fe = cons[k] ? parseFechaHora(cons[k].Fecha_Carga, cons[k].Hora_Carga) : 0;
-            if (!cons[k] || fa >= fe) cons[k] = e;
-        });
-        state.equipmentData = Object.values(cons);
-        aplicarFiltros();
-    } catch(e) { console.error('Error general:', e); }
-    state.isFirstLoad = false;
+    let all = [];
+    let sucursalesConDatos = new Set();
+    for (const [s, u] of Object.entries(URLS)) {
+        try {
+            const r = await fetch(u + '&t=' + Date.now());
+            const t = await r.text();
+            const parsed = parseCSV(t, s);
+            if (parsed.length > 0) sucursalesConDatos.add(s);
+            all = all.concat(parsed);
+        } catch(e) { console.error('Error ' + s, e); }
+    }
+    state.rawData = all;
+    const cons = {};
+    all.forEach(e => {
+        const k = e.ID_Equipo + '_' + e.sucursal;
+        const fa = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
+        const fe = cons[k] ? parseFechaHora(cons[k].Fecha_Carga, cons[k].Hora_Carga) : 0;
+        if (!cons[k] || fa >= fe) cons[k] = e;
+    });
+    state.equipmentData = Object.values(cons);
+    if (sucursalesConDatos.size === 1 && state.sucursal === 'TODAS') {
+        const unicaSuc = Array.from(sucursalesConDatos)[0];
+        state.sucursal = unicaSuc;
+        document.querySelectorAll('.sucursal-btn').forEach(b => b.classList.remove('active'));
+        const btnId = unicaSuc === 'MALAGUEÑO' ? 'btnMalagueno' : unicaSuc === 'BARKER' ? 'btnBarker' : 'btnPampita';
+        document.getElementById(btnId).classList.add('active');
+    }
+    aplicarFiltros();
+    actualizarFiltroEquipos();
 }
 
 function aplicarFiltros() {
-    let base = state.equipmentData;
-    
-    // 🔥 FILTRADO POR MES - CORREGIDO
+    let base = state.sucursal === 'TODAS' ? state.equipmentData : state.equipmentData.filter(e => e.sucursal === state.sucursal);
     if (state.mes !== 'ACTUAL') {
-        const [year, month] = state.mes.split('-').map(Number);
-        base = base.filter(e => {
-            if (!e.Fecha_Carga) return false;
-            const fecha = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
-            if (!fecha) return false;
-            const d = new Date(fecha);
-            return d.getFullYear() === year && (d.getMonth() + 1) === month;
-        });
-        
-        // Mostrar banner histórico
-        const banner = document.getElementById('bannerHistorico');
-        const label = document.getElementById('labelMesHistorico');
-        if (banner && label) {
-            banner.style.display = 'flex';
-            label.innerText = MESES[state.mes] || state.mes;
-        }
-    } else {
-        // Ocultar banner cuando es tiempo real
-        const banner = document.getElementById('bannerHistorico');
-        if (banner) banner.style.display = 'none';
+        const [y, m] = state.mes.split('-').map(Number);
+        base = base.filter(e => { const f = parseFechaHora(e.Fecha_Carga, e.Hora_Carga); if(!f) return false; const d=new Date(f); return d.getFullYear()===y && (d.getMonth()+1)===m; });
     }
-    
-    // Filtros existentes
-    state.filteredData = base.filter(e => {
-        const ms = state.sucursal === 'TODAS' || e.sucursal === state.sucursal;
+    base = base.filter(e => {
         const mp = state.propiedad === 'TODAS' || e.Propiedad === state.propiedad;
         const me = state.equipo === 'TODOS' || e.ID_Equipo === state.equipo;
         let me2 = true;
         if (state.estado === 'OPERATIVO') me2 = e.Estado === 'OPERATIVO';
         else if (state.estado === 'PARADO') me2 = e.Estado !== 'OPERATIVO';
-        return ms && mp && me && me2;
+        return mp && me && me2;
     });
-    
+    state.filteredData = base.sort((a,b) => a.ID_Equipo.localeCompare(b.ID_Equipo, undefined, {numeric:true}));
     actualizarTodo();
 }
 
 function actualizarTodo() {
-    actualizarKPIsHeader();
-    actualizarKPIsTarjetas();
-    actualizarTabla();
-    actualizarGraficos();
-    actualizarAlertas();
-    actualizarFiltroEquipos();
+    const ops = state.filteredData.filter(e => e.Estado === 'OPERATIVO');
+    const pas = state.filteredData.filter(e => e.Estado !== 'OPERATIVO');
+    document.getElementById('totalEquipos').innerText = state.filteredData.length;
+    document.getElementById('totalParados').innerText = pas.length;
+    document.getElementById('countOp').innerText = ops.length;
+    document.getElementById('countPa').innerText = pas.length;
+    document.getElementById('totalFlotaCount').innerText = state.filteredData.length;
+    let hsPerdidas = 0;
+    pas.forEach(e => { const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); if(t) hsPerdidas += t.totalHs; });
+    document.getElementById('totalHsPerdidas').innerText = Math.round(hsPerdidas) + 'h';
+    actualizarKPIsTarjetas(ops.length, pas.length, pas);
+    renderizarBotonesPro(ops, pas);
+    actualizarGraficosPrincipales(ops.length, pas.length, pas);
+    actualizarTablaInferior();
+    actualizarGraficoTrazabilidad();
 }
 
-function actualizarKPIsHeader() {
-    const t = state.filteredData.length;
-    const p = state.filteredData.filter(e => e.Estado !== 'OPERATIVO').length;
-    let hs = 0;
-    state.filteredData.forEach(e => {
-        if (e.Estado !== 'OPERATIVO') {
-            const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
-            if (ti && ti.totalHs > 0) hs += ti.totalHs;
-        }
-    });
-    safeSet('totalEquipos', t);
-    safeSet('totalParados', p);
-    safeSet('totalHsPerdidas', Math.round(hs) + 'h');
+function actualizarKPIsTarjetas(opCount, paCount, pasList) {
+    const cont = document.getElementById('kpiContainer'); if (!cont) return;
+    const total = opCount + paCount;
+    const disp = total > 0 ? Math.round((opCount/total)*100) : 0;
+    let critico = null, maxHs = 0;
+    pasList.forEach(e => { const t = calcTiempo(e.Fecha_Carga, e.Hora_Carga); if(t && t.totalHs > maxHs) { maxHs = t.totalHs; critico = e; } });
+    const promParada = paCount > 0 ? Math.round((document.getElementById('totalHsPerdidas').innerText.replace('h','') / paCount)) : 0;
+    cont.innerHTML = `
+        <div class="glass-card p-4 kpi-green"><div class="text-xs font-bold text-green-400 mb-1">✅ DISPONIBILIDAD</div><div class="text-3xl font-black text-green-300">${disp}%</div><div class="kpi-subtitulo text-green-200">${opCount} de ${total} equipos</div></div>
+        <div class="glass-card p-4 kpi-cyan"><div class="text-xs font-bold text-cyan-400 mb-1"> OPERATIVOS</div><div class="text-3xl font-black text-cyan-300">${opCount}</div><div class="kpi-subtitulo text-cyan-200">De ${total} · ${paCount} parados</div></div>
+        <div class="glass-card p-4 kpi-amber"><div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div><div class="text-3xl font-black text-amber-300">${document.getElementById('totalHsPerdidas').innerText}</div><div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div></div>
+        <div class="glass-card p-4 kpi-red"><div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div><div class="text-xl font-black text-red-300 truncate">${critico ? critico.ID_Equipo : '-'}</div><div class="kpi-subtitulo text-red-200">${critico ? Math.floor(maxHs/24)+'d '+Math.floor(maxHs%24)+'h parado' : 'Sin paradas'}</div></div>
+        <div class="glass-card p-4 kpi-purple"><div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div><div class="text-3xl font-black text-purple-300">${promParada}h</div><div class="kpi-subtitulo text-purple-200">Por equipo parado</div></div>
+    `;
 }
 
-function actualizarKPIsTarjetas() {
-    const cont = document.getElementById('kpiContainer');
-    if (!cont) return;
-    const t = state.filteredData.length;
-    const op = state.filteredData.filter(e => e.Estado === 'OPERATIVO').length;
-    const pa = t - op;
-    const disp = t > 0 ? Math.round(op/t*100) : 0;
-    const equipoFiltrado = state.equipo !== 'TODOS' ? state.equipmentData.find(e => e.ID_Equipo === state.equipo) : null;
+// RENDERIZADO DE BOTONES COMPACTOS
+function renderizarBotonesPro(ops, pas) {
+    const cOps = document.getElementById('listaOpsContainer');
+    const cPas = document.getElementById('listaPasContainer');
     
-    if (equipoFiltrado) {
-        const esParado = equipoFiltrado.Estado !== 'OPERATIVO';
-        const ti = esParado ? calcTiempo(equipoFiltrado.Fecha_Carga, equipoFiltrado.Hora_Carga) : null;
-        const historial = state.rawData.filter(x => x.ID_Equipo === equipoFiltrado.ID_Equipo);
-        const paradasCount = historial.filter(x => x.Estado !== 'OPERATIVO').length;
-        const operativosCount = historial.filter(x => x.Estado === 'OPERATIVO').length;
-        cont.innerHTML = `
-            <div class="glass-card p-4 kpi-${esParado?'red':'green'}"><div class="text-xs font-bold ${esParado?'text-red-400':'text-green-400'} mb-1">📊 ESTADO ACTUAL</div><div class="text-2xl font-black ${esParado?'text-red-300':'text-green-300'}">${esParado?'⏸️ PARADO':'✅ OPERATIVO'}</div><div class="kpi-subtitulo text-${esParado?'red':'green'}-200">Última carga: ${equipoFiltrado.Fecha_Carga||'-'}</div></div>
-            <div class="glass-card p-4 kpi-amber"><div class="text-xs font-bold text-amber-400 mb-1">️ TIEMPO PARADO</div><div class="text-2xl font-black text-amber-300">${ti?`${ti.dias>0?ti.dias+'d ':''}${ti.horas}h ${ti.minutos}m`:'-'}</div><div class="kpi-subtitulo text-amber-200">${esParado?'Desde última carga':'En servicio'}</div></div>
-            <div class="glass-card p-4 kpi-cyan"><div class="text-xs font-bold text-cyan-400 mb-1">🔢 HORÓMETRO ACTUAL</div><div class="text-3xl font-black text-cyan-300">${equipoFiltrado.Lectura||'0'}</div><div class="kpi-subtitulo text-cyan-200">${equipoFiltrado.Tipo_Equipo||'Equipo'}</div></div>
-            <div class="glass-card p-4 kpi-purple"><div class="text-xs font-bold text-purple-400 mb-1">📜 HISTORIAL</div><div class="text-2xl font-black text-purple-300">${historial.length} reg.</div><div class="kpi-subtitulo text-purple-200">⏸️ ${paradasCount} paradas · ✅ ${operativosCount} oper.</div></div>
-            <div class="glass-card p-4 kpi-blue"><div class="text-xs font-bold text-blue-400 mb-1">🏷️ INFORMACIÓN</div><div class="text-lg font-black text-blue-300 truncate">${equipoFiltrado.Equipo||'-'}</div><div class="kpi-subtitulo text-blue-200">📍 ${equipoFiltrado.sucursal} · 🏢 ${equipoFiltrado.Propiedad||'-'}</div></div>
-        `;
-    } else {
-        let hsPerdidas = 0, critico = null, maxHs = 0;
-        state.filteredData.forEach(e => {
-            if (e.Estado !== 'OPERATIVO') {
-                const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
-                if (ti && ti.totalHs > 0) {
-                    hsPerdidas += ti.totalHs;
-                    if (ti.totalHs > maxHs) { maxHs = ti.totalHs; critico = e; }
-                }
-            }
-        });
-        const prom = pa > 0 ? Math.round(hsPerdidas / pa) : 0;
-        cont.innerHTML = `
-            <div class="glass-card p-4 kpi-green"><div class="text-xs font-bold text-green-400 mb-1">✅ DISPONIBILIDAD</div><div class="text-3xl font-black text-green-300">${disp}%</div><div class="kpi-subtitulo text-green-200">${op} de ${t} equipos</div></div>
-            <div class="glass-card p-4 kpi-cyan"><div class="text-xs font-bold text-cyan-400 mb-1">🟢 OPERATIVOS</div><div class="text-3xl font-black text-cyan-300">${op}</div><div class="kpi-subtitulo text-cyan-200">De ${t} · ${pa} parados</div></div>
-            <div class="glass-card p-4 kpi-amber"><div class="text-xs font-bold text-amber-400 mb-1">⏱️ TIEMPO MUERTO</div><div class="text-3xl font-black text-amber-300">${Math.round(hsPerdidas)}h</div><div class="kpi-subtitulo text-amber-200">Acumulado actualmente</div></div>
-            <div class="glass-card p-4 kpi-red"><div class="text-xs font-bold text-red-400 mb-1">🚨 EQUIPO CRÍTICO</div><div class="text-xl font-black text-red-300 truncate">${critico?critico.ID_Equipo:'-'}</div><div class="kpi-subtitulo text-red-200">${critico?Math.floor(maxHs/24)+'d '+Math.floor(maxHs%24)+'h parado':'Sin paradas'}</div></div>
-            <div class="glass-card p-4 kpi-purple"><div class="text-xs font-bold text-purple-400 mb-1">📊 PROM. PARADA</div><div class="text-3xl font-black text-purple-300">${prom}h</div><div class="kpi-subtitulo text-purple-200">Por equipo parado</div></div>
-        `;
-    }
+    // Renderizado compacto para Operativos
+    cOps.innerHTML = ops.map(e => `
+        <div class="eq-btn eq-op ${state.selectedEquipos.includes(e.ID_Equipo) ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
+            ${e.ID_Equipo}
+            <div class="eq-tooltip">
+                <div class="tooltip-title">${e.Equipo || 'Sin nombre'}</div>
+                <div class="tooltip-row"><span class="tooltip-label">Tipo:</span> <span>${e.Tipo_Equipo || '-'}</span></div>
+                <div class="tooltip-row"><span class="tooltip-label">Horómetro:</span> <span class="text-cyan-300 font-bold">${e.Lectura || '-'}h</span></div>
+                <div class="tooltip-row"><span class="tooltip-label">Estado:</span> <span class="text-emerald-400">✅ OPERATIVO</span></div>
+            </div>
+        </div>`).join('');
+        
+    // Renderizado compacto para Parados
+    cPas.innerHTML = pas.map(e => {
+        const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
+        const tiempoStr = ti ? `${ti.dias}d ${ti.horas}h` : '0d 0h';
+        return `
+        <div class="eq-btn eq-pa ${state.selectedEquipos.includes(e.ID_Equipo) ? 'selected' : ''}" onclick="toggleSel('${e.ID_Equipo}')">
+            ${e.ID_Equipo}
+            <div class="eq-tooltip">
+                <div class="tooltip-title">${e.Equipo || 'Sin nombre'}</div>
+                <div class="tooltip-row"><span class="tooltip-label">Tipo:</span> <span>${e.Tipo_Equipo || '-'}</span></div>
+                <div class="tooltip-row"><span class="tooltip-label">Horómetro:</span> <span class="text-cyan-300 font-bold">${e.Lectura || '-'}h</span></div>
+                <div class="tooltip-row"><span class="tooltip-label">Tiempo parado:</span> <span class="text-amber-400 font-bold">${tiempoStr}</span></div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
-function calcTiempo(fechaStr, horaStr) {
-    const fp = parseFechaHora(fechaStr, horaStr);
-    if (!fp) return null;
-    const diff = new Date().getTime() - fp;
-    if (diff < 0) return null;
-    const dias = Math.floor(diff / 86400000);
-    const horas = Math.floor((diff % 86400000) / 3600000);
-    const min = Math.floor((diff % 3600000) / 60000);
-    return { dias, horas, minutos: min, totalHs: diff / 3600000 };
+function toggleSel(id) {
+    const idx = state.selectedEquipos.indexOf(id);
+    if (idx > -1) state.selectedEquipos.splice(idx, 1);
+    else state.selectedEquipos.push(id);
+    const ops = state.filteredData.filter(e => e.Estado === 'OPERATIVO');
+    const pas = state.filteredData.filter(e => e.Estado !== 'OPERATIVO');
+    renderizarBotonesPro(ops, pas);
+    renderizarTagsFlotantes();
+    actualizarGraficoTrazabilidad();
+    actualizarTablaInferior();
 }
 
-function actualizarTabla() {
-    const tb = document.getElementById('equipmentTableBody');
-    const cr = document.getElementById('contadorRegistros');
-    if (!tb) return;
-    if (cr) cr.innerText = state.filteredData.length + ' registros';
-    if (state.filteredData.length === 0) {
-        tb.innerHTML = '<tr><td colspan="9" class="text-center text-cyan-300 p-4"> Sin datos para el período seleccionado</td></tr>';
+function renderizarTagsFlotantes() {
+    const c = document.getElementById('floatingTagsContainer');
+    if (state.selectedEquipos.length === 0) {
+        c.innerHTML = '<span class="text-xs text-slate-500 italic self-center">Seleccioná equipos para ver su comparación...</span>';
         return;
     }
-    tb.innerHTML = state.filteredData.map((e, i) => {
+    c.innerHTML = state.selectedEquipos.map(id => `<div class="floating-tag" onclick="toggleSel('${id}')">${id} <span class="remove-btn">×</span></div>`).join('');
+}
+
+function actualizarGraficosPrincipales(opCount, paCount, paradosList) {
+    const ctxDona = document.getElementById('estadoChart');
+    if (charts.dona) charts.dona.destroy();
+    const donaPlugin = {
+        id: 'donaLabels',
+        afterDatasetsDraw(chart) {
+            const { ctx, data, chartArea: { width, height } } = chart;
+            ctx.save();
+            const total = data.datasets[0].data.reduce((a,b) => a + b, 0);
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 2.2;
+            data.datasets[0].data.forEach((value, index) => {
+                if (value === 0) return;
+                const porcentaje = ((value / total) * 100).toFixed(1);
+                const angle = chart.getDatasetMeta(0).data[index].startAngle + (chart.getDatasetMeta(0).data[index].circumference / 2);
+                const x = centerX + (radius * 0.7) * Math.cos(angle);
+                const y = centerY + (radius * 0.7) * Math.sin(angle);
+                ctx.font = 'bold 13px Inter';
+                ctx.fillStyle = '#f8fafc';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${porcentaje}%`, x, y);
+                ctx.font = '10px Inter';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText(`${value} eq`, x, y + 14);
+            });
+            ctx.restore();
+        }
+    };
+    charts.dona = new Chart(ctxDona, {
+        type: 'doughnut',
+        data: { labels: ['Operativo', 'Parado'], datasets: [{ data: [opCount, paCount], backgroundColor: ['#06b6d4', '#f59e0b'], borderWidth: 0, hoverOffset: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' } } } },
+        plugins: [donaPlugin]
+    });
+    const ctxBarras = document.getElementById('topParadosChart');
+    if (charts.barras) charts.barras.destroy();
+    const top5 = paradosList.map(e => ({ ...e, hs: calcTiempo(e.Fecha_Carga, e.Hora_Carga)?.totalHs || 0 })).sort((a,b) => b.hs - a.hs).slice(0, 5);
+    charts.barras = new Chart(ctxBarras, {
+        type: 'bar',
+        data: { labels: top5.map(e => e.ID_Equipo), datasets: [{ label: 'Horas Parado', data: top5.map(e => Math.round(e.hs)), backgroundColor: '#ef4444', borderRadius: 8, barPercentage: 0.6 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toLocaleString('es-AR')} horas` } } }, scales: { x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(148,163,184,0.1)' } }, y: { ticks: { color: '#cbd5e1', font: { weight: 'bold' } }, grid: { display: false } } } }
+    });
+}
+
+function actualizarTablaInferior() {
+    const tb = document.getElementById('equipmentTableBody'); 
+    const cr = document.getElementById('contadorRegistros'); 
+    if (!tb) return;
+    
+    let dataToShow = state.filteredData;
+    if (state.selectedEquipos.length > 0) {
+        dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
+    }
+    cr.innerText = dataToShow.length + ' registros';
+    
+    if (dataToShow.length === 0) { 
+        tb.innerHTML = '<tr><td colspan="8" class="text-center text-cyan-300 p-5"> Sin datos para la selección actual</td></tr>'; 
+        return; 
+    }
+    
+    tb.innerHTML = dataToShow.map((e) => {
         const esParado = e.Estado !== 'OPERATIVO';
         const badge = esParado ? 'status-parado' : 'status-operativo';
-        const txt = esParado ? '️ Parado' : '✅ Operativo';
-        let celdaTiempo = '<span class="text-slate-500 text-xs">-</span>';
-        if (esParado && e.Fecha_Carga && e.Fecha_Carga.trim() !== '') {
-            const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
-            if (ti && ti.totalHs > 0 && ti.totalHs < 100000) {
-                let h = '⏱️ ';
-                if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `;
-                h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`;
-                celdaTiempo = `<span class="cronometro text-xs" data-fp="${e.Fecha_Carga}" data-hp="${e.Hora_Carga||'00:00'}">${h}</span>`;
-            } else {
-                celdaTiempo = `<span class="text-xs text-amber-300"> ${e.Fecha_Carga||''}</span>`;
-            }
-        }
-        const pulse = esParado ? 'pulse-alert' : '';
-        return `<tr class="${pulse}" data-idx="${i}">
-            <td class="font-bold text-cyan-300">${e.ID_Equipo||'-'}</td>
-            <td class="font-semibold">${e.Equipo||'-'}</td>
-            <td class="text-slate-400">${e.Tipo_Equipo||'-'}</td>
-            <td>${e.sucursal||'-'}</td>
-            <td><span class="${badge}">${txt}</span></td>
-            <td>${celdaTiempo}</td>
-            <td>${e.Lectura||'-'}</td>
-            <td class="col-motivo" title="${(e.Motivo_Parada||'').replace(/"/g,'&quot;')}">${e.Motivo_Parada||'-'}</td>
-            <td>${e.Reportante||'-'}</td>
-        </tr>`;
-    }).join('');
-    tb.querySelectorAll('tr[data-idx]').forEach(tr => {
-        tr.addEventListener('click', () => abrirModal(parseInt(tr.dataset.idx)));
-    });
-    actualizarCronometros();
-}
-
-function actualizarCronometros() {
-    document.querySelectorAll('[data-fp]').forEach(el => {
-        const ti = calcTiempo(el.dataset.fp, el.dataset.hp);
-        if (ti) {
-            let h = '⏱️ ';
-            if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `;
-            h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`;
-            el.innerHTML = h;
-        }
-    });
-}
-setInterval(actualizarCronometros, 10000);
-
-function actualizarGraficos() {
-    const op = state.filteredData.filter(e => e.Estado === 'OPERATIVO').length;
-    const pa = state.filteredData.filter(e => e.Estado !== 'OPERATIVO').length;
-    
-    if (charts.estado) charts.estado.destroy();
-    const ce = document.getElementById('estadoChart');
-    if (ce) {
-        charts.estado = new Chart(ce, {
-            type: 'doughnut',
-            data: { labels: ['Operativo','Parado'], datasets: [{ data: [op, pa], backgroundColor: ['#06b6d4','#f59e0b'], borderWidth: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } } }
-        });
-    }
-    
-    if (charts.top) charts.top.destroy();
-    const ct = document.getElementById('topParadosChart');
-    const parados = state.filteredData.filter(e => e.Estado !== 'OPERATIVO')
-        .map(e => ({ ...e, hs: calcTiempo(e.Fecha_Carga, e.Hora_Carga)?.totalHs || 0 }))
-        .sort((a,b) => b.hs - a.hs).slice(0,5);
-    if (ct) {
-        charts.top = new Chart(ct, {
-            type: 'bar',
-            data: { labels: parados.map(e=>e.ID_Equipo), datasets: [{ data: parados.map(e=>Math.round(e.hs)), backgroundColor: ['#ef4444','#f97316','#f59e0b','#eab308','#84cc16'], borderRadius: 6 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#cbd5e1' } }, y: { ticks: { color: '#cbd5e1' } } } }
-        });
-    }
-    
-    if (charts.mot) charts.mot.destroy();
-    const cm = document.getElementById('motivosChart');
-    const motivos = {};
-    state.filteredData.filter(e => e.Estado !== 'OPERATIVO' && e.Motivo_Parada).forEach(e => {
-        const m = e.Motivo_Parada.substring(0,30);
-        motivos[m] = (motivos[m]||0)+1;
-    });
-    const motArr = Object.entries(motivos).sort((a,b)=>b[1]-a[1]).slice(0,6);
-    if (cm) {
-        charts.mot = new Chart(cm, {
-            type: 'doughnut',
-            data: { labels: motArr.map(m=>m[0])||['Sin paradas'], datasets: [{ data: motArr.map(m=>m[1])||[1], backgroundColor: ['#06b6d4','#f59e0b','#a855f7','#ef4444','#10b981','#ec4899'], borderWidth: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 9 } } } } }
-        });
-    }
-    
-    if (charts.traz) {
-        charts.traz.destroy();
-        charts.traz = null;
-    }
-    const ctr = document.getElementById('trazabilidadChart');
-    if (!ctr || state.filteredData.length === 0) return;
-
-    const getEmoji = (tipo) => {
-        const t = (tipo || '').toLowerCase();
-        if (t.includes('camión') || t.includes('camion')) return '🚛';
-        if (t.includes('cargad')) return '🚜';
-        if (t.includes('topad')) return '🚜';
-        if (t.includes('perforad') || t.includes('pantera')) return '🔩';
-        if (t.includes('excavad')) return '️';
-        if (t.includes('motonivelad')) return '🛣️';
-        if (t.includes('retro')) return '';
-        return '⚙️';
-    };
-
-    const unicos = {};
-    state.filteredData.forEach(e => {
-        if (!e.ID_Equipo || !e.Fecha_Carga || !e.Lectura) return;
-        const fp = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
-        if (!fp) return;
+        const txt = esParado ? '⏸️ Parado' : '✅ Operativo';
         
-        if (!unicos[e.ID_Equipo]) unicos[e.ID_Equipo] = [];
-        const d = new Date(fp);
-        const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-        unicos[e.ID_Equipo].push({ 
-            fecha: fp, 
-            lectura: parseFloat(e.Lectura)||0, 
-            mes: `${meses[d.getMonth()]}-${d.getFullYear().toString().substr(-2)}`,
-            tipo: e.Tipo_Equipo || 'Otros'
-        });
-    });
-
-    Object.values(unicos).forEach(arr => arr.sort((a,b) => a.fecha - b.fecha));
-    const todosMeses = [...new Set(Object.values(unicos).flatMap(a => a.map(x=>x.mes)))];
-    const mesesOrdenados = todosMeses.sort((a,b) => {
-        const ma = a.split('-'), mb = b.split('-');
-        const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-        return parseInt(ma[1])*12+meses.indexOf(ma[0]) - (parseInt(mb[1])*12+meses.indexOf(mb[0]));
-    });
-
-    const colores = ['#06b6d4','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#f97316','#14b8a6','#6366f1','#84cc16'];
-    const equiposConDatos = Object.keys(unicos)
-        .map(id => ({ id, n: unicos[id].length, tipo: unicos[id][0].tipo }))
-        .sort((a,b) => b.n - a.n)
-        .slice(0, 10);
-
-    charts.traz = new Chart(ctr, {
-        type: 'line',
-        data: {
-            labels: mesesOrdenados,
-            datasets: equiposConDatos.map((eq, i) => {
-                const datos = unicos[eq.id];
-                const data = mesesOrdenados.map(mes => {
-                    const r = datos.find(x => x.mes === mes);
-                    return r ? r.lectura : null;
-                });
-                return {
-                    label: `${getEmoji(eq.tipo)} ${eq.id}`,
-                    data: data,
-                    borderColor: colores[i % colores.length],
-                    backgroundColor: colores[i % colores.length] + '20',
-                    tension: 0.4,
-                    fill: false,
-                    pointRadius: 6,
-                    pointHoverRadius: 10,
-                    pointBackgroundColor: colores[i % colores.length],
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    borderWidth: 3,
-                    spanGaps: true
-                };
-            })
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-                legend: { 
-                    position: 'top', 
-                    labels: { 
-                        color: '#e2e8f0', 
-                        font: { size: 11, weight: '600' }, 
-                        boxWidth: 16,
-                        padding: 15,
-                        usePointStyle: true,
-                        pointStyle: 'circle'
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                    titleColor: '#06b6d4',
-                    titleFont: { size: 13, weight: 'bold' },
-                    bodyColor: '#e2e8f0',
-                    bodyFont: { size: 12 },
-                    borderColor: '#06b6d4',
-                    borderWidth: 1,
-                    cornerRadius: 8,
-                    padding: 12,
-                    callbacks: {
-                        title: (items) => ` Período: ${items[0].label}`,
-                        label: (context) => {
-                            const val = context.parsed.y;
-                            if (val === null) return null;
-                            return `${context.dataset.label}: ${val.toLocaleString('es-AR')} horas`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(100,116,139,0.1)', drawBorder: false },
-                    ticks: { 
-                        color: '#94a3b8', 
-                        font: { size: 10, weight: '500' },
-                        maxRotation: 45,
-                        minRotation: 45
-                    }
-                },
-                y: {
-                    beginAtZero: false,
-                    grid: { color: 'rgba(100,116,139,0.1)', drawBorder: false },
-                    ticks: { 
-                        color: '#94a3b8', 
-                        font: { size: 11, weight: '500' },
-                        callback: (v) => v.toLocaleString('es-AR') + 'h',
-                        stepSize: 2000
-                    }
-                }
-            },
-            animation: {
-                duration: 1500,
-                easing: 'easeOutQuart'
+        let celdaTiempo = '<span class="text-slate-400 text-xs">-</span>';
+        if (esParado && e.Fecha_Carga) {
+            const ti = calcTiempo(e.Fecha_Carga, e.Hora_Carga);
+            if (ti && ti.totalHs > 0) { 
+                let h = '⏱️ '; 
+                if (ti.dias > 0) h += `<span class="crono-dia">${ti.dias}d</span> `; 
+                h += `<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span>`; 
+                celdaTiempo = `<span class="cronometro text-sm">${h}</span>`; 
             }
         }
-    });
+        
+        const equipoClass = esParado ? 'equipo-parado-texto' : 'equipo-operativo-texto';
+        
+        return `<tr class="${esParado ? 'pulse-alert' : ''}" onclick="abrirModalPorId('${e.ID_Equipo}')">
+                    <td class="font-bold ${equipoClass}">${e.Equipo || e.ID_Equipo}</td>
+                    <td class="text-slate-300 font-medium">${e.Tipo_Equipo || '-'}</td>
+                    <td class="text-slate-300">${e.sucursal || '-'}</td>
+                    <td><span class="${badge}">${txt}</span></td>
+                    <td class="font-mono">${celdaTiempo}</td>
+                    <td class="text-amber-300 font-bold">${e.Lectura || '-'}</td>
+                    <td class="col-motivo text-slate-300">${e.Motivo_Parada || '-'}</td>
+                    <td class="text-slate-300">${e.Reportante || '-'}</td>
+                </tr>`;
+    }).join('');
 }
 
-function actualizarFiltroEquipos() {
-    const sel = document.getElementById('filterEquipo');
-    if (!sel) return;
-    const val = sel.value;
-    const eqs = state.sucursal === 'TODAS' ? state.equipmentData : state.equipmentData.filter(e=>e.sucursal===state.sucursal);
-    const unicos = {};
-    eqs.forEach(e => { if (!unicos[e.ID_Equipo]) unicos[e.ID_Equipo] = e; });
-    const lista = Object.values(unicos).sort((a,b) => {
-        const na = parseInt(a.ID_Equipo.replace(/\D/g,''))||0, nb = parseInt(b.ID_Equipo.replace(/\D/g,''))||0;
-        return na - nb;
-    });
-    sel.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>' + 
-        lista.map(e => `<option value="${e.ID_Equipo}">🔧 ${e.ID_Equipo} | ${e.Tipo_Equipo||'Otros'}</option>`).join('');
-    if (val && val !== 'TODOS' && lista.some(e=>e.ID_Equipo===val)) sel.value = val;
+function abrirModalPorId(idEquipo) {
+    const idx = state.filteredData.findIndex(e => e.ID_Equipo === idEquipo);
+    if (idx !== -1) { state.indiceModal = idx; renderModal(); const m = document.getElementById('equipmentModal'); if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; } }
 }
 
-function actualizarAlertas() {
-    const hoy = new Date();
-    const cont = document.getElementById('alertasHoy');
-    if (!cont) return;
-    const consolidado = {};
-    state.rawData.forEach(e => {
-        const k = e.ID_Equipo + '_' + e.sucursal;
-        const fa = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
-        const fe = consolidado[k] ? parseFechaHora(consolidado[k].Fecha_Carga, consolidado[k].Hora_Carga) : 0;
-        if (!consolidado[k] || fa >= fe) consolidado[k] = e;
-    });
-    const alertas = Object.values(consolidado).filter(e => {
-        const t = parseFechaHora(e.Fecha_Carga, e.Hora_Carga);
-        const d = new Date(t);
-        return d.getDate() == hoy.getDate() && d.getMonth() == hoy.getMonth() && d.getFullYear() == hoy.getFullYear();
-    });
-    const filtradas = state.sucursal !== 'TODAS' ? alertas.filter(a=>a.sucursal===state.sucursal) : alertas;
-    if (filtradas.length === 0) { cont.innerHTML = '<p class="text-cyan-200 text-center py-2">Sin alertas</p>'; return; }
-    cont.innerHTML = filtradas.map(a => `<div class="alert-item"><div class="flex justify-between"><span class="font-bold text-cyan-300">${a.ID_Equipo}</span><span class="text-[9px] text-slate-400">${a.Hora_Carga||''}</span></div><div class="text-[10px] text-cyan-200 truncate">${a.Equipo}</div><div class="text-[10px] text-slate-400">  ${a.Reportante||'-'}</div></div>`).join('');
-}
-
-function abrirModal(idx) {
-    if (idx < 0 || idx >= state.filteredData.length) return;
-    state.indiceModal = idx;
-    renderModal();
-    const m = document.getElementById('equipmentModal');
-    if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; }
-}
+function cerrarModal() { const m = document.getElementById('equipmentModal'); if (m) { m.classList.add('hidden'); m.style.display = 'none'; } }
+function navModal(dir) { const n = state.indiceModal + dir; if (n < 0 || n >= state.filteredData.length) return; state.indiceModal = n; renderModal(); }
 
 function renderModal() {
-    const e = state.filteredData[state.indiceModal];
-    if (!e) return;
-    
-    const mt = document.getElementById('modalTitle');
-    const mc = document.getElementById('modalEquipoCounter');
-    const bp = document.getElementById('btnPrevEquipo');
-    const bn = document.getElementById('btnNextEquipo');
+    const e = state.filteredData[state.indiceModal]; if (!e) return;
+    const mt = document.getElementById('modalTitle'); const mc = document.getElementById('modalEquipoCounter');
+    const bp = document.getElementById('btnPrevEquipo'); const bn = document.getElementById('btnNextEquipo');
     const cont = document.getElementById('modalContent');
-    
-    // 🔥 CORREGIDO: Mostrar ID + TIPO DE EQUIPO (no ID duplicado)
     if (mt) mt.innerText = `📋 ${e.ID_Equipo} - ${e.Tipo_Equipo||'Sin tipo'}`;
     if (mc) mc.innerText = `Equipo ${state.indiceModal+1} de ${state.filteredData.length}`;
     if (bp) { bp.disabled = state.indiceModal === 0; bp.style.opacity = state.indiceModal === 0 ? '0.3' : '1'; }
     if (bn) { bn.disabled = state.indiceModal === state.filteredData.length-1; bn.style.opacity = state.indiceModal === state.filteredData.length-1 ? '0.3' : '1'; }
     if (!cont) return;
-    
-    const esParado = e.Estado !== 'OPERATIVO';
-    const ti = esParado ? calcTiempo(e.Fecha_Carga, e.Hora_Carga) : null;
-    
+    const esParado = e.Estado !== 'OPERATIVO'; const ti = esParado ? calcTiempo(e.Fecha_Carga, e.Hora_Carga) : null;
     let cronHTML = '';
     if (esParado && e.Fecha_Carga) {
-        if (ti && ti.totalHs > 0 && ti.totalHs < 100000) {
-            cronHTML = `<div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center"><div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div><div class="text-3xl font-black cronometro">${ti.dias>0?`<span class="crono-dia">${ti.dias}d</span> `:''}<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span></div><div class="text-[10px] text-slate-400 mt-2">Desde: ${e.Fecha_Carga} ${e.Hora_Carga||''}</div></div>`;
-        } else {
-            cronHTML = `<div class="bg-amber-950/30 border border-amber-500/50 rounded-xl p-4 text-center"><div class="text-xs text-amber-400"> ${e.Fecha_Carga||''} ${e.Hora_Carga||''}</div><div class="text-[10px] text-slate-400 mt-1">No se pudo calcular el tiempo</div></div>`;
-        }
+        if (ti && ti.totalHs > 0 && ti.totalHs < 100000) cronHTML = `<div class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 text-center"><div class="text-xs text-red-400 mb-2">⏱️ TIEMPO PARADO EN VIVO</div><div class="text-3xl font-black cronometro">${ti.dias>0?`<span class="crono-dia">${ti.dias}d</span> `:''}<span class="crono-hora">${ti.horas}h</span> <span class="crono-min">${ti.minutos}m</span></div><div class="text-xs text-slate-400 mt-2">Desde: ${e.Fecha_Carga} ${e.Hora_Carga||''}</div></div>`;
+        else cronHTML = `<div class="bg-amber-950/30 border border-amber-500/50 rounded-xl p-4 text-center"><div class="text-xs text-amber-400"> 📅 ${e.Fecha_Carga||''} ${e.Hora_Carga||''}</div><div class="text-xs text-slate-400 mt-1">No se pudo calcular el tiempo</div></div>`;
     }
-    
-    const hist = state.rawData.filter(x=>x.ID_Equipo===e.ID_Equipo).sort((a,b)=>parseFechaHora(b.Fecha_Carga,b.Hora_Carga)-parseFechaHora(a.Fecha_Carga,a.Hora_Carga));
-    
-    // 🔥 EVITAR DUPLICAR MOTIVO
-    const motivoActual = e.Motivo_Parada || '';
-    
+    const hist = state.rawData.filter(x=>x.ID_Equipo===e.ID_Equipo).sort((a,b)=>parseFechaHora(b.Fecha_Carga,b.Hora_Carga)-parseFechaHora(a.Fecha_Carga,a.Hora_Carga)).slice(0, 5);
     let histHTML = '';
     if (hist.length > 0) {
-        histHTML = `<div class="mt-4 bg-slate-800/50 rounded-xl p-5 border border-cyan-500/30"><h3 class="font-bold text-cyan-400 text-base mb-4">📜 HISTORIAL DE REGISTROS (${hist.length})</h3><div class="space-y-4">` +
-            hist.map((h, idx) => {
+        histHTML = `<div class="mt-4 bg-slate-800/50 rounded-xl p-5 border border-cyan-500/30"><h3 class="font-bold text-cyan-400 text-base mb-4">📜 ÚLTIMOS REGISTROS</h3><div class="space-y-3">` +
+            hist.map(h => {
                 const esOp = h.Estado === 'OPERATIVO';
-                const tiH = !esOp ? calcTiempo(h.Fecha_Carga, h.Hora_Carga) : null;
-                
-                // 🔥 Si es el primer registro del historial y el motivo es igual al actual, omitirlo
-                const esPrimerRegistro = idx === 0;
-                const motivoEsIgual = h.Motivo_Parada === motivoActual && motivoActual !== '';
-                const omitirMotivo = esPrimerRegistro && motivoEsIgual;
-                
-                return `<div class="p-4 rounded-lg border-2 ${esOp?'bg-green-950/20 border-green-500/40':'bg-amber-950/20 border-amber-500/40'}">
-                    <div class="flex justify-between items-center mb-3"><span class="font-bold text-lg ${esOp?'text-green-400':'text-amber-400'}">${esOp?'✅ OPERATIVO':'⏸️ PARADO'}</span><span class="text-sm font-semibold text-cyan-300">📅 ${h.Fecha_Carga} ${h.Hora_Carga||''}</span></div>
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div class="bg-slate-900/50 rounded-lg p-3"><div class="text-xs text-slate-400 mb-1"> HORÓMETRO</div><div class="text-xl font-black text-amber-300">${h.Lectura||'N/A'}</div></div>
-                        <div class="bg-slate-900/50 rounded-lg p-3"><div class="text-xs text-slate-400 mb-1">👤 REPORTANTE</div><div class="text-base font-bold text-cyan-300">${h.Reportante||'N/A'}</div></div>
-                    </div>
-                    ${tiH && tiH.totalHs > 0 && tiH.totalHs < 100000 ? `<div class="bg-red-950/30 rounded-lg p-2 mb-3 text-center border border-red-500/30"><span class="text-sm font-bold text-red-300">⏱️ Tiempo desde este registro: <span class="crono-dia">${tiH.dias}d</span> <span class="crono-hora">${tiH.horas}h</span> <span class="crono-min">${tiH.minutos}m</span></span></div>`:''}
-                    ${!omitirMotivo && h.Motivo_Parada?`<div class="bg-slate-900/50 rounded-lg p-3 mt-2"><div class="text-xs text-amber-400 mb-2 font-bold uppercase tracking-wide">️ Motivo / Descripción</div><div class="text-[14px] text-slate-200 leading-relaxed modal-texto-completo">${h.Motivo_Parada}</div></div>`:''}
-                    ${h.Observaciones?`<div class="bg-slate-900/50 rounded-lg p-3 mt-2"><div class="text-xs text-cyan-400 mb-2 font-bold uppercase tracking-wide">📝 Observaciones</div><div class="text-[14px] text-slate-200 leading-relaxed">${h.Observaciones}</div></div>`:''}
+                return `<div class="p-3 rounded-lg border ${esOp?'border-green-500/30 bg-green-950/10':'border-amber-500/30 bg-amber-950/10'}">
+                    <div class="flex justify-between items-center mb-2"><span class="font-bold text-sm ${esOp?'text-green-400':'text-amber-400'}">${esOp?'✅ OPERATIVO':'⏸️ PARADO'}</span><span class="text-xs text-slate-400">📅 ${h.Fecha_Carga} ${h.Hora_Carga||''}</span></div>
+                    <div class="grid grid-cols-2 gap-2 text-xs"><div><span class="text-slate-500">Horómetro:</span> <span class="text-cyan-300 font-bold">${h.Lectura}h</span></div><div><span class="text-slate-500">Reportante:</span> <span class="text-slate-300">${h.Reportante||'-'}</span></div></div>
+                    ${h.Motivo_Parada?`<div class="mt-2 text-xs text-slate-300 modal-texto-completo"><span class="text-amber-400 font-bold">Motivo:</span> ${h.Motivo_Parada}</div>`:''}
                 </div>`;
             }).join('') + '</div></div>';
     }
-    
     cont.innerHTML = `
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🔢 ID</div><div class="text-xl font-bold text-cyan-300">${e.ID_Equipo}</div></div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🏷️ Tipo</div><div class="text-sm font-bold text-white">${e.Tipo_Equipo||'-'}</div></div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🚜 Equipo</div><div class="text-base font-bold text-white">${e.Equipo}</div></div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🏷️ Tipo</div><div class="text-base font-bold text-white">${e.Tipo_Equipo||'-'}</div></div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400"> Equipo</div><div class="text-base font-bold text-white">${e.Equipo}</div></div>
             <div class="bg-slate-800 p-4 rounded-xl border border-cyan-500/30"><div class="text-xs text-slate-400">🏢 Propiedad</div><div class="text-sm font-bold text-white">${e.Propiedad||'-'}</div></div>
         </div>
         ${cronHTML}
@@ -804,60 +669,154 @@ function renderModal() {
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📍 Sucursal</span><span class="font-bold text-cyan-300">${e.sucursal}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📊 Estado</span><span class="font-bold ${esParado?'text-amber-300':'text-green-300'}">${e.Estado}</span></div>
             <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span class="text-slate-400">📈 Lectura</span><span class="font-bold text-amber-300">${e.Lectura||'-'}</span></div>
-            ${e.Motivo_Parada?`<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 font-bold uppercase tracking-wide mb-2">⚠️ Motivo</div><div class="text-[14px] text-slate-200 leading-relaxed modal-texto-completo">${e.Motivo_Parada}</div></div>`:''}
-            ${e.Observaciones?`<div class="p-3 bg-slate-800/50 rounded-lg"><div class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-2">📝 Observaciones</div><div class="text-[14px] text-slate-200 leading-relaxed modal-texto-completo">${e.Observaciones}</div></div>`:''}
+            ${e.Motivo_Parada?`<div class="p-3 bg-amber-950/20 rounded-lg border border-amber-500/30"><div class="text-xs text-amber-400 font-bold uppercase tracking-wide mb-2">⚠️ Motivo</div><div class="text-sm text-slate-200 leading-relaxed modal-texto-completo">${e.Motivo_Parada}</div></div>`:''}
         </div>
         ${histHTML}
     `;
 }
 
-function cerrarModal() {
-    const m = document.getElementById('equipmentModal');
-    if (m) { m.classList.add('hidden'); m.style.display = 'none'; }
+// ============================================================
+// GRÁFICO PRINCIPAL: COMPARATIVA DE BARRAS (Más útil que líneas)
+// ============================================================
+function actualizarGraficoTrazabilidad() {
+    const ctx = document.getElementById('trazabilidadBarChart'); if (!ctx) return;
+    if (chartTrazabilidad) chartTrazabilidad.destroy();
+    const infoDiv = document.getElementById('graficoInfo');
+    
+    // Si hay equipos seleccionados, mostramos barras comparativas
+    if (state.selectedEquipos.length > 0) {
+        infoDiv.innerText = `📊 Comparativa de ${state.selectedEquipos.length} equipo(s) seleccionado(s)`;
+        
+        // Obtener datos actuales de los equipos seleccionados
+        const dataToShow = state.filteredData.filter(e => state.selectedEquipos.includes(e.ID_Equipo));
+        
+        // Ordenar por horómetro descendente para mejor visualización
+        dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
+        
+        const labels = dataToShow.map(e => e.ID_Equipo);
+        const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
+        
+        // Asignar colores únicos a cada equipo seleccionado
+        const colors = dataToShow.map((e, index) => LINE_COLORS[index % LINE_COLORS.length]);
+        
+        chartTrazabilidad = new Chart(ctx, {
+            type: 'bar',
+            data: { 
+                labels: labels, 
+                datasets: [{ 
+                    label: 'Horómetro Actual (hs)', 
+                    data: values, 
+                    backgroundColor: colors, 
+                    borderRadius: 6, 
+                    barPercentage: 0.6, 
+                    categoryPercentage: 0.8 
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                layout: { padding: { top: 35, bottom: 15 } }, 
+                plugins: { 
+                    legend: { display: false }, 
+                    tooltip: { 
+                        backgroundColor: 'rgba(15,23,42,0.95)', 
+                        titleColor: '#06b6d4', 
+                        bodyColor: '#e2e8f0', 
+                        callbacks: { 
+                            title: (items) => items[0].label, 
+                            label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs` 
+                        } 
+                    } 
+                }, 
+                scales: { 
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#67e8f9', font: { size: 12, weight: 'bold' }, autoSkip: false }, 
+                        title: { display: true, text: '🚜 Número de Equipo', color: '#94a3b8', font: { size: 11 } } 
+                    }, 
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: 'rgba(148,163,184,0.1)' }, 
+                        ticks: { color: '#94a3b8', callback: function(value) { return value.toLocaleString('es-AR') + ' h'; } }, 
+                        title: { display: true, text: 'Horómetro (horas)', color: '#94a3b8', font: { size: 11 } } 
+                    } 
+                }
+            }
+        });
+    }
+    // Si NO hay equipos seleccionados, mostrar gráfico de barras general
+    else {
+        infoDiv.innerText = '📊 Horómetros actuales de la flota (Selecciona equipos para comparar)';
+        let dataToShow = [...state.filteredData];
+        dataToShow.sort((a,b) => (parseFloat(b.Lectura)||0) - (parseFloat(a.Lectura)||0));
+        // Limitar a los primeros 20 para que no se sature si no hay selección
+        dataToShow = dataToShow.slice(0, 20); 
+        
+        const labels = dataToShow.map(e => e.ID_Equipo);
+        const values = dataToShow.map(e => parseFloat(e.Lectura)||0);
+        const colors = dataToShow.map(e => e.Estado !== 'OPERATIVO' ? '#ef4444' : '#10b981');
+        
+        chartTrazabilidad = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: labels, datasets: [{ label: 'Horómetro Actual', data: values, backgroundColor: colors, borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.85 }] },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                layout: { padding: { top: 35, bottom: 15 } }, 
+                plugins: { 
+                    legend: { display: false }, 
+                    tooltip: { 
+                        backgroundColor: 'rgba(15,23,42,0.95)', 
+                        titleColor: '#06b6d4', 
+                        bodyColor: '#e2e8f0', 
+                        callbacks: { 
+                            title: (items) => items[0].label, 
+                            label: (item) => `Horómetro: ${item.parsed.y.toLocaleString('es-AR')} hs` 
+                        } 
+                    } 
+                }, 
+                scales: { 
+                    x: { grid: { display: false }, ticks: { color: '#67e8f9', font: { size: 10, weight: 'bold' }, autoSkip: true, maxRotation: 35, minRotation: 35 }, title: { display: true, text: '🚜 Número de Equipo', color: '#94a3b8', font: { size: 11 } } }, 
+                    y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: '#94a3b8', callback: function(value) { return value.toLocaleString('es-AR') + ' h'; } }, title: { display: true, text: 'Horómetro (horas)', color: '#94a3b8', font: { size: 11 } } } 
+                }
+            }
+        });
+    }
 }
 
-function navModal(dir) {
-    const n = state.indiceModal + dir;
-    if (n < 0 || n >= state.filteredData.length) return;
-    state.indiceModal = n;
-    renderModal();
+function actualizarFiltroEquipos() {
+    const sel = document.getElementById('filterEquipo'); if (!sel) return;
+    const val = sel.value;
+    const eqs = state.filteredData;
+    const unicos = {};
+    eqs.forEach(e => { if (!unicos[e.ID_Equipo]) unicos[e.ID_Equipo] = e; });
+    const lista = Object.values(unicos).sort((a,b) => (parseInt(a.ID_Equipo.replace(/\D/g,''))||0) - (parseInt(b.ID_Equipo.replace(/\D/g,''))||0));
+    sel.innerHTML = '<option value="TODOS">🔎 Todos los equipos</option>' + lista.map(e => `<option value="${e.ID_Equipo}">🔧 ${e.ID_Equipo} | ${e.Tipo_Equipo||'Otros'}</option>`).join('');
+    if (val && val !== 'TODOS' && lista.some(e=>e.ID_Equipo===val)) sel.value = val;
+    else sel.value = 'TODOS';
 }
 
-function safeSet(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
 function forceRefreshData() { loadData(); }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btns = { btnTodas: 'TODAS', btnMalagueno: 'MALAGUENO', btnBarker: 'BARKER', btnPampita: 'LA_PAMPITA' };
-    Object.entries(btns).forEach(([id, val]) => {
-        const b = document.getElementById(id);
-        if (b) b.addEventListener('click', () => {
-            document.querySelectorAll('.sucursal-btn').forEach(x=>x.classList.remove('active'));
-            b.classList.add('active');
-            state.sucursal = val;
-            document.getElementById('filterEquipo').value = 'TODOS';
+    document.querySelectorAll('.sucursal-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.sucursal-btn').forEach(b=>b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            state.sucursal = e.currentTarget.getAttribute('data-suc');
+            state.selectedEquipos = [];
             aplicarFiltros();
+            actualizarFiltroEquipos();
         });
     });
-    ['filterMes','filterPropiedad','filterEquipo','filterEstado'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('change', (e) => {
-            if (id === 'filterMes') state.mes = e.target.value;
-            else if (id === 'filterPropiedad') state.propiedad = e.target.value;
-            else if (id === 'filterEquipo') state.equipo = e.target.value;
-            else if (id === 'filterEstado') state.estado = e.target.value;
-            aplicarFiltros();
-        });
-    });
-    const bp = document.getElementById('btnPrevEquipo');
-    const bn = document.getElementById('btnNextEquipo');
-    const bc1 = document.getElementById('btnCerrarModal');
-    const bc2 = document.getElementById('btnCerrarModalFooter');
-    const bv = document.getElementById('btnVolverActual');
-    if (bp) bp.addEventListener('click', () => navModal(-1));
-    if (bn) bn.addEventListener('click', () => navModal(1));
-    if (bc1) bc1.addEventListener('click', cerrarModal);
-    if (bc2) bc2.addEventListener('click', cerrarModal);
-    if (bv) bv.addEventListener('click', () => { const fm = document.getElementById('filterMes'); if (fm) fm.value = 'ACTUAL'; state.mes = 'ACTUAL'; aplicarFiltros(); });
+    document.getElementById('filterMes').addEventListener('change', (e) => { state.mes = e.target.value; aplicarFiltros(); });
+    document.getElementById('filterPropiedad').addEventListener('change', (e) => { state.propiedad = e.target.value; aplicarFiltros(); });
+    document.getElementById('filterEquipo').addEventListener('change', (e) => { state.equipo = e.target.value; aplicarFiltros(); });
+    document.getElementById('filterEstado').addEventListener('change', (e) => { state.estado = e.target.value; aplicarFiltros(); });
+    document.getElementById('btnPrevEquipo').addEventListener('click', () => navModal(-1));
+    document.getElementById('btnNextEquipo').addEventListener('click', () => navModal(1));
+    document.getElementById('btnCerrarModal').addEventListener('click', cerrarModal);
+    document.getElementById('btnCerrarModalFooter').addEventListener('click', cerrarModal);
     document.addEventListener('keydown', (e) => {
         const m = document.getElementById('equipmentModal');
         if (m && !m.classList.contains('hidden')) {
